@@ -127,6 +127,14 @@ public:
 
 };
 
+inline float safelog10f( float x )
+{
+  if( unlikely(x < 1e-5f) )
+    return -5.f;
+  return log10f( x );
+}
+
+
 
 void CompressionTMO::tonemap( const float *R_in, const float *G_in, float *B_in, int width, int height,
                               float *R_out, float *G_out, float *B_out, const float *L_in,
@@ -139,7 +147,7 @@ void CompressionTMO::tonemap( const float *R_in, const float *G_in, float *B_in,
     float *logL = new float[pix_count];
 //    std::unique_ptr<float[]> logL(new float[pix_count]);
     for( size_t pp = 0; pp < pix_count; pp++ ) {
-        logL[pp] = log10f( std::max( 1e-5f, L_in[pp] ) );
+        logL[pp] = safelog10f( L_in[pp] );
     }
 
     ImgHistogram H;
@@ -190,9 +198,9 @@ void CompressionTMO::tonemap( const float *R_in, const float *G_in, float *B_in,
 
     // Apply the tone-curve
     for( int pp = 0; pp < pix_count; pp++ ) {
-        R_out[pp] = lut.interp( log10f(R_in[pp]) );
-        G_out[pp] = lut.interp( log10f(G_in[pp]) );
-        B_out[pp] = lut.interp( log10f(B_in[pp]) );
+        R_out[pp] = lut.interp( safelog10f(R_in[pp]) );
+        G_out[pp] = lut.interp( safelog10f(G_in[pp]) );
+        B_out[pp] = lut.interp( safelog10f(B_in[pp]) );
     }
 
     delete [] s;

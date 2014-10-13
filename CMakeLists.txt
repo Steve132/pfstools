@@ -4,8 +4,8 @@ project(pfstools)
 set(CPACK_GENERATOR TGZ)
 set(CPACK_SOURCE_GENERATOR TGZ)
 # CPack version numbers for release tarball name.
-set(CPACK_PACKAGE_VERSION_MAJOR 1)
-set(CPACK_PACKAGE_VERSION_MINOR 9)
+set(CPACK_PACKAGE_VERSION_MAJOR 2)
+set(CPACK_PACKAGE_VERSION_MINOR 0)
 set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_SOURCE_IGNORE_FILES
 "~$"
@@ -24,8 +24,8 @@ if( "${CYGWIN}" STREQUAL "" )
   set(CYGWIN 0)  
 endif( "${CYGWIN}" STREQUAL "" )
 
-set (pfstools_VERSION_MAJOR 1)
-set (pfstools_VERSION_MINOR 9.0)
+set (pfstools_VERSION_MAJOR 2)
+set (pfstools_VERSION_MINOR 0.0)
 set (pfslib_version 1.2)
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
  

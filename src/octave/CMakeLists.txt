@@ -1,4 +1,4 @@
-include_directories("${PROJECT_BINARY_DIR}/" "${PROJECT_SOURCE_DIR}/src/pfs" ${OCTAVE_DEST_DIR})
+include_directories("${PROJECT_BINARY_DIR}/" "${PROJECT_SOURCE_DIR}/src/pfs" "${PROJECT_SOURCE_DIR}/src/octave/help_files" ${OCTAVE_DEST_DIR})
 link_directories("${PROJECT_SOURCE_DIR}/src/pfs")
 
 set(HELP_FILES pfsget.help pfsopen.help pfsput.help pfsread.help pfstransform_colorspace.help pfswrite.help)
