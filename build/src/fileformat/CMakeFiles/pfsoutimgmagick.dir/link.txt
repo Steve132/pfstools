@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfsoutimgmagick.dir/pfsoutimgmagick.cpp.o  -o pfsoutimgmagick  -L/Users/rafal/pfstools/src/pfs  ../pfs/libpfs.a 

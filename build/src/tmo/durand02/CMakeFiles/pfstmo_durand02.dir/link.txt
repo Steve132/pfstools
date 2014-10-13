@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfstmo_durand02.dir/pfstmo_durand02.cpp.o CMakeFiles/pfstmo_durand02.dir/tmo_durand02.cpp.o CMakeFiles/pfstmo_durand02.dir/bilateral.cpp.o  -o pfstmo_durand02  -L/Users/rafal/pfstools/src/pfs  ../../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

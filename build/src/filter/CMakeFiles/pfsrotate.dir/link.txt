@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfsrotate.dir/pfsrotate.cpp.o  -o pfsrotate  -L/Users/rafal/pfstools/src/pfs  ../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

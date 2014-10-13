@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfstmo_pattanaik00.dir/pfstmo_pattanaik00.cpp.o CMakeFiles/pfstmo_pattanaik00.dir/tmo_pattanaik00.cpp.o  -o pfstmo_pattanaik00  -L/Users/rafal/pfstools/src/pfs  ../../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

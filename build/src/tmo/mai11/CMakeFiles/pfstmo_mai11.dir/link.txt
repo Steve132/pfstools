@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfstmo_mai11.dir/pfstmo_mai11.cpp.o CMakeFiles/pfstmo_mai11.dir/compression_tmo.cpp.o  -o pfstmo_mai11  -L/Users/rafal/pfstools/src/pfs  ../../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 
