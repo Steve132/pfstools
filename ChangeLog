@@ -1,0 +1,214 @@
+pfstools 1.9.0 <17.09.2014>
+	* added: CMake build system (to replace automake in future releases)
+	* changed: pfsinrgbe & pfsoutrgbe do not correct for Radiance WHITE_EFFICACY by default. Note that this makes absolute values stored in .hdr files using earlier pfstools version smaller then they should be. Check manual pages for pfsinrgbe.
+	* added: pfsretime - simple frame duplication
+	* added: pfscolortransform - color calibration
+	* updated: pfsglview contains many improvement and multithreading (thanks to Oliver Barth)
+	* updated: pfsview is multithreaded if openmp present
+	* fixed: pfsindcraw uses sRGB rather than the native RGB color space. This should improve colors in HDR images merged from RAW.
+	* fixed: bugs in pfsintiff
+	* fixed: Building OSX app bundle for pfsview disabled by default (use --enable-osxapp to enable again)
+
+pfstools 1.8.5 <21.10.2011>
+	* fixed: pfsintiff normalizes 16-bit files to 0-1 range to maintain compatibility with pfscalibration and the rest of pfstools
+	* fixed: when reading TIFF files, pfsin falls back to pfsinimgmagick if pfsintiff not found
+	* fixed: pfsout tries first pfsoutimgmagic when writing TIFF images
+
+pfstools 1.8.4 <20.05.2011>
+	* fixed: SegFault from pfsview when switching channels
+	* fixed: quoted arguments in pfsin/pfsout/pfsv/pfsindcraw/pfsinmulti (fixes bug 3279342)
+
+pfstools 1.8.3 <23.03.2011>
+	* fixed: pfsdisplayfunction properly interpolates display LUT
+	* fixed: bug #3080304 - configure uses non-portable test(1) syntax
+	* fixed: bug #1766263 - pfsinhdrgen fails silently on pfsin failure. - partially
+	* fixed: pfsview the entire code converted from qt3 to qt4 (fixes bug #3127946)
+	* fixed: "Fit window to content" works again in pfsview
+	* added: window icon in pfsview
+	* added: improved image file saving in pfsview
+
+pfstools 1.8.2 <18.06.2010>
+	* fixed: compiler incompatibility issue in pfspanoramic.cpp
+	* fixed: bug #2953028 "gcc 4.4.1 const cast error"
+	* fixed: spaces were improperly escaped in pfsin / pfsout (thanks to Timo)
+	* added: new improved hdrhtml template from hdrlabs.com (thanks to Christian)
+
+pfstools 1.8.1 <01.06.2009>
+	 * fixed: hdrhtml JavaScript code for XHTML pages
+	 * fixed: hdrhtml '+' and '-' keys work now the same as in pfsview (were swapped)
+	 * fixed: added missing includes
+	 * fixed: matlab/pfs_shell.m removes matlab paths from LD_LIBRARY_PATH
+	 * fixed: uninitialized color clipping mode in pfsview (tracker 2790026)
+	 * fixed: pfsview, "preserve bri & hue" color clipping handles lower limit correcly now
+	 * fixed: pfsinppm does not report EOF error when reading from stdin
+	 * fixed: compilation on Mac OS X 10.5.7 with Fink
+	 * added: make install creates application bundle for pfsview
+
+pfstools 1.8 <23.02.2009>
+	 * added: pfsouthdrhtml for generating web pages with an HDR viewer
+	 * added: matlab functions: pfs_write_image, pfs_read_image
+	 * added: matlab interface can now save multi-channel (>3) images
+	 * fixed: cleaned up and improved matlab documentation, added Content.m
+	 * fixed: problem with inheriting matlab's LD_LIBRARY_PATH when running pfs commands
+	 * fixed: improved search for NETPBM header files in the configure script
+	 * fixed: pfssize keeps aspect ratio when resizing many images with --min/max/x/y
+
+pfstools 1.7.0 <22.10.2008>
+	 * added: pfsingdal - reader of geospatial data formats using GDAL (Geospatial Data Abstraction Library) (thanks to Martin Lambers)
+	 * added: pfsdisplayfunction command for conversion between display luminance and pixel values
+	 * added: pfsinimgmagick and pfsinppm add a WHITE_Y tag to frames (needed by some tone mapping operators)
+	 * pfsview: automatically switch to linear mapping and LDR range for display-referred images
+	 * fixed: pfsview correctly shows pixel position x=0
+	 * added: inverse gamma correction in pfsgamma
+	 * added: pfsgamma sets propertly LUMINANCE tag and displays warnings on improper input images
+	 * added: configure script displays information and commands that will not be compiled because of missing dependencies
+	 * fixed: some warning messages due to stricter syntax in g++ 4.2.1
+	 * bugfix: removed depreciated matlab command pfsread - caused compilation problems under Windows
+	 * added: pfs_test_shell for quick testing for common matlab setup problems
+	 * added: pfsview shows in the status bar current exposure for the dynamic range window (relative to Y=1)
+	 * added: configure should automatically find the include dir for netpbm	
+	 * fixed: handling of >8bit files is unified for all commands; new tag ('BITDEPTH') is used to store information about the bit-depth recission; pfsoutimagemagic and pfsoutppm support a new option --bit-depth
+         * fixed: removed --linear option from pfsoutppm, pfsoutimagemagick, pfsouttiff and changed default behavior, which was too confusing and error-prone. Images will never be gamma-corrected (transformed to the sRGB) unless it is explicitly enforced with a new option '--srgb'.
+	
+pfstools 1.6.5 <06.05.2008>
+	 * fixed: matlab interface cleanup: pfsfclose.cpp pfsfgets.cpp pfsfputs.cpp pfspopen2.cpp pfssend.cpp moved to another project as they do not belong to pfstools
+	 * fixed: matlab Makefile automatically detects correct mex-file extension (thanks to Neil Alldrin)
+	 * fixed: matlab - pfs_shell under unix adds bash as the default shell for executing pfs commands
+	 * fixed: matlab interface operates now on single precission floats, thus making most operations faster (thanks to Neil Alldrin)
+	 * added: matlab -> pfsview function shows now matrix names
+	 * Debian patch ported: changes required to switch to octave3.0 (thanks to Thomas Weber)
+	 * Debian patch ported: Fixed the usage of dcraw(1)'s -m command line option (thanks to Sebastian Harl)
+	
+pfstools 1.6.4 <01.01.2007>
+	 * fixed: buffer overflow vulnerability in rgbeio.cpp (thanks to Stefan)
+	 * fixed: compilation issues with gcc-4.3 - missing includes (thanks to Sebastian Harl for the Debian patch) 
+	 
+pfstools 1.6.3 <05.12.2007>
+	 * fixed: pfsinopenexr can now read files that has data window < display window
+	 * fixed: pfs library can handle channel names up to 32 characters (was 8)
+	 * updated: pfs specification - max string lengths and format of custom channel names
+	 * security fix: fscanf in rgbeio.cpp (thanks to Stefan and Ludwig)
+	 * bugfix: pfsview - segfault when switching channels
+	 * fixed: pfsview - color readout in the status line refreshed when new channel or frame loaded
+	 * added: matlab/pfs_write_luminance.m
+	 * bugfix: rgbeio - header read properly when the first byte is 0x20 (thanks to Axel)
+	 * bugfix: rgbeio - fix misinterpreted rle-compresses lines (thanks to Axel)
+
+pfstools 1.6.2 <04.07.2007>
+         * matlab: pfsview can now display 2D cell arrays
+	 * pfs library: quite serious bug in sRGB transforms fixed
+	 * added: check for GLUT library (unix only)
+	 * added: man page for pfsglview
+	 
+pfstools 1.6.1 <24.04.2007>
+	 * added: pfsin accepts all extensions supported by dcraw (thanks to L. David Baron)
+	 * fixed: tiff logluv reader - segfault bug and wrong colorspace conversions (thanks to Giuseppe Rota)
+	 * updated: some documentation files
+	 * fixed: matlab/pfs_transform_colorspace accepts 3D/2D matrix as both input and output
+	 * fixed: matlab/pfs_put or _get handles tags in pfs stream
+	 * fixed: pfsview under different shell than bash
+
+pfstools 1.6 <01.03.2007>
+	 * added: preliminary support for matlab (see README.matlab)
+	 * added: --disable-octave option
+	 * fixed: configure.ac honors CXXFLAGS instead of overwriting them with -O3
+	 * added: pfsin/outimgmagic now handles alpha channel
+	 * added: pfsindcraw checks for dcraw and reports errors if not found
+	 * fixed: pfsintiff could fail with large images
+	 * added: example project files for MS VC++ (CVS only)
+	 * added: pfsglview (viewer, which does not require qt)
+	 * added: support for exposure adjustment in radiance HDR files
+	 * fixed: compiler compatibity issues in pfspanoramic.cpp
+	 
+pfstools 1.5 <16.08.2006>
+	 * All octave IO API updated: named pipes replaced with popen, which is less
+	 problematic under cygwin
+	 
+	 * bugfix: color conversion matrixes (XYZ->RGB) lead to inaccuracies for 16bit images.
+	matrix values have been adjusted to maximize precision. (2006-08-08)
+	 * added: initial support for alpha channels in Tiff files (thanks to Pablo d'Angelo, http://hugin.sf.net). images can be loaded, but alpha channels are ignored.
+	 * added: disable-* options to configure script to disable build of certain features
+	 * added: pfsview - displayed image can be copied to clipboard
+	 * added: pfscut - now it is possible to specify u-l, b-r coordinates
+	 * updated: pfs specification
+
+pfstools 1.4	 
+ 	 * added: initial support for camera RAW files via dcraw wrapper pfsindcraw
+	   2006-03-17  Grzegorz Krawczyk  <krawczyk@mpi-sb.mpg.de>
+	 * pfsview: now possible to choose color space for the pixel under the cursor
+	 * pfsview: added new color clipping method: Keep brightness and hue
+	 * improved QT autoconf check, added --with-qtinclude, --with-qtlibs
+	 * fixed typos in documentation and pfs spec (thanks to Adam Buchbinder)
+	 * pfs.cpp and colorspace.cpp compile under MS Visual C++
+	 * pfsopen.m can accept file descriptor of an opened file now
+pfstools 1.3
+	 * added: pfsinimgmagick/pfsoutimgmagick to read and write images using ImageMagick++ library
+	 * added: pfsinjpeghdr / pfsoutjpeghdr for JPEG-HDR format
+	 * added: pfsstat - hdr image statistic
+	 * bug fixed: loading of images in pfsview should be 30-60% faster
+	 * configure.ac - improved QT config script
+	 ** use pkgconfig to set up QT flags, if possible
+	 ** verify MOC
+	 ** simpler script to set up QT flags
+	 * libpfs uses map instead of hash_map - for better compatibility
+	 * added: pfsview - better handling of negative values
+	 ** mark negative with red now works
+	 ** negative values in color images are now recognized
+	 * pv renamed to pfsv to avoid the conflict with the pipe viewer 'pv'
+
+pfstools 1.2.1 <19.07.2005>
+         * bug fixed: seg fault in pfsoutexr and pfsabsolute
+	 * bug fixed: pfsin uses bash as a shell
+	 
+pfstools 1.2 <15.06.2005>
+	 pfs library: extended api:
+	 * pckconfig file renamed from pfs-1.0.pc to pfs.pc
+	 * iterator over all tags in TagContainer
+	 * new iterator over all channels in Frame
+	 * FrameFileIterator can be used together with getopt and getopt_long
+	 pfsinexr, pfsoutexr: can read/write all channels and all tags/attributes
+	 added: pfsinpfm, pfsoutpfm - to read/write PFM HDR images
+	 pfsin*,pfsout*: now use 'LUMINANCE' tag to keep the track of the type of
+	                 intensities stored in the pfs stream:
+			 relative (linear) or display (gamma corrected)
+	 pfssize: new arguments --minx, --miny, --maxx and --maxy
+	 pfs library: sRGB color space scaled to keep channel values
+	   within 0-1 range (to be compliant with the other parts of pfstools)
+	 Added new filters
+	 * pfscut - crops images
+	 * pfscat - concatenates images or animations
+	 * pfspad - add border to images or animations
+	 * pfsrotate - rotates images by 90deg
+	 * pfsflip - flips images
+	 * pfsabsolute - calibrates images to absolute units (Y in cd/m^2)
+	 Support for LUMINANCE tag (recognized by some pfsin* and pfsout* commands)
+	 
+pfstools 1.1 <29.01.2005>
+	pfsview: minimum and maximum of the luminance window can be
+	  dragged (previously only entire window could be dragged)
+10.01.2004
+	added: support for gcc 3.4.2 (thanks to Fabio Mierlo)
+15.12.2004
+        added: pfspanoramic
+05.12.2004
+	pfsview: optimized mapping function for faster display and
+	better responsiveness
+	pfsview: added visualization of negative values
+	pfsview: added option to switch off NaN and Inf marking
+	pfssize: fixed problem with boundary conditions
+	pfsview: shortcuts added
+24.11.2004
+	added: octave script: pfssize
+	transformColorSpace does graph traverse to find conversion
+	between any color spaces
+18.11.2004
+	pfsview: can save visible window as .png image
+17.11.2004
+	pfsextractchannels: added
+	Updated man pages
+02.11.2004
+	pfsview: it is now possible to move back and forth between the frames
+	pfsin*: all those commands now add a tag FILE_NAME 	
+27.10.2004
+	Rewritten and much improved pfssize. Enlarging of images is now
+	possible. pfssize rewrites tags to the resized stream.

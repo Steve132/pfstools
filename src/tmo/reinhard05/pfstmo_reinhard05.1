@@ -1,0 +1,51 @@
+.TH "pfstmo_reinhard05" 1
+.SH NAME
+pfstmo_reinhard05 \- Photoreceptor based dynamic range reduction
+.SH SYNOPSIS
+.B pfstmo_reinhard05
+[--brightness <val>] [--chromatic <val>] [--light <val>]
+[--verbose] [--help]
+.SH DESCRIPTION
+This command implements a tone mapping operator as described in:
+
+Dynamic Range Reduction Inspired by Photoreceptor Physiology.
+E. Reinhard and K. Devlin.
+In IEEE Transactions on Visualization and Computer Graphics, 2005.
+
+.SH OPTIONS
+.TP
+--brightness <val>, -b <val>
+
+Brightness correction (-8..8), parameter 'f' in paper. 
+Default value: 0.0
+.TP
+--chromatic <val>, -c <val>
+
+Amount of chromatic adaptation (von Kries model) (0..1), parameter 'c' in paper.
+Default value: 0.0
+.TP
+--light <val>, -l <val>
+
+Amount of light adaptation adaptation (0..1), parameter 'l' in paper.
+Default value: 1.0
+.TP
+--verbose
+
+Print additional information during program execution.
+.TP
+--help
+
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_reinhard04 -s 0.5 | pfsout memorial.png
+
+Tone map image and save it in png format.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <krawczyk@mpi-sb.mpg.de>.

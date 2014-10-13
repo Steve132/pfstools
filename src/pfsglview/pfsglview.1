@@ -1,0 +1,107 @@
+.TH "pfsglview" 1
+.SH NAME
+pfsglview \- Viewer for high-dynamic range images in pfs format
+.SH SYNOPSIS
+.B pfsglview
+[--h] [--v]
+.SH DESCRIPTION
+pfsview is a OpenGL/GLUT application for viewing high-dynamic range images. It
+expects pfs stream on the standard input and displays the frames in
+that stream one by one.
+
+.SH DYNAMIC RANGE WINDOW
+To show high-dynamic range data on a low-dynamic range monitor,
+pfsglview uses concept of a dynamic range window. The dynamic range
+window is the highest and lowest value that should be mapped to black
+and white pixel. Values above or below the window are clipped (see
+clipping methods below). The dynamic range window is displayed in
+pfsglview as a blue area on the dynamic range scale (second toolbox from
+the top). The window can be moved, shrunk and expended using a mouse
+or a keyboard.
+
+.SH ZOOMING AND PANNING
+To zoom image, the mouse can be dragged in vertical direction with the left button pressed. 
+Pressing [space] button or pressing left mouse button above the statistic window (left-bottom corner) changes from 
+zooming to panning modes and vice versa. To pan image, the mouse can be dragged in vertical 
+and horizontal directions with the left button pressed. 
+
+.SH POPUP MENU OPTIONS
+.TP
+.B Zoom reset
+Set default zoom parameters.
+.TP
+.B Zoom in
+Increase image (mouse dragging with left button pressed).
+.TP
+.B Zoom out
+Decrease image (mouse dragging with left button pressed).
+.TP 
+.B Increase exposure
+Move dynamic range window into higher luminance values.
+.TP
+.B Decrease exposure
+Move dynamic range window into lover luminance values.
+.TP
+.B Extend dynamic range
+Extend dynamic range window.
+.TP
+.B Shrink dynamic range
+Shrink dynamic range window
+.TP
+.B Low dynamic range
+Set dynamic range window to <-1,1> range (log scale).
+.TP
+.B Fit to dynamic range
+Set dynamic range windo to minimum and maximum luminance of a given image.
+.TP
+.B Choose channel
+Change image data channel.
+.TP
+.B Mapping method
+Change mapping method (see below for details).
+.TP
+.B Next frame
+Display next image from the pipe.
+.TP
+.B Previous frame
+Display previous image from the pipe.
+.TP
+.B Histogram
+Switch on/off histogram window.
+.TP
+.B Info
+Switch on/off info window.
+.TP
+.B Save&Quit
+Send the visible LDR image (8-bits) to stdout and quit pfsglview.
+
+
+.SH MAPPING METHODS
+
+High-dynamic range data are usually better visualized using non-linear
+scale, for example a logarithmic or a power function. pfsglview offers
+several such scales, shown in \fIpopup\fR menu. Gray-scale values for
+each mapping method are computed by the formulas:
+
+\fBLINEAR\fR: y = (x-min)/(max-min)
+
+\fBGAMMA\fR: y = [ (x-min)/(max-min) ]^gamma
+
+\fBLOGARITHMIC\fR: y = (log10(x)-log10(min))/(log10(max)-log10(min))
+
+where \fIy\fR is the gray-scale value after mapping, \fIx\fR
+is an input HDR value, \fImin\fR and \fImax\fR are lower and upper bounds
+of the dynamic range window.
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsglview 
+See the memorial image.
+.TP
+pfsin memorial.hdr | pfsglview | pfsout memorial.jpg
+See the memorial image and save the clipped (8-bits) version to memorial.jpg (\fISave&Quit\fR option from popup menu should be activated).
+
+.SH "SEE ALSO"
+.BR pfsin (1)
+
+Please report bugs and comments to Radoslaw Mantiuk <radoslaw.mantiuk@gmail.com>.

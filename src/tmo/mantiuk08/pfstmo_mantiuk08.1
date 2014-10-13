@@ -1,0 +1,270 @@
+.TH "pfstmo_mantiuk08" 1
+.SH NAME
+pfstmo_mantiuk08 \- Display adaptive tone mapping
+.SH SYNOPSIS
+\fBpfstmo_mantiuk08\fR [\fB--display-function\fR <\fIdf-spec\fR>] [\fB--display-size\fR=<\fIsize-spec\fR>]
+[\fB--color-saturation\fR <\fIfloat\fR>] [\fB--contrast-enhancement\fR <\fIfloat\fR>]
+[\fB--white-y\fR=<\fIfloat\fR>] [\fB--fps\fR=<\fIframes-per-second\fR>]
+[\fB--output-tone-curve\fR=<\fIfile name\fR>] [\fB--verbose\fR] [\fB--help\fR]
+.SH DESCRIPTION
+This command applies the display adaptive tone mapping, which attempts
+to preserve contrast of an input (HDR) image as close as possible
+given the characteristic of an output display. Use this tone mapping
+operator if you want to preserve original image appearance, or
+slightly enhance contrast (-\fBe\fR option) while maintaining the
+natural look of images. The operator can also compensate for ambient
+light reflections on a screen, and for varying dynamic range and
+brightness of a display. The operator is suitable for video sequences
+as it prevents high-frequency changes in tone-curve between
+consecutive frames, which would result in flickering. Note that the
+temporal filtering is always active and there is no need to specify
+an argument to switch it on.
+.HP
+.PD 0
+More details can be found in:
+.IP
+Rafal Mantiuk, Scott Daly and Louis Kerofsky.
+.IP
+Display Adaptive Tone Mapping.
+.IP
+In: ACM Transactions on Graphics 27 (3), 2008.
+.IP
+http://www.mpi-inf.mpg.de/resources/hdr/datmo/
+.PD
+.PP
+If you find this TMO useful in your research project, please cite the
+paper above.
+.HP
+.PD 0
+This operator also employs color correction mechanism from:
+.IP
+Radoslaw Mantiuk, Rafal Mantiuk, Anna Tomaszewska, Wolfgang Heidrich.
+.IP
+Color Correction for Tone Mapping.
+.IP
+In: Computer Graphics Forum (Proc. of EUROGRAPHICS'09), 28(2), 2009.
+.IP
+http://zgk.wi.ps.pl/color_correction/
+.PD
+.PP
+The result of this TMO does not require gamma correction.
+.SH OPTIONS
+.TP
+\fB--display-function\fR <\fIdf-spec\fR>, \fB-d\fR <\fIdf-spec\fR>
+To
+adapt tone-mapping to different displays, this operator must be
+provided a display function. The display function describes how output
+luminance of a display changes with pixel values. If no parameter is
+given, the command assumes \fB-df\ pd=lcd\fR (see \fIPre-defined
+display\fR below). There are several ways to specify the display
+function:
+.TP
+\fIGamma-gain-black-ambient display model\fR
+.IP
+g=<float>:l=<float>:b=<float>:k=<float>:a=<float>[:n=<float>]
+.IP
+Gamma-gain-black-ambient model can approximate a range of displays and
+is a compact way to specify a display function. It assumes that a display function
+has the following form:
+.IP 
+L_d(I) = (l-b)*I^gamma + b + k/pi*a
+.IP
+The parameters are as follows:
+.RS
+.PD 0
+.TP 5
+\fBg\fR - 
+gamma or exponent of a display function (default 2.2, usually from 1.8 to 2.8)
+.TP 5
+\fBl\fR -
+peak luminance of a display in cd/m^2  (default 100, from 80 for CRTs to 500 or more for newer displays)
+.TP 5
+\fBb\fR -
+black level, which is luminance of a black pixel when the display is on (default 1, usually from 0.3 to 1 cd/m^2)
+.TP 5
+\fBk\fR -
+reflectivity of a screen (assuming that it is diffuse) (default 0.01, usually about 0.01 (1%) for LCD displays, more for CRTs)
+.TP 5
+\fBa\fR -
+ambient illumination in lux. Typical values are:
+.RS
+.IP 50\ lux
+Family living room (dim, \fBdefault\fR)
+.IP 400\ lux
+A brightly lit office
+.IP 32000\ lux
+Sunlight on an average day (min.)
+.IP 100000\ lux
+Sunlight on an average day (max.)
+.RE
+.RE
+.PD
+.TP
+\fIPre-defined display\fR
+.IP
+\fBpd\fR=\fI<display_type>\fI
+.IP
+Use pre-defined display type. This options are for convenience only
+and they do not mean to accurately model the response of a particular
+display.  The following \fIdisplay type\fRs are recognized:
+.RS
+.TP
+\fBlcd_office\fR (g=2.2, l=100, b=0.8, k=0.01, a=400 )
+lcd set to "office" mode seen in bright environment
+.PD 0
+.TP
+\fBlcd\fR        (g=2.2, l=200, b=0.8, k=0.01, a=60  )
+typical lcd seen in dim environment (\fBdefault\fR)
+.TP
+\fBlcd_bright\fR (g=2.6, l=500, b=0.5, k=0.01, a=10  )
+newer LCD TV seen in dark environment
+.TP
+\fBcrt\fR        (g=2.2, l=80,  b=1,   k=0.02, a=60  )
+CRT monitor seen in dim environment
+.PD
+.RE
+.IP
+The parameters
+in the parenthesis are the same as for the gamma-gain-black-ambient
+model explained above.
+.TP
+\fILookup-table\fR
+.IP
+\fBlut\fR=\fI<file>\fI
+.IP
+This is the most accurate specification of the display response
+function, but requires measuring it with a luminance meter. The lookup
+table should account also for ambient light, so that it is recommended
+to use the luminance meter that can measure screen luminance from a
+distance, such as Minolta LS-100 (as opposed to those that use rubber
+tube touching a display that eliminates the influence of ambient
+light). The <file> must be a comma-separated text file in a format
+(CSV) with two columns: first column represents pixel values (from 0.0
+to 1.0) and the second physical luminance in cd/m^2. Both the pixel
+value and the luminance should increase in each raw.
+.TP
+\fB--display-size\fR=<\fIsize-spec\fR>, \fB-s\fR=<\fIsize_spec\fR>
+Specifies how large the image appears to a viewer and what is the
+viewing distance.  If no parameter is given, \fB-s\ ppd=30\fR is
+assumed. Since this tone-mapper is global, display size has moderate
+effect on the resulting images and thus skipping this parameter should
+not do much harm. There are two ways to specify image size:
+.RS
+.PD 0
+.TP
+\fBvres\fR=<lines>:\fBvd\fR=<screen_heights>[:\fBd\fR=<\fImeters\fR>]
+.RS
+.IP \fBvres\fR
+- screen's vertical resolution in lines, for example 1024. 
+.IP \fBvd\fR
+- viewing distance specified as multiplies of screen height. For example if the display is seen from 0.5m and the height of its screen is 25cm, \fBvd\fR=2.
+.IP \fBd\fR
+- (optional) viewing distance in meters. This is to account for lower
+eye's sensitivity for larger viewing distances (although the effect is
+negligible). By default \fB-d\fR=0.5 is assumed.
+.RE
+.TP
+\fBppd\fR=<\fIpixels_per_visual_degree\fR>[:\fBd\fR=<\fImeters\fR>]
+.RS
+.IP \fBppd\fR
+- how many pixels spans one visual degree.
+.IP \fBd\fR
+- (optional) viewing distance in meters. This is to account for lower
+eye's sensitivity for larger viewing distances (although the effect is
+negligible). By default \fB-d\fR=0.5 is assumed.
+.RE
+.RE
+.PD
+.TP
+\fB--color-saturation\fR <\fIfloat\fR>, \fB-c\fR <\fIfloat\fR>
+Decrease or increase color saturation after tone mapping. Default
+value \fB-c=1\fR attempts to preserve color appearance of the original
+image. Use values >1 to increase and <1 to decrease color saturation.
+.TP
+\fB--contrast-enhancement\fR <\fIfloat\fR>, \fB-e\fR <\fIfloat\fR>
+By default this tone-mapper attempts to preserve contrast of an input
+image (\fB-e=1\fR). This parameter controls whether the contrast of an
+input image should be enhanced before tone-mapping. For example
+\fB-e=1.15\fR boosts contrast by 15%. Note that if a target display
+does not offer sufficient dynamic range, contrast may be enhanced only
+for selected tone-values (those that dominate in an image) or not
+enhanced at all.
+.TP
+\fB--white-y\fR=<\fIfloat\fR>, \fB-y\fR=<\fIfloat\fR>
+Tells the
+tone-mapper what luminance level in the input image should be mapped
+to the maximum luminance of a display. Since HDR images contain only
+relative luminance information, tone-mapper does not know how bright
+should be the scene. This option is meant to fix this problem by
+providing tone-mapper with the information what luminance level in an
+input image should be perceived as a diffuse white surface. Default is
+\fInone\fR, which means that no such mapping will be enforced and
+tone-mapper is free to find an optimal brightness for a given
+image. This is a recommended setting for HDR images. Setting
+\fB--white-y\fR could be necessary for dark scenes, which could be
+made too bright by the tone-mapper. The value of this parameter can be
+also passed in pfsstream as a tag \fIWHITE_Y\fR. pfstools 1.7 and
+newer sets set this tag automatically for LDR images. The command line
+option overrides the value of the pfstream tag.
+.TP
+\fB--fps\fR=<\fIframes-per-second\fR>, \fB-f\fR=<\fIframes-per-second\fR>
+Set the frame rate of the input sequence. Default is 25. Currently
+only 3 values are supported: 25, 30 and 60. This parameter controls
+temporal filter that makes sure the resulting sequence is coherent in
+time. This reduces the likelihood of a visible flicker.
+.TP
+\fB--output-tone-curve\fR=<\fIfile name\fR>, \fB-o\fR=<\fIfile name\fR>
+Write tone-curves to a text file. This option is mainly
+for debugging purposes, but can be used to visualize computed
+tone-curves. The tone-curve data is stored in a comma separated text
+file (CSV), consisting of three columns: frame number, log10 of input
+luminance factor, log10 of the resulting display luminance, and the
+pixel value (0-1).
+.TP
+\fB--verbose\fR, \fB-v\fR
+Print additional information during program execution.
+.TP
+\fB--quiet\fR, \fB-q\fR
+Do not display progress report.
+.TP
+\fB--help\fR, \fB-h\fR
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_mantiuk08 -d pd=crt | pfsout memorial.png
+.IP
+Tone map memorial image for a CRT display and store the result in the PNG format.
+.TP
+pfsin memorial.hdr | pfstmo_mantiuk08 -d g=2.6:l=500:b=0.5:k=0.01:a=10 | pfsview
+.IP
+Tone map memorial image for a display that has a 2.2 gamma, the peak
+luminance of 500 cd/m^2, the black level of 0.5 cd/m^2, the panel
+reflectivity of 1% (0.01) and is seen under the illumination of 10
+lux. 
+.TP
+pfsin bridge.jpg --linear | pfsclamp --min 0.007 | pfstmo_mantiuk08 -v | pfsview
+.IP
+Enhance the low-dynamic range image 'bridge' and view the
+result. pfsclamp command reduces noise for low code values.
+.HP
+.PD 0
+pfsin frame%05d.exr | pfstmo_mantiuk08 -d pd=lcd_bright --fps 30 | pfsout out_frame%04d.png
+.PD
+.IP
+Tone-map video sequence at 30 frame-per-second frame rate. 
+.TP
+pfsin *.exr | pfstmo_mantiuk08 | pfsview
+.IP
+Tone-map and display *.exr HDR images in the current directory. 
+.TP
+pfsin *.exr | pfstmo_mantiuk06 | pfsgamma -g 0.8 | pfstmo_mantiuk08 | pfsview
+.IP
+It is possible to stack a TMO that sharpens images (pfstmo_mantiuk06) with the
+contrast preserving TMO (pfstmo_mantiuk08) to get new interesting results.
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

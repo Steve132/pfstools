@@ -1,0 +1,37 @@
+.TH "pfsrotate" 1
+.SH NAME
+pfsrotate \- Rotate images 90 degrees.
+.SH SYNOPSIS
+.B pfsrotate
+[--r] [--help]
+.SH DESCRIPTION
+Use this command to rotate images from a stream of pfs. This command is useful
+for output on hardcopy devices with aspect ratios opposite to the input image.
+By default, the image is rotated clockwise. The --r option may be used to rotate
+the image counter-clockwise instead. 
+
+.SH OPTIONS
+.TP
+--r, -r
+
+Rotate the image counter-clockwise instead of clockwise.
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsrotate -r | pfsout memorial_gc.hdr
+
+Rotate memorial image 90 degrees counter-clockwise and save to memorial_gc.hdr.
+
+.SH "NOTES"
+To rotate an image 180 degrees, use 
+.BR pfsflip (1) 
+with both the --h and --v options specified.
+
+.SH "SEE ALSO"
+.BR pfsin(1)
+.BR pfsout(1)
+.BR pfsflip(1)
+
+.SH BUGS
+Please report bugs and comments to Alexander Efremov
+<aefremov@mpi-sb.mpg.de>.

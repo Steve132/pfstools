@@ -1,0 +1,97 @@
+.TH "pfsin" 1
+.SH NAME
+pfsin \- Read an image in one of the several formats and write pfs stream to
+the standard output
+.SH SYNOPSIS
+.B pfsin
+<file> [<file>...]
+.SH DESCRIPTION
+This command can be used to read high- or low- dynamic range image in
+several recognized formats and output pfs stream on standard
+output. The pfs stream is usually piped to another program for further
+processing (see examples). To get a list of recognized formats and
+extensions, execute:
+
+  pfsin --help
+
+This command is a front-end for pfsin* programs for reading images:
+pfsinrgbe, pfsinexr, etc. Based on the file extension, appropriate
+program is executed. If two different file format are given as
+parameters, two different program for loading images are
+executed. Additional options starting with dash '-' can be passed to
+pfsin* programs. The following rules apply for passing the options:
+the options given before any image file name (or %d pattern) are
+passed to all pfsin* programs. Options given after image file name are
+only passed to the program executed for that file(s). Note also that
+all option that take an argument (except \fB--frames\fR) must given in
+the form \fI--option=value\fR, that is without a space between an
+option and its argument.
+
+.SH OPTIONS
+The following options are shared by most pfsin* commands, although
+some may not accept --absolute and may ignore --linear.
+.TP
+.B \--frames <range>
+Range is given in mathlab / octave format:
+
+.B "startframe:step:endframe"
+
+Frame numbers start with
+.B "startframe"
+(default 0), are increased by
+.B "step"
+(default 1) and stop at
+.B "endframe"
+You can skip one of those values, for example
+.I "1:100"
+for frames 1,2,...,100 and
+.I 0:2:
+for frames 0,2,4,... up to the last file that exists.
+
+.TP
+.B \--skip-missing
+Skip up to ten frames in a row if corresponding files are
+missing. Otherwise the program stops reading sequence at the first
+file that does not exists. This switch does not apply to the first
+frame in a sequence. This switch can be useful if there is a rendered
+animation where some of the frame has not been generated.
+
+.TP
+.B \--linear, -l
+Converts pixel values to linear luminance (XYZ), assuming the sRGB
+color space for the input image. The maximum pixel value (255,255,255)
+is mapped to Y=1. \fILUMINANCE\fR tag is set to RELATIVE.
+
+.TP
+.B \--absolute <max_lum>, -a <max_lum>
+\fB--absolute\fR converts pixel values to an absolute linear luminance
+(XYZ), that is the color space, in which channel Y contains luminance
+given in cd/m^2. The sRGB color space is assumed for the input
+image. The maximum pixel value (255,255,255) is mapped to
+Y=\fI<max_lum>\fR. \fI<max_lum>\fR is typically set to 80 [cd/m^2] for
+a CRT monitor. \fILUMINANCE\fR tag is set to
+ABSOLUTE. \fB--absolute\fR process images almost the same as
+\fB--relative\fR, but additionally it scales all pixels by
+\fI<max_lum>\fR.
+
+.SH EXAMPLES
+.TP
+pfsin memorial.pic | pfsview
+
+See a hdr image in Radiance format (RGBE).
+
+.TP  
+pfsin memorial.pic | pfstmo_drago03 | pfsout memorial.jpeg
+
+Tone map a hdr image and save it as JPEG.
+ 
+.SH "SEE ALSO"
+.BR pfsout (1)
+.BR pfsinppm (1)
+.SH BUGS
+For LDR formats - JPEG, PNG, PNM: If pfstools are compiled without
+ImageMagic support, this command currently will not handle multiple
+frames given with a \%%d pattern.
+
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools

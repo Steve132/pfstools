@@ -1,0 +1,2 @@
+/usr/bin/ar cr libpfs.a  CMakeFiles/pfs.dir/colorspace.cpp.o CMakeFiles/pfs.dir/pfs.cpp.o CMakeFiles/pfs.dir/pfsutils.cpp.o
+/usr/bin/ranlib libpfs.a

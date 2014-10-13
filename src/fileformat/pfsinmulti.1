@@ -1,0 +1,45 @@
+.TH "pfsinmulti" 1
+.SH NAME
+pfsinmulti \- read several streams of frames and write pfs streams to
+named pipes
+.SH SYNOPSIS
+.B pfsinmulti
+pfsinmulti <file> [--frames f:s:t] [--skip-frames] [<file>...] -- command @1 @2 [@3 ...]
+.SH DESCRIPTION
+Use this command to read several animation sequences and write them to
+pfsstreams. This command is useful with those pfs programs, which take
+several pfs streams as arguments. For example, the following command
+can be used to combine two animations so that there are stitched
+together:
+
+  pfsinmulti anim_a-%04d.hdr anim_b-%04d.hdr -- pfscat @1 @2
+
+arguments @1 and @2 are replaced with named pipes for anim_a-%04d.hdr
+and anim_b-%04d.hdr frames respectively. \fIcommand\fR argument is
+obligatory and it must be preceded with '--'. There should be as many
+@1, @2, .., @n arguments as there are animation sequences given as
+input.
+
+Arguments \fB--frames\fR, \fB--skip-frames\fR and other options are
+handled the same way as in \fIpfsin\fR program. Also pfsinmulti
+recognizes the same file formats as pfsin.
+
+Technically, pfsinmulti creates a named pipe for each pfsstream,
+replaces @n arguments with the names of those pipes and deletes
+the pipes when \fIcommand\fR finishes.
+
+.SH EXAMPLES
+.TP
+pfsinmulti image1.hdr image2.hdr -- cat @1 @2 | pfsview
+
+Does the same as 'pfsv image1.hdr image2.hdr' but in much more
+sophisticated way.
+
+.SH "SEE ALSO"
+.BR pfsin (1)
+.SH BUGS
+This command currently does not handle multiple frames given with a
+\%%d pattern in case of LDR formats: JPEG, PNG, PNM. 
+
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

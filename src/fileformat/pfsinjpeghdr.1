@@ -1,0 +1,24 @@
+.TH "pfsinjpeghdr" 1
+.SH NAME
+pfsinjpeghdr \- Load images or frames in JPEG-HDR format
+.SH SYNOPSIS
+.B pfsinjpeghdr
+<file> 
+
+.SH DESCRIPTION
+Use this command to read JPEG file with HDR extension. This software
+makes use of the High Dynamic Range Imaging Library from Sunnybrook
+Technologies Inc. (c) Sunnybrook Inc. 2005
+
+.SH EXAMPLES
+.TP
+ pfsinhdrjpeg memorial.jpeg | pfsout memorial.hdr
+
+Converts from one HDR format to another
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.
+.SH "SEE ALSO"
+.BR pfsoutjpeghdr (1)
+
+

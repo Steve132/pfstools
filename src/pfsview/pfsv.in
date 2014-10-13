@@ -1,0 +1,12 @@
+#!@BASH_PATH@
+############################################################
+# View HDR images
+############################################################
+
+if [ -z "$1" ]; then
+   echo "View HDR images";
+   echo "Usage: pfsv <image> [<image>...]"
+   exit 0;
+fi
+
+pfsin "$@" | pfsview

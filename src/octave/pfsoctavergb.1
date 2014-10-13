@@ -1,0 +1,23 @@
+.TH "pfsoctavergb" 1
+.SH NAME
+pfsoctavergb \- Process red, green and blue channels in pfs stream using Octave
+.SH SYNOPSIS
+.B pfsoctavergb <octave_program>
+.SH DESCRIPTION
+Use this command to execute a GNU Octave program on red, green and blue
+channels of each frame in the pfs stream. \fIoctave_program\fR must be
+given in quotation marks ("") and must not produce any output (it can
+output to stderr, not to stdout). Red, green and blue color channels
+are available in \fIoctave_program\fR as \fBR\fR, \fBG\fR and \fBB\fR
+matrices.  
+.PP
+Note: This command requires GNU Octave.
+.SH EXAMPLES
+.TP
+pfsinrgbe frames_%04d.hdr | pfsoctavergb "R = R.^2; G = G.^2; B = B.^2;" | pfsview
+.PP
+Expand the dynamic range of a sequence of frames and show the result
+with pfsview.
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

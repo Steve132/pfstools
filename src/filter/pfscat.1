@@ -1,0 +1,47 @@
+.TH "pfscat" 1
+.SH NAME
+pfscat \- Concatenate frames in PFS stream
+.SH SYNOPSIS
+.B pfscat
+[--horizontal] [--vertical] [-j <type>] 
+[-R <val>] [-G <val>] [-B <val>] [-Y <val>] [--help] image1.pfs image2.pfs ...
+.SH DESCRIPTION
+Read number of frames as input, stitch them either horizontally
+or vertically, and produce single frame as output. If frames are not all
+the same size they are justified with each other - by default they are 
+centered, but can also be flushed with a specified edge.  
+.SH OPTIONS
+.TP	
+--horizontal, -H
+Stitch frames horizontally. 
+.TP
+--vertical, -V
+Stitch frames vertically.  
+.TP
+-j <type>
+Specify justification of input frames. Predefined types are: min, 
+max, center. 
+.TP
+-R <val>, -G <val>, -B <val>
+Color of an extra space in a resulting image. Default color is black, 
+and if some of the components is not specified, its value is set to 0.0. 
+.TP
+-Y <val>
+Color of an extra space in luminance mode. 
+.TP
+--help, -h
+Print a list of commandline options.
+.SH EXAMPLES
+.TP
+pfsinmulti anim1_%04d.hdr anim2_%04d.hdr -- pfscat @1 @2 --vertical
+Stitch two hdr animations in vertical alignment. 'pfscat' is taken as an
+argument by 'pfsinmulti', therefore it must be preceded with '--'. Number
+of @1 @2 ... @n arguments must be the same as number of animations to combine.
+.SH NOTES
+Note that either --horizontal or --vertical option must be specified.
+.SH SEE ALSO
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Dorota Zdrojewska
+<dzdrojewska@wi.ps.pl>.	

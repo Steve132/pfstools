@@ -1,0 +1,53 @@
+.TH "pfscolortransform" 1
+.SH NAME
+pfscolortransform \- Apply color calibration using user provided matrix file.
+.SH SYNOPSIS
+.B pfscolortransform
+(--\fBxyzrgb\fR matrix-file | --\fBrgbxyz\fR matrix-file) [--\fBtranspose]
+.SH DESCRIPTION
+Use this command to calibrate colours using a calibration matrix supplied in a text file. 
+The command is intended for linearized (not gamma corrected) color spaces. 
+The matrix should be 3x3 and it should transform from CIE XYZ to ITU rec. 709 RGB (sRGB primaries but linear, no gamma) 
+or from the same RGB to CIE XYZ (see options below). The text file should contain three rows with numbers separated by a comma, 
+for example:
+.PP
+.PD 0
+.IP 
+0.0292,0.0126,0.0009
+.IP
+0.0052,0.0340,-0.0049
+.IP
+0.0055,-0.0059,0.0409
+.PD
+.PP
+If the --\fBxyzrgb\fR is supplied, the pixel values are color-transformed as follows:
+.IP
+[RGB]' = M * [XYZ]
+.PP
+where ' is matrix transposition, * is matrix multiplication, RGB is a vector of RGB values 
+and XYZ is the vector of CIE XYZ trichromatic values. If the --\fBrgbxyz\fR is supplied, 
+the pixel values are color-transformed as follows:
+.IP
+[XYZ]' = M * [RGB]
+.SH OPTIONS
+.TP
+--\fBxyzrgb\fR matrix-file, -\fBx\fR matrix-file
+User provided matrix is a conversion matrix to convert from XYZ to RGB color space.
+.TP
+--\fBrgbxyz\fR matrix-file, -\fBr\fR matrix-file
+User provided matrix is a conversion matrix to convert from RGB to XYZ color space.
+.TP
+--\fBtranspose, -\fBt
+Take transpose of provided matrix file. 
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfscolortransform -x matrix.txt | pfsout memorial_gc.ppm
+.IP
+Color calibrate memorial image with matrix in matrix.txt file and save to memorial_gc.ppm.
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsdisplayfunction (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

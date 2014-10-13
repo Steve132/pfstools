@@ -1,0 +1,95 @@
+#!/usr/bin/octave -q
+#  
+# This file is a part of PFSTOOLS package.
+#  ---------------------------------------------------------------------- 
+#  Copyright (C) 2003,2004 Rafal Mantiuk and Grzegorz Krawczyk
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# 
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  ---------------------------------------------------------------------- 
+# 
+#  @author Rafal Mantiuk, <mantiuk@mpi-sb.mpg.de>
+# 
+#  $Id: pfsstat,v 1.2 2005/11/07 14:40:52 rafm Exp $
+#
+# See man page for more information
+
+pin = pfsopen( "stdin" );
+
+#fprintf( stderr, "l = %d\n", length( argv ) );
+
+if( length( argv ) != 0 )
+  error( "Expecting no parameters" ); 
+endif
+
+firstFrame = true;
+while( true )
+  pin = pfsget( pin );
+
+  if( pin.EOF == true ) # Are there any more frames
+    break;
+  endif
+
+  ## Low pass filter to eliminate influence of high frequencies on
+  ## the statistic
+  kernel = gausswin( 30, 2.2 );
+  ##*gausswin( 30, 2.2 )';
+  kernel = kernel / sum( kernel(:) );
+  ## Separate filtering for rows and cols
+  fy = conv2( pin.channels.Y, kernel, 'same' );
+  fy = conv2( fy, kernel', 'same' );
+
+  ## Remove zero and negative values - set them to smalles possitive value
+  min_positive = min( vec( fy + (fy<=0)*1000 ) );
+  fy = fy .* (fy >= min_positive) + min_positive .* (fy < min_positive);
+
+  ## Work in log domain
+  lfy = log10(fy);
+
+  ## Calculate statistics
+  minimum = min( vec( lfy ) );
+  maximum = max( vec( lfy ) );
+  dynamic_range = maximum - minimum;
+  s_average = mean( vec( lfy ) );
+  s_median = median( vec( lfy ) );
+
+  if( !firstFrame )
+    fprintf( stderr, "======================\n" );
+  endif
+  if( isfield( pin.tags, "FILE_NAME" ) )
+    fprintf( stderr, "File: %s\n", pin.tags.FILE_NAME );
+  endif
+  if( isfield( pin.tags, "LUMINANCE" ) )
+    fprintf( stderr, "Luminance profile: %s\n", pin.tags.LUMINANCE );  
+  endif     
+  fprintf( stderr, "Width: %d Height: %d\n", pin.columns, pin.rows );
+  fprintf( stderr, "Dynamic Range: \t%g [log_10]\t 1:%g [lin]\t %g [dB]\n", \
+                                dynamic_range, 10^dynamic_range, \
+                                round(20*dynamic_range)  );
+  fprintf( stderr, "Minimum: \t%g [log_10]\t %g [lin]\n", \
+                                minimum, 10^minimum  );
+  fprintf( stderr, "Maximum: \t%g [log_10]\t %g [lin]\n", \
+                                maximum, 10^maximum  );
+
+  fprintf( stderr, "Log average: \t%g [log_10]\t %g [lin]\n", \
+                                s_average, 10^s_average  );
+
+  fprintf( stderr, "Median: \t%g [log_10]\t %g [lin]\n", \
+                                s_median, 10^s_median  );
+
+  firstFrame = false;
+endwhile
+
+pfsclose( pin );
+

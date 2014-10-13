@@ -1,0 +1,76 @@
+.TH "pfstmo_reinhard02" 1
+.SH NAME
+pfstmo_reinhard02 \- Photographic Tone Reproduction for Digital Images
+.SH SYNOPSIS
+.B pfstmo_reinhard02
+[--scales] [--key <val>] [--phi <val>]
+[--range <val>] [--lower <val>] [--upper <val>]
+[--temporal-coherent]
+[--verbose] [--help]
+.SH DESCRIPTION
+This command implements a tone mapping operator as described in:
+
+Photographic Tone Reproduction for Digital Images.
+E. Reinhard, M. Stark, P. Shirley, and J. Ferwerda.
+In ACM Transactions on Graphics, 2002.
+
+According to the paper, results of this TMO require gamma correction.
+.SH OPTIONS
+.TP
+[--scales] 
+
+Use scales to calculate local adaptation. That means: use local
+version of this operator. By default, global version is used.
+.TP
+[--key <val>] 
+
+Set key value for the image (refer to paper for details).
+Default value: 0.18, accepted range <0..1>.
+.TP
+[--phi <val>]
+
+Set phi value (refer to paper for details).
+Default value: 1.0, accepted range >=0.0.
+.TP
+[--range <val>] 
+
+Set range size (refer to paper for details).
+Default value: 8, accepted range >1.
+.TP
+[--lower <val>] 
+
+Set lower scale size (refer to paper for details).
+Default value: 1, accepted range >=1.
+.TP
+[--upper <val>]
+
+Set upper scale size (refer to paper for details).
+Default value: 43, accepted range >=1.
+.TP
+[--temporal-coherent], [-t]
+
+When this option is specified, tone mapping is time coherent for video
+sequences. Currently the option imposes that the average and maximum
+luminance value can change at most by 1% between two consecutive
+frames.
+.TP
+--verbose
+
+Print additional information during program execution.
+.TP
+--help
+
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_reinhard02 -s | pfsgamma -g 2.2 | pfsout memorial.png
+
+Tone map image and save it in png format.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <krawczyk@mpi-sb.mpg.de>.

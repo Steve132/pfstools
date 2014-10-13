@@ -1,0 +1,74 @@
+.TH "pfssize" 1
+.SH NAME
+pfssize \- Resize frames
+.SH SYNOPSIS
+.B pfssize
+[--x <new_width>] [--y <new_height>] [--ratio <scale_ratio>] [--maxx <max_width>] [--maxy <max_heigh>] [--minx <max_width>] [--miny <max_heigh>] [--filter <filter-name>]
+.SH DESCRIPTION
+Resize all frames and all channels in the stream. Note that resampling
+is done on each channel as it is - for color images resampling is
+usually done in linear (not gamma corrected) XYZ color space.
+.SH OPTIONS
+.TP
+--x <new_width>, -x <new_width>
+
+New x resolution in pixels.
+
+.TP
+--y <new_height>, -y <new_height>
+
+New y resolution in pixels.
+
+.TP
+--ratio <scale_ratio>, -r <scale_ratio>
+
+Resize both width and height using the given ratio. Ratio equal 1 is the original
+size, lower than 1 makes the frames smaller and greater than 1,
+enlarges the frames.
+
+.TP
+--minx <max_width>, --miny <max_heigh>
+
+Make sure that the resulting image has at least <min_width> width
+and/or <min_height> height. Cannot be used in combination with -x, -y
+and --ratio.
+
+.TP
+--maxx <max_width>, --maxy <max_heigh>
+
+Make sure that the resulting image has at most <max_width> width
+and/or <max_height> height. Cannot be used in combination with -x, -y
+and --ratio.
+
+.TP
+--filter <filter-name>, -f <filter-name>
+
+Use filter <filter-name> for upsampling (on downsampling, box filter
+is always used). Available filters:
+
+.B BOX
+Box filter. This is the fastest and the filter, but it also causes
+visible aliasing artifacts.
+
+.B LINEAR
+(deafult) Bi-linear filter.
+
+.B MITCHELL
+Mitchell filter. From \fIMitchell and Netravali, Reconstruction
+Filters in Computer Graphics,In Computer Graphics, vol. 22 (4)
+1988\fR. Since the filter contains negative parts, it may cause halo
+artifacts and it may result in negative values for HDR images.
+
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfssize -r 0.25 | pfsout memorial_small.hdr
+
+Lower the resolution of memorial.hdr four times.
+
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

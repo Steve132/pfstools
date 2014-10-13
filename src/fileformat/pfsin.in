@@ -1,0 +1,155 @@
+#!@BASH_PATH@
+############################################################
+# Read any image and write pfs stream to the standard output
+############################################################
+
+if test -z "$1" || test "$1" = "--help"; then
+cat <<EOF
+Read an image in one of the several formats and write pfs stream to
+the standard output.
+
+Usage: pfsin <file> [<file>...]
+
+Recognized file formats and extensions:
+ Radiance RGBE - .pic, .hdr
+ TIFF (incl. LogLuv) - .tiff, .tif
+ PNM, PPM - .ppm, .pnm
+ JPEG - .jpeg, .jpg
+ PNG - .png
+ PFS - .pfs
+ OpenEXR - .exr
+ PFM - .pfm
+ DPX - .dpx
+ GIF - .gif
+ BMP - .bmp
+ EPS - .eps
+ hdrgen - .hdrgen (multi-exposure sequence, see pfscalibration)
+ Canon 350D RAW - .cr2
+ (and other camera RAW formats recognized by dcraw)
+
+See the man page for more information.
+EOF
+    exit 1
+fi
+
+#Arguments used for all images passed to pfsout
+global_arguments=""
+if test -n "$1"; then
+    while test "${1:0:1}" = "-"; do
+        
+        #Handle options that require a parameter
+        for par_opt in "--frames" "-f" "--absolute" "-a"; do
+            if test "$1" = $par_opt; then
+                if test -z "$2"; then
+                    echo >&2 "Required parameter missing after $par_opt"
+                    exit 1;
+                fi
+                global_arguments="$global_arguments $1"
+                shift
+                break;
+            fi
+        done
+        
+        global_arguments="$global_arguments $1"              
+        shift             
+    done
+fi
+
+while test "$1"; do
+
+      extension="${1##*.}"
+
+      file_pattern="$1"
+      
+      # Handle common arguments arguments 
+      extra_arguments="";
+      if test -n "$2"; then
+          while test "${2:0:1}" = "-"; do
+
+              #Handle options that require a parameter
+              for par_opt in "--frames" "-f" "--absolute" "-a"; do
+                  if test "$2" = $par_opt; then
+                      if test -z "$3"; then
+                          echo >&2 "Required parameter missing after $par_opt"
+                          exit 1;
+                      fi
+                      extra_arguments="$extra_arguments $2"
+                      shift
+                      break;
+                  fi
+              done
+                            
+              extra_arguments="$extra_arguments $2"              
+              shift             
+          done
+      fi
+         
+      case "$extension" in
+          ("hdr"|"HDR"|"pic"|"PIC")
+          pfsinrgbe "$file_pattern" $global_arguments $extra_arguments
+             ;;
+          ("ppm"|"PPM"|"pnm"|"PNM"|"pgm"|"PGM")
+          pfsinppm "$file_pattern" $global_arguments $extra_arguments
+             ;;
+          ("tif"|"TIF"|"tiff"|"TIFF")
+          ## Use internal pfsintiff if possible, if not - ImageMagick
+          if which pfsintiff >/dev/null; then
+              pfsintiff "$file_pattern" $global_arguments $extra_arguments   
+          elif which pfsinimgmagick >/dev/null; then
+              pfsinimgmagick "$file_pattern" $global_arguments $extra_arguments
+          else
+              echo 1>&2 "$extension files unsupported. Compile pfstools with ImageMagick or libtiff."
+              exit 1
+
+          fi
+             ;;            
+          ("exr"|"EXR")
+          pfsinexr "$file_pattern" $global_arguments $extra_arguments
+             ;;
+          ("pfm"|"PFM")
+          pfsinpfm "$file_pattern" $global_arguments $extra_arguments
+             ;;
+          ("jpg"|"JPG"|"jpeg"|"JPEG")
+          ## Use ImageMagick if possible, if not - netpbm
+          if which pfsinimgmagick >/dev/null; then
+              pfsinimgmagick "$file_pattern" $global_arguments $extra_arguments          
+          elif which jpegtopnm >/dev/null; then
+              jpegtopnm "$file_pattern" | pfsinppm - $global_arguments $extra_arguments
+          else
+              echo 1>&2 "$extension files unsupported. Compile pfstools with ImageMagick or NetPBM."
+              exit 1
+
+          fi
+          ;;
+          ("png"|"PNG")
+          ## Use ImageMagick if possible, if not - netpbm
+          if which pfsinimgmagick >/dev/null; then
+              pfsinimgmagick "$file_pattern" $global_arguments $extra_arguments          
+          elif which pngtopnm >/dev/null; then
+              pngtopnm "$file_pattern" | pfsinppm - $global_arguments $extra_arguments
+          else
+              echo 1>&2 "$extension files unsupported. Compile pfstools with ImageMagick or NetPBM."
+              exit 1
+          fi
+          ;;
+          ("dpx"|"DPX"|"gif"|"GIF"|"bmp"|"BMP"|"eps"|"EPS")
+          pfsinimgmagick "$file_pattern" $global_arguments $extra_arguments
+             ;;
+          ("pfs"|"PFS")
+          cat "$file_pattern" | pfstag --set "FILE_NAME=${file_pattern}"
+             ;;
+          ("hdrgen"|"HDRGEN")
+          pfsinhdrgen "$file_pattern" $global_arguments $extra_arguments
+             ;;
+          (*)
+          if dcraw -i "$file_pattern" > /dev/null 2>&1; then
+              pfsindcraw "$file_pattern" $global_arguments $extra_arguments
+          else
+              echo 1>&2 "Unknown extension: $extension"
+              exit 1
+          fi
+          ;;          
+      esac
+      
+      shift
+done

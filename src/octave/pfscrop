@@ -1,0 +1,50 @@
+#!/bin/sh
+
+if test -z "$1" || test "$1" = "--help" || (test $# != "2" && test $# != "4"); then
+cat <<EOF
+Crop pfs image.
+
+Usage: pfscrop [x y] width height 
+
+x - x position of the cropping window (leftmost = 1). 1 by default
+x - y position of the cropping window (topmost = 1). 1 by default
+width - width of the cropping window
+height - height of the cropping window
+
+EOF
+    exit 1
+fi
+
+if test $# == "2"; then
+    CW_X=1
+    CW_Y=1
+    CW_W=$1
+    CW_H=$2
+else
+    CW_X=$1
+    CW_Y=$2
+    CW_W=$3
+    CW_H=$4
+fi
+
+#echo 2> "Cropping window pos: $CW_X $CW_Y size: $CW_W $CW_H"
+
+SCRIPTFILE=`tempfile`
+cat >${SCRIPTFILE} <<EOF
+1;
+## Auto-generated octave script
+[X Y Z] = pfsread( "stdin", "X", "Y", "Z" );
+if( ${CW_Y} + ${CW_H}-1 > rows( Y ) || ${CW_X} + ${CW_W}-1 > columns(Y) )
+  error( "Cropping window exceeds image size" );
+  exit( 1 )
+endif
+X = X(${CW_Y}:${CW_Y} + ${CW_H}-1, ${CW_X}:${CW_X} + ${CW_W}-1);
+Y = Y(${CW_Y}:${CW_Y} + ${CW_H}-1, ${CW_X}:${CW_X} + ${CW_W}-1);
+Z = Z(${CW_Y}:${CW_Y} + ${CW_H}-1, ${CW_X}:${CW_X} + ${CW_W}-1);
+pfswrite( "stdout", "X", X, "Y", Y, "Z", Z );
+EOF
+
+octave2.1 -q ${SCRIPTFILE}
+
+rm ${SCRIPTFILE}
+

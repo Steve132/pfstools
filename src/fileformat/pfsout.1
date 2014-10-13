@@ -1,0 +1,41 @@
+.TH "pfsout" 1
+.SH NAME
+pfsout \- Read pfs frames from stdin and write them in the format determined by
+the extension of the file name
+.SH SYNOPSIS
+.B pfsout
+pfsout <file> [<file>...]
+.SH DESCRIPTION
+This command can be used to write pfs frames piped to standard input
+in one of the several recognized formats. The proper format is
+determined by the extension of the give file name. To get a list of
+recognized formats and extensions, execute:
+
+  pfsin --help
+
+This command is a front-end for pfsout* programs for writing images:
+pfsoutrgbe, pfsoutexr, etc. Based on the file extension, appropriate
+program is executed. If two different file format are given as
+parameters, two different program for writing images are
+executed. Additional options starting with dash '-' can be passed to
+pfsout* programs. The following rules apply for passing the options:
+the options given before any image file name (or %d pattern) are
+passed to all pfsout* programs. Options given after image file name
+are only passed to the program executed for that file(s). Note also that
+all option that take an argument (except \fB--frames\fR) must given in
+the form \fI--option=value\fR, that is without a space between an
+option and its argument.
+
+.SH EXAMPLES
+.TP
+ pfsin memorial.tiff | pfsout memorial.hdr
+
+Converts from one HDR format to another
+.SH "SEE ALSO"
+.BR pfsin (1)
+.SH BUGS
+This command currently does not handle multiple frames given with a
+\%%d pattern in case of LDR formats: JPEG, PNG, PNM. 
+
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools

@@ -1,0 +1,11 @@
+DEPRECIATED! Use pfsopen/pfsput/pfsclose instead
+Write matrices as channels in PFS format to stdout.
+
+usage: pfswrite( fileName, c1n, C1, c2n, C2, ...);
+  fileName - name of the file to write, or \"stdout\" for standard output
+  c1n - name of the first channel
+  C1  - matrix with the first channel
+  c2n - name of the second channel
+  C2  - matrix with the second channel
+  
+Channel names are case sensitive

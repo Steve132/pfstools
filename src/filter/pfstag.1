@@ -1,0 +1,38 @@
+.TH "pfstag" 1
+.SH NAME
+pfstag \- Set or remove tags to/from pfs stream
+.SH SYNOPSIS
+.B pfstag
+[--set [channel:]name=value] [--remove [channel:]name]
+.SH DESCRIPTION
+Use this command to set or remove tags from the pfs-stream. Tags are
+used to add additional information to pfs frames and they are in the
+format: 'name=value'. To learn more about tags, read 'Specification of
+the PFS File Format'.
+
+Tags are set/removed to/from all pfs frames in the stream.
+
+Note that currently only OpenEXR file format supports tags. 
+.SH OPTIONS
+.TP
+--set [channel:]name=value], -s [channel:]name=value], --add [channel:]name=value]
+Change existing or add a new tag of the given name. If no channel is given,
+tags are added to the frame.
+
+.TP
+--remove [channel:]name], -r [channel:]name]
+Remove tag of the given name. Ignore if the tag does not exist. If no
+channel is given, tags are removed from the frame.
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstag --add "EXTRA_INFO=foo" | pfsout memorial_ei.exr
+
+Add tag "EXTRA_INFO=foo" to the memorial image and save it as memorial_ei.exr.
+
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

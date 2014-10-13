@@ -1,0 +1,8 @@
+Bugs and todo items:
+
+* Improve matlab interface
+* Better color handling in the pfs library
+* Performance improvements:
+   * Shared memory instead of pipes
+   * "Lazy" color space transform
+   

@@ -1,0 +1,77 @@
+#!/usr/bin/octave -q
+#  
+# This file is a part of PFSTOOLS package.
+#  ---------------------------------------------------------------------- 
+#  Copyright (C) 2003,2004 Rafal Mantiuk and Grzegorz Krawczyk
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# 
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  ---------------------------------------------------------------------- 
+# 
+#  @author Rafal Mantiuk, <mantiuk@mpi-sb.mpg.de>
+# 
+#  $Id: pfsoctavelum,v 1.2 2008/05/06 18:01:32 rafm Exp $
+#
+# See man page for more information
+
+pin = pfsopen( "stdin" );
+
+#fprintf( stderr, "l = %d\n", length( argv ) );
+
+if( length( argv ) != 1 )
+  error( "Expecting exactly one parameter with octave code to be execuded" ); 
+endif
+
+command = argv(){1};
+
+## Add missing ';'
+if( command(length(command)) != ";" )
+  command = [ command ";" ];
+endif
+
+firstFrame = true;
+while( true )
+  pin = pfsget( pin );
+
+  if( pin.EOF == true ) # Are there any more frames
+    break;
+  endif
+
+  if( firstFrame )
+    ## The dimensions are know only after loading the first frame 
+    pout = pfsopen( "stdout", pin.rows, pin.columns );
+    firstFrame = false;
+  endif
+
+  ## Copy channels and tags from the source to destination stream
+  pout.channels = pin.channels;
+  pout.tags = pin.tags;
+  pout.channelTags = pin.channelTags;
+
+  [Y _x _y] = pfstransform_colorspace( "XYZ", pout.channels.X, \
+      pout.channels.Y, pout.channels.Z, "Yxy" );
+
+  eval( command );
+
+  [pout.channels.X pout.channels.Y pout.channels.Z] = \
+      pfstransform_colorspace( "Yxy", Y, _x, _y, "XYZ" );  
+
+  pfsput( pout );
+
+endwhile
+
+pfsclose( pin );
+if( exist( "pout" ) != 0 )
+  pfsclose( pout );
+endif

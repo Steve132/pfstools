@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfsinimgmagick.dir/pfsinimgmagick.cpp.o  -o pfsinimgmagick  -L/Users/rafal/pfstools/src/pfs  ../pfs/libpfs.a 

@@ -1,0 +1,56 @@
+Source: pfstools
+Priority: optional
+Maintainer: Andreas Hirczy <ahi@itp.tugraz.at>
+Build-Depends: debhelper (>= 4.0.0), autotools-dev, libtiff-dev, libopenexr-dev, libnetpbm10-dev, octave2.1, octave2.1-headers,  qt3-dev-tools, libqt3-mt-dev
+Standards-Version: 3.6.2
+Section: libs
+
+Package: pfstools
+Section: graphics
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libpfstools (= ${Source-Version})
+Description: properly colorimetry of images
+ pfstools package is a set of command line (and one GUI) programs for
+ reading, writing, manipulating and viewing high-dynamic range (HDR) images
+ and video frames. All programs in the package exchange data using a simple
+ generic file format (pfs) for HDR data. The concept of the pfstools is
+ similar to netpbm package for low-dynamic range images.
+ .
+ pfstools come with a library for reading and writing pfs files. The library
+ can be used for writing custom applications that can integrate with the
+ existing pfstools programs.
+ .
+ pfstools offers also a good integration with a high-level mathematical
+ programming language GNU Octave. pfstools can be used as the extension of
+ Octave for reading and writing HDR images or simply to store effectively
+ large matrices.
+ .
+ Note that pfs in not just another format for storing HDR images (and there
+ are already quite a few of them). It is more an attempt to integrate the
+ existing file formats by providing a simple data format that can be used to
+ exchange data between applications.
+ .
+ <URL:http://www.mpi-sb.mpg.de/resources/pfstools/>
+
+
+Package: libpfstools-dev
+Section: libdevel
+Architecture: any
+Depends: libpfstools (= ${Source-Version})
+Description: properly colorimetry of images - development files
+ development files for pfstools
+
+Package: libpfstools
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: properly colorimetry of images - libraries
+ libraries for pfstools
+
+Package: octave-pfstools
+Section: math
+Architecture: any
+Depends: libpfstools (= ${Source-Version}), octave
+Description: properly colorimetry of images - ocatve bindings
+ octave bindings for pfstools
+

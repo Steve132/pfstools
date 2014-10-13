@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfsinrgbe.dir/pfsinrgbe.cpp.o CMakeFiles/pfsinrgbe.dir/rgbeio.cpp.o  -o pfsinrgbe  -L/Users/rafal/pfstools/src/pfs  ../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

@@ -1,0 +1,1 @@
+/Applications/MATLAB_R2009b.app/bin/mex  -cxx    -output pfsput.mexmaci64 CMakeFiles/pfsput.dir/pfsput.cpp.o CMakeFiles/pfsput.dir/mex_utils.cpp.o  -L/Users/rafal/pfstools/src/pfs ../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

@@ -1,0 +1,10 @@
+Tranform between color spaces using pfs library.
+
+usage: [C1 C2 C2] = pfstranform_colorspace( inCSname, c1, c2, c3, outCSname );
+  inCSname - name of the input color space
+  c<n> - matrix with n-th channel of input color space
+  C<n> - matrix with n-th channel of output color space
+  outCSname - name of the output color space
+
+Recognized color space names: 'XYZ', 'RGB', 'sRGB', 'YUV', 'Yxy'.
+Color space names are case insensitive.

@@ -1,0 +1,57 @@
+#!/bin/sh
+############################################################
+# Read pfs frames from stdin and forward them to ffmpeg
+# program
+############################################################
+# 
+# This file is a part of PFSTOOLS package.
+# ---------------------------------------------------------------------- 
+# Copyright (C) 2003,2004 Rafal Mantiuk and Grzegorz Krawczyk
+# 
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# ---------------------------------------------------------------------- 
+#
+
+if test "$1" = "--help"; then
+cat <<EOF
+This command is a wrapper for ffmpeg program and can be used to
+write pfs frames to a compressed video.
+
+Usage: pfsoutffmpeg <ffmpeg options> output_file.avi
+
+See manual of ffmpeg for further information. Note that the usage of
+'-f' switch (input format specifier) and '-i' switch (input file
+specifier) is implemented inside the script and is therefore not
+allowed.
+
+See the man page for sample usage.
+EOF
+exit 1
+fi
+
+FFMPEG="/usr/bin/ffmpeg"
+FFMPEG_SWICHES="-f imagepipe -i - "
+FFMPEG_USER_SWICHES=""
+
+while test "$1"; do
+      if test "$1" = "-f" -o "$1" = "-i"; then
+         echo "pfsoutffmpeg: Usage of -f and -i switches is not allowed." &1>2
+         exit 1
+      fi
+      FFMPEG_USER_SWICHES="${FFMPEG_USER_SWICHES} $1"
+      shift
+done
+
+pfsoutppm - | ${FFMPEG} ${FFMPEG_SWICHES} ${FFMPEG_USER_SWICHES}

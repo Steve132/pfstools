@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfstmo_reinhard05.dir/pfstmo_reinhard05.cpp.o CMakeFiles/pfstmo_reinhard05.dir/tmo_reinhard05.cpp.o  -o pfstmo_reinhard05  -L/Users/rafal/pfstools/src/pfs  ../../pfs/libpfs.a -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

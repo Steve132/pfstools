@@ -1,0 +1,95 @@
+.TH "pfsview" 1
+.SH NAME
+pfsview \- Viewer for high-dynamic range images in pfs format
+.SH SYNOPSIS
+.B pfsview
+[--window_min <log_lum>] [--window_max <log_lum>]
+.SH DESCRIPTION
+pfsview is a QT application for viewing high-dynamic range images. It
+expects pfs stream on the standard input and displays the frames in
+that stream one by one.
+
+\fBpfsv\fR script can be more convienent to use if hdr images are to be
+displayed without any prior processing.
+
+.SH DYNAMIC RANGE WINDOW
+To show high-dynamic range data on a low-dynamic range monitor,
+pfsview uses concept of a dynamic range window. The dynamic range
+window is the highest and lowest value that should be mapped to black
+and white pixel. Values above or below the window are clipped (see
+clipping methods below). The dynamic range window is displayed in
+pfsview as a blue area on the dynamic range scale (second toolbox from
+the top). The window can be moved, shrunk and expended using a mouse
+or a keyboard.
+
+.SH CLIPPING METHODS
+
+Currently, two clipping methods are available (see View menu):
+
+.TP
+Simple clipping
+The values above and below the dynamic range window are displayed as
+black or white.
+
+.TP
+Color-coded clipping
+The values above the dynamic range window are displayed as yellow and
+below the window as green. This is helpful to see which parts of the
+image do not fit into the selected dynamic range.
+
+.TP
+Keep brightness and hue
+This method tries to preserve brightness and
+hue while sacrificing color saturation when the colors exceed the RGB
+color gamut. Colors are desaturated in the RGB color space towards the
+neutral color (D65) of the corresponding luminance.
+
+.SH MAPPING METHODS
+
+High-dynamic range data are usually better visualized using non-linear
+scale, for example a logarithmic or a power function. pfsview offers
+several such scales, shown in \fIView\fR menu. Gray-scale values for
+each mapping method are computed by the formulas:
+
+\fBLINEAR\fR: y = (x-min)/(max-min)
+
+\fBGAMMA\fR: y = [ (x-min)/(max-min) ]^gamma
+
+\fBLOGARITHMIC\fR: y = (log10(x)-log10(min))/(log10(max)-log10(min))
+
+where \fIy\fR is the gray-scale value after mapping, \fIx\fR
+is an input HDR value, \fImin\fR and \fImax\fR are lower and upper bounds
+of the dynamic range window.
+
+
+.SH OPTIONS
+.TP
+--window_min <log_lum>
+
+Lower bound of the values that should be displayed or minimum value of
+the dynamic range window. The value should be given in log_10 units,
+for example -1 if the lower bound should be 0.1 (10^-1).
+
+.TP
+--window_max <log_lum>
+Upper bound of the values that should be displayed or minimum value of
+the dynamic range window. The value should be given in log_10 units,
+for example -1 if the upper bound should be 0.1 (10^-1).
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsview 
+See the memorial image.
+
+.TP
+pfsv memorial.hdr
+The same as above, but using the utility script 'pv'.
+
+.SH "SEE ALSO"
+.BR pfsv (1)
+.BR pfsin (1)
+.SH BUGS
+Zomming in may sometimes show artifacts.
+
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

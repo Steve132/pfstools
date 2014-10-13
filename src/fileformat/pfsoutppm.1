@@ -1,0 +1,90 @@
+.TH "pfsoutppm" 1
+.SH NAME
+pfsoutppm, pfsouttiff, pfsoutrgbe, pfsoutexr \- Write images or frames
+in one of the several formats
+.SH SYNOPSIS
+.B pfsoutppm
+(<file> [--srgb] [--frames <range>])  [<file>...]
+
+.B pfsouttiff
+(<file> [--srgb] [--frames <range>])  [<file>...]
+
+.B pfsoutrgbe
+(<file> [--frames <range>])  [<file>...]
+
+.B pfsoutexr
+(<file> [--frames <range>])  [<file>...]
+
+.SH DESCRIPTION
+This command can be used to write pfs frames piped to standard input
+in one of the several recognized formats. See the manual page of
+pfsinppm to get a list of available formats. 
+.PP
+To write images to standard output use a single dash '-' instead
+of filename.
+.PP
+Each file name can contain a \%%d pattern, which is substituted with frame
+numbers. The pattern has the same syntax as C
+.I printf
+command. For example, you can use \%%04d to make the frame number
+four digit with proceedings zeros. You can select the frames using the
+following options (the options must be always given after the file
+name):
+.TP
+.B \--frames <range>
+Range is given in mathlab / octave format:
+
+.B "startframe:step:endframe"
+
+Frame numbers start with
+.B "startframe"
+(default 0), are increased by
+.B "step"
+(default 1) and stop at
+.B "endframe"
+You can skip one of those values, for example
+.I "1:100"
+for frames 1,2,...,100 and
+.I 0:2:
+for frame 0,2,4,... up to the last file that exists.
+.TP
+.B --srgb, -s
+Apply the sRGB non-linearity (approximately 2.2 gamma) before writing
+a file. This can be used instead of using \fIpfsgamma -g 2.2\fR to
+store the result of some tone-mapping operators. The option will
+compress contrast to make sure that tone values are properly shown on
+a display. It should be only used with linearized (not gamma
+corrected) images that are normalized to the 0-1 range.
+.TP
+\fB--bit-depth\fR <val>, \fB-b <val>
+Enforce bit-depth (per color
+channel). The allowed values are from 8 to 32. If not specified, the
+bit depth from the pfs stream ('BITDEPTH' tag) will be used
+instead. If the 'BITDEPTH' tag is missing, the ImageMagick default
+value will be used (usually 16). The bit depth of actually stored file
+may be lower of that specified, if the file format does not support
+higher bit depths.
+
+.SH EXAMPLES
+.TP
+ pfsin memorial.tiff | pfsoutrgbe memorial.hdr
+Converts from one HDR format to another
+.TP
+pfsin test.jpg | pfsout test.png
+Convert from one image format to another.
+.TP
+ pfsin --linear test.jpg | pfsout --srgb test.png
+The same as above, but apply inverse gamma correction after reading
+an image (--linear) and then apply gamma correction before writing an
+image (--srgb).
+.SH "SEE ALSO"
+.BR pfsout (1)
+.BR pfsinppm (1)
+.SH BUGS
+Writing TIFF files with pfsouttiff seems to be broken, but pfsoutimgmagick
+can be used instead. pfsout will attempt to use pfsoutimgmagick and
+fall back to pfsouttiff if pfstools were not compiled with
+ImageMagick.
+
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools

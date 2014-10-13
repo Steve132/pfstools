@@ -1,0 +1,41 @@
+.TH "pfstmo_drago03" 1
+.SH NAME
+pfstmo_drago03 \- Adaptive logarithmic tone mapping operator
+.SH SYNOPSIS
+.B pfstmo_drago03
+[--bias <val>] 
+[--verbose] [--help]
+.SH DESCRIPTION
+This command implements adaptive logarithmic tone mapping operator as
+described in:
+
+Adaptive logarithmic mapping for displaying high contrast scenes.
+F. Drago, K. Myszkowski, T. Annen, and N. Chiba. In Eurographics 2003.
+
+According to the paper, results of this TMO require gamma correction.
+.SH OPTIONS
+.TP
+--bias <val>, -b <val>
+
+Bias value within the range 0..1. Default value: 0.85
+.TP
+--verbose
+
+Print additional information during program execution.
+.TP
+--help
+
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_drago03 -b 0.8 | pfsgamma -g 1.7 | pfsout memorial.png
+
+Tone map image, apply gamma correction, and save it in png format.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <krawczyk@mpi-sb.mpg.de>.

@@ -1,0 +1,17 @@
+doxygen
+Makefile.in
+Makefile
+libtool
+aclocal.m4
+autom4te.cache
+config.*
+configure
+stamp-h
+Debug
+Release
+build
+TAGS
+.deps
+.libs
+stamp-h.in
+echo semantic.cache

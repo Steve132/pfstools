@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+fcd355a09bc64fbcee0f6d5c56ae0e83 src/pfsview/moc_luminancerange_widget.cxx
+204f8a477f344851e165a1f1487a8a72 src/pfsview/moc_main.cxx
+191239bbba8b791eda0fa0692e3a7a23 src/pfsview/moc_pfsview_widget.cxx

@@ -1,0 +1,24 @@
+To compile pfstools from sources on OSX, you need:
+1. XCode
+2. Any of:
+   Homebrew - http://brew.sh/ (recommended)
+   Fink - http://www.finkproject.org/
+   MacPorts - https://www.macports.org/
+
+It is recommended to use cmake to compile pfstools on OSX. Refer to
+REAME file for the instruction on how to compile with cmake.
+
+pfstools requires a number of libraries to compile. The most important are:
+OpenEXR
+qt4
+imagemagick (with C++ library)
+
+
+===== Image Magick =====
+
+In case of problems with ImageMagick on Mountain Lion:
+
+brew install libtool --universal
+brew link libtool --force
+brew install imagemagick --with-magick-plus-plus
+

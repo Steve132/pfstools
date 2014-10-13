@@ -1,0 +1,184 @@
+This is a list of frequency asked questions for the pfstools package.
+
+----------------------------------------------------------------------
+General questions
+----------------------------------------------------------------------
+
+1. What are pfstools?
+
+pfstools package is a set of command line (and one GUI) programs for
+reading, writing, manipulating and viewing high-dynamic range (HDR)
+images and video frames. All programs in the package exchange data
+using unix pipes and a simple generic HDR image format (pfs). The
+concept of the pfstools is similar to netpbm package for low-dynamic
+range images.
+
+2. What are the major features?
+
+- pfstools try to handle properly colorimetry of images, not
+  neglecting physical meaning of color data.
+
+- The filters can work on a single images as well as on a sequences of
+  frames.
+  
+- It includes a set of loaders and savers for most of the popular HDR file
+  formats. There is no need to write one's own loader for Radiance's
+  RGBE or link with several libraries to load OpenEXR images.
+
+- Because of its modular architecture, owning to use of UNIX pipes,
+  the suite of tools is quite flexible. For example, to load an HDR
+  image, tone map it, apply gamma correction and save it as a jpeg
+  file, one can issue:
+
+  pfsin memorial.hdr | pfstmo_drago03 | pfsgamma 2.2 | pfsout memorial.jpeg
+
+  It's very easy to exchange one piece of processing to another. 
+
+- pfs files can contain not only color information but also additional
+  channels, like depth map, flow field or alpha channel.
+  
+- Integration with GNU Octave and matlab. It includes functions to
+  read and write HDR frame from/to Octave/matlab. This way, it's easy
+  to write one's one tone mapping operator using a high level math
+  language.
+
+- It includes a convenient viewer for HDR images and any data that
+  fits into pfs files.
+
+3. What is the license?
+
+Everything is under some form of the GNU license. The library for
+reading and writing of PFS streams is under The GNU Lesser General
+Public License (LGPL), all software, including programs for reading,
+writing and modifying images, are under The GNU General Public License
+(GPL), the specification of the PFS format is under GNU Free
+Documentation License (FDL). For more information on GNU licensing,
+see http://www.gnu.org/licenses/ .
+
+4. Are there any alternative tools/formats for processing HDR
+   images and video sequences?
+
+We will try to keep the updated list on the pfstools web page:
+
+http://www.mpi-sb.mpg.de/resources/pfstools/
+
+5. What platforms does it work on?
+
+pfstools is developed under Debian (sarge) on Intel based platform. It
+has also been successfully compiled under cygwin on Windows and Mac OS
+X (except pfsview, which requires qt).It should compile on any
+platform which is supported by automake/autoconf and which has
+required libraries (see dependencies in README file).
+
+----------------------------------------------------------------------
+PFS file format
+----------------------------------------------------------------------
+
+1. Why pfs format does not employ any compression?
+
+pfs stream is not meant to be stored on a disk or transferred via slow
+networks. pfs stream should be passed from one application to another,
+which should involve only memory-to-memory copy and minimum amount of
+processing. pfs format was designed to be easy to read and at the same
+time generic enough to hold variety of data.
+
+2. Why are the data stored in XYZ color space? It would be so much
+   easier to have RGB data.
+
+For low-dynamic range data that can be displayed on the screen, RGB
+space may in fact seem to be more appropriate (however it does not
+have any physical meaning unless additional information is
+included). However, the human eye can see color gamut much broader
+than the one that can be shown on an LCD or CRT display. If such broad
+range of colors were to be described as RGB channels, negative values
+of color would have to be used. Negative values in color channels
+would complicate image processing much more than simple linear
+transform needed to convert between XYZ and any kind of RGB
+space. Additionally, XYZ color space (illuminant D65, normal observer)
+has precisely defined spectral responses and thus can accurately
+describe colorimetric data.
+
+----------------------------------------------------------------------
+PFS library
+----------------------------------------------------------------------
+
+1. What functionality does the PFS library offer?
+
+* Reading and writing of pfs stream (a sequence of frames)
+* Color space transformations
+* Parsing of command line options
+
+2. What is the programming language of the API?
+
+C++. 
+
+3. Do I have to use pfs library to read / write pfs files?
+
+No, you are welcome to write your own reader, writer, or library that
+can handle pfs files, as long as it complies with the specification of
+the pfs format. See ./doc/pfs_format_spec.pdf
+
+4. Why does the pfs library use C style FILE instead of C++ iostreams?
+
+pfs stream is mixed text and binary format. Unfortunately C++ iostreams
+do not handle binary data very well. We also found many compatibilty
+problems on failed attempt to use iostream in the pfs
+library. Besides, there seems to be more libraries that use FILEs from
+stdio than iostreams. You can use __gnu_css::stdio_filebuf to
+integrate your iostream based program with the pfs library.
+
+5. Where can I find documentation for PFS library API?
+
+Each header file of the library has Doxygen documentation. See also
+pfstools web page: http://www.mpi-sb.mpg.de/resources/pfstools/
+
+6. How to link my program with the PFS library?
+
+The best is to use autoconf + pkgconfig and include the following
+lines in autoconf.ac file:
+
+AC_MSG_CHECKING([for pfs library])
+PKG_CHECK_MODULES(PFS, pfs >= 1.2,,
+  AC_MSG_ERROR(pfstools package required. Download it from http://pfstools.sourceforge.net/))
+AC_SUBST(PFS_CFLAGS)
+AC_SUBST(PFS_LIBS)
+
+than in Makefile.am:
+
+LIBS += $(PFS_LIBS)
+INCLUDES += $(PFS_CFLAGS)
+
+----------------------------------------------------------------------
+PFS tools
+----------------------------------------------------------------------
+
+1. Where can I find documentation for programs in the pfstools package?
+
+Each program has its manual page with documentation (man
+<program_name>).
+
+2. What is typical usage pattern for pfstools programs?
+
+To read an HDR image, tone map it, and then save to low-dynamic range
+file (.png), you can issue:
+
+pfsin memorial.hdr | pfstmo_drago03 | pfsout memorial.png
+
+3. Can pfstools programs work with multiple frames?
+
+Yes. See man page for pfsinppm. Example:
+
+pfsinexr frame%04d.exr --frames 0:100 | pfstmo_drago03 | pfsoutppm tm_frame%04d.ppm
+
+To tone map frames frame0000.exr, frame0001.exr, ... frame0100.exr and
+save resulting frames in tm_frame0000.ppm, ..., tm_frame0100.ppm
+
+4. What is the naming convention for pfstools programs?
+
+All programs in pfstools package are named to facilitate a
+<tab>-completion in a UNIX shell. Therefore the names of programs
+always start with 'pfs' prefix. Then follows a name of the program or
+name of the program group followed by the actual name of the
+program. Some example of groups are: pfsin* for reading files, pfsout*
+for writing files, and pfstmo* for tone mapping.
+

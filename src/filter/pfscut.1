@@ -1,0 +1,61 @@
+.TH "pfscut" 1
+.SH NAME
+pfscut \- Extract a rectangle out of a frame in PFS stream
+.SH SYNOPSIS
+.B pfscut
+[--left <columns>] [--right <columns>] 
+[--top <rows>] [--bottom <rows>]
+[--width <new_width>] [--height <new_height>] [--help]
+[x_ul y_ul x_br y_br]
+.SH DESCRIPTION
+Extract a rectangle out of each frame in PFS stream. You can either
+specify x and y coordinates of upper left and lower right corner (the
+coordinates start with 0 and rise in the left-to-right and
+up-to-botton directions) or give a combination of the options listed
+below.
+.SH OPTIONS
+.TP	
+--left <columns>, -l <columns>
+Number of columns to be cut out from the left edge of an image. 
+.TP
+--right <columns>, -r <columns>
+Number of columns to be cut out from the right edge of an image. 
+.TP
+--top <rows>, -t <rows>
+Number of rows to be cut out from the top edge of an image. 
+.TP
+--bottom <rows>, -b <rows>
+Number of rows to be cut out from the bottom edge of an image. 
+.TP
+--width <new_width>, -W <new_width>
+Width of an output image. Note that --width can be mixed with either
+--left or --right option.
+.TP
+--height <new_height>, -H <new_height>
+Height of an output image. Note that --height can be mixed with either
+--top or --bottom option.
+.TP
+--help, -h
+Print a list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin image.hdr | pfscut --left 20 --top 5 | pfsout out.hdr
+Cut out 20 columns from the left and 5 rows from the top edge of 
+image.hdr and save frame as out.hdr. 
+.TP
+pfsin image.hdr | pfscut --left 20 --width 400 | pfsout out.hdr
+Cut out 20 columns from the left edge of image.hdr, and create output
+image 400 pixels in width.
+.TP
+pfsin image.hdr | pfscut 0 0 511 511 | pfsout out.hdr
+Cut left-upper part of the image of the size 512x512 (note that
+coordinates start with 0 and 512 is the last row/column that is
+included in the resulting image).
+.TP
+.SH SEE ALSO
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Dorota Zdrojewska
+<dzdrojewska@wi.ps.pl>.
+		

@@ -1,0 +1,45 @@
+.TH "pfstmo_mai11" 1
+.SH NAME
+pfstmo_mai11 \- Tone-mapping for backward-compatible compression 
+.SH SYNOPSIS
+\fBpfstmo_mai11\fR [\fB--verbose\fR][\fB--quiet\fR] [\fB--help\fR]
+.SH DESCRIPTION
+This is a tone-mapping operator that is optimized to give the best
+performance for images or video that are encoded using a backward-compatible 
+compression, such as HDR-JPEG, or HDR-MPEG. The images produced by
+this operator do not need to be visually pleasing. The details on the
+operator can be found in:
+.IP
+Mai, Z., Mansour, H., Mantiuk, R., Nasiopoulos, P., Ward, R., &
+Heidrich, W. 
+.IP
+Optimizing a tone curve for backward-compatible high dynamic range
+image and video compression. 
+.IP
+.PP
+If you find this TMO useful in your research project, please cite the
+paper above.
+.PP
+The result of this TMO does not require gamma correction.
+.SH OPTIONS
+.TP
+\fB--verbose\fR, \fB-v\fR
+Print additional information during program execution.
+.TP
+\fB--quiet\fR, \fB-q\fR
+Do not display progress report.
+.TP
+\fB--help\fR, \fB-h\fR
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_mai11 | pfsout memorial_to_encode.png
+.IP
+Tone map memorial image and store the result in the PNG format.
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

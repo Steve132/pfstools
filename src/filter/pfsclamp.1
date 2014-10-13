@@ -1,0 +1,59 @@
+.TH "pfsclamp" 1
+.SH NAME
+pfsclamp \- Clamp color and luminance channel values to be within the specified range
+.SH SYNOPSIS
+.B pfsclamp
+[--min <minimum>] [--max <maximum>]
+[--percentile] [--zero] [--rgb]
+.SH DESCRIPTION
+Use this command to clamp values of luminance and color channels to be
+within the specified range. I.e. if a value in the channel is above
+the specified maximum or below specified minimum, set the value to either
+minimum or maximum.
+
+The command operates directly on XYZ channels.
+.SH OPTIONS
+.TP
+--min <val>
+
+Lower bound for clamping. Default value: 0.0001 (10^-4)
+
+.TP
+--max <val>
+
+Upper bound for clamping. Default value: 100000000 (10^8)
+
+.TP
+--percentile, -p
+
+Treat given min and max values as a percentile.
+
+.TP
+--zero, -z
+
+Set values out of clamping range to zero, instead of setting to
+specified maximum and minimum.
+
+.TP
+--rgb
+
+Perform clamping in RGB space.
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsclamp | pfsout memorial_cl.hdr
+
+Remove possible out-of-range values, for examples zeros, from memorial
+image.
+
+.TP
+pfsin memorial.hdr | pfsclamp --max 0.95 -p | pfsout memorial_cl.hdr
+
+Remove 5% of the brightest pixels from the original image.
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de> and Grzegorz Krawczyk
+<krawczyk@mpi-sb.mpg.de>.

@@ -1,0 +1,62 @@
+.TH "pfsinexr" 1
+.SH NAME
+pfsinexr \- Load images or frames in OpenEXR format
+.SH SYNOPSIS
+.B pfsinexr
+[--keep-rgb] (<file> [--frames <range>] [--skip-missing])  [<file>...]
+
+.SH DESCRIPTION
+Use this command to read frames in OpenEXR format. The frames are
+converted to pfs stream and send to the standard output. This command
+can read arbitrary channels from OpenEXR files; color channels XYZ are
+however specially handled (see option \fIkeep-rgb\fR).
+
+pfsinexr reads also all string attributes from OpenEXR file and write
+them as tags in pfs stream. Attributes of other types are ignored. If
+attribute name contains a colon (:), the part before colon is treated
+as a channel name and the attribute is assigned to that channel
+(similar notation as command line argument of pfstag program).
+
+pfsinexr recognizes OpenEXR standard attribute \fIWhiteLuminance\fR
+and multiplies the data by that value to get absolute luminance values
+(see also \fB--fix-halfmax\fR switch in pfsoutexr). Additionally the
+tag \fILUMINANCE\fR is set to \fIABSOLUTE\fR unless OpenEXR files
+contains attribute \fILUMINANCE\fR set to semething else. That is the
+channel \fIY\fR is assumued to represent absolute luminance levels in
+cd/m^2.
+
+If an OpenEXR file contains 'Z' channel, it is renamed to 'DEPTH' to
+avoid conflict with the Z color channel for the XYZ color space.
+
+Details on the format of the pattern
+file names, which are used for reading multiple frames, can be found in the
+manual page of pfsinppm.
+
+To automatically recognize a file format from the extension, use
+\fIpfsin\fR command instead.
+
+.TP
+.B \--keep-rgb
+By default, color channels R, G and B from an OpenEXR file are
+converted to XYZ color space, which is suggested format for color data
+in pfs. When \fIkeep-rgb\fR option is specified, color channels RGB
+are stored as they are without any conversion.
+
+.SH EXAMPLES
+.TP
+ pfsin memorial.exr | pfsout memorial.hdr
+
+Converts from one HDR format to another
+
+.SH BUGS
+pfsinexr and pfsoutexr can not take stdin / stdout as an input/output
+(dash '-' instead of file name). 
+
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsinppm (1)
+.BR pfsoutexr (1)
+
+

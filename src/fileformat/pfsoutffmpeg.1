@@ -1,0 +1,46 @@
+.TH "pfsoutffmpeg" 1
+.SH NAME
+pfsoutffmpeg \- Read pfs frames from stdin and forward them to ffmpeg program
+.SH SYNOPSIS
+.B pfsoutffmpeg
+[--help]
+<ffmpeg options> output_file
+.SH DESCRIPTION
+This command is a wrapper for ffmpeg program and can be used to
+write pfs frames to a compressed video.
+
+Check the examples section to for sample usage and see manual of
+ffmpeg for further information.
+
+Note that the usage of '-f' switch (input format specifier) and '-i'
+switch (input file specifier) of the ffmpeg program is implemented
+inside the script and is therefore not allowed.
+
+.SH EXAMPLES
+.TP
+pfsinrgbe frame%04d.hdr --frames 100:2:200 | pfstmo_reinhard02 -s
+| pfsgamma -g 1.7 | pfsoutffmpeg -qscale 4 test.avi
+
+1. Read HDR frames in RGBE format with the following names:
+   frame0100.hdr, frame0102.hdr, frame0104.hdr,... frame0200.hdr
+
+2. Apply local tone mapping operator to each frame (Reinhard2002
+   model, part of the PFSTMO package)
+
+3. Apply gamma correction to each tone mapped frame
+
+4. Compress frames to test.avi animation
+
+.SH "SEE ALSO"
+.BR ffmpeg (1)
+.BR pfsin (1)
+.BR pfstmo_reinhard02 (1)
+.BR pfsgamma (1)
+
+.SH BUGS
+Frames smaller than 512x384 can cause broken pipe error, due to bug in
+ppm pipe reading routine in ffmpeg.
+
+Please report bugs and comments to
+Rafal Mantiuk <mantiuk@mpi-sb.mpg.de> or
+Grzegorz Krawczyk <krawczyk@mpi-sb.mpg.de>.

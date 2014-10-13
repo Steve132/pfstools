@@ -1,0 +1,72 @@
+.TH "pfstmo_durand02" 1
+.SH NAME
+pfstmo_durand02 \- Fast bilateral filtering for the display of HDR images
+.SH SYNOPSIS
+.B pfstmo_durand02
+[--sigma-s <val>] [--sigma-r <val>] [--base-contrast <val>] 
+[--quiet] [--verbose] [--help]
+.SH DESCRIPTION
+This command implements a tone mapping operator as described in:
+.PD 0
+.IP
+F. Durand and J. Dorsey.
+.IP
+Fast Bilateral Filtering for the Display of High-Dynamic-Range Images.
+.IP
+In: In ACM Transactions on Graphics, 2002.
+.PD
+.PP
+According to paper, results of this TMO require gamma correction.
+.PP
+.PD 0
+Unless \fB-g\fR option is specified, this operator also employs color
+correction mechanism from:
+.IP
+Radoslaw Mantiuk, Rafal Mantiuk, Anna Tomaszewska, Wolfgang Heidrich.
+.IP
+Color Correction for Tone Mapping.
+.IP
+In: Computer Graphics Forum (Proc. of EUROGRAPHICS'09), 28(2), 2009.
+.IP
+http://zgk.wi.ps.pl/color_correction/
+.PD
+.SH OPTIONS
+.TP
+\fB--sigma-s\fR <val>, \fB-s\fR <val>
+Sigma value for spatial kernel. Default value: 40
+.TP
+\fB--sigma-r\fR <val>, \fB-r\fR<val>
+Sigma value for range kernel. Default value: 0.4
+.TP
+\fB--base-contrast\fR <val>, \fB-c\fR <val>
+Contrast of the base layer. Default value is 5.0f. Lower value causes
+higher contrast compression and results in darker picture - can help
+if after tone mapping too many pixels remain saturated.
+.IP
+Increasing this value will results in brighter and more 'dynamic' picture.
+.TP
+\fB--original\fR, \fB-g\fR
+Use original algorithm as described in the
+paper with no extensions. For this operator the switch will disable
+color correction.
+.TP
+\fB--verbose\fR
+Print additional information during program execution.
+.TP
+\fB--quiet\fR, \fB-q\fR
+Do not display progress report.
+.TP
+\fB--help\fR, \fB-h\fR
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_durand02 | pfsgamma -g 2.2 | pfsout memorial.png
+Tone map image and save it in png format.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <krawczyk@mpi-sb.mpg.de>.

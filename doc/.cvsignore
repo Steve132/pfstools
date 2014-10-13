@@ -1,0 +1,8 @@
+Makefile
+Makefile.in
+*.aux
+*.dvi
+*.log
+*.pdf
+*.ps
+echo semantic.cache

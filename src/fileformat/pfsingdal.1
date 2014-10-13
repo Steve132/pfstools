@@ -1,0 +1,30 @@
+.TH "pfsingdal" 1
+.SH NAME
+pfsingdal \- Load data using the GDAL library
+.SH SYNOPSIS
+.B pfsingdal
+[<file>...]
+
+.SH DESCRIPTION
+This command can load images or frames in the multitude of data
+formats supported by GDAL (Geospatial Data Abstraction Library).
+See \fIhttp://www.gdal.org/formats_list.html\fR for a list of supported formats.
+.PP
+\fBpfsingdal\fR reads images or frames from files and writes
+\fIpfs\fR stream to the Standard Output. The \fIpfs\fR stream is
+usually piped to another program for further processing.
+.PP
+The output of \fBpfsingdal\fR is the closest possible match of the input data.
+
+.SH EXAMPLES
+.TP
+pfsingdal sardata.cosar | pfsview
+
+.SH NOTES
+pfsingdal can not read from pipes, due to the design of GDAL.
+.PP
+Please report bugs and comments to Martin Lambers <marlam@marlam.de>.
+.SH "SEE ALSO"
+.BR pfsin (1),
+.BR pfsout (1)
+

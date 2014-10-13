@@ -1,0 +1,86 @@
+#!@BASH_PATH@
+############################################################
+# Read several streams of frames and write pfs streams to
+# named pipes.
+############################################################
+
+if test -z "$1" || test "$1" = "--help"; then
+cat <<EOF
+Read several sequences of frames or images and write them
+as pfs streams to named pipes.
+
+Usage: pfsinmulti <file> [<file>...] -- <command> @1 [@2 [..]]
+
+See the man page for more information.
+EOF
+    exit 1
+fi
+
+all_named_pipes=""
+do_break="0"
+
+while test "$1"; do
+      if test "${1:0:1}" = "-"; then
+          global_arguments="$global_arguments $1"
+          shift
+          continue
+      fi   
+      file_pattern="$1"
+            
+      # Get --frames and --skip-frames arguments 
+      extra_arguments="";
+      if test -n "$2"; then
+         if test "$2" = "--"; then
+            shift
+            do_break="1"            
+         else
+          while test "${2:0:1}" = "-"; do
+              if test "$2" = "--frames"; then
+                  if test -z "$3"; then
+                      echo >&2 "Required argument missing after --frames"
+                      exit 1;
+                  fi
+                  extra_arguments="$extra_arguments $2 $3"
+                  shift
+              else
+                  extra_arguments="$extra_arguments $2"              
+              fi
+              shift
+          done
+          fi
+      fi
+
+      named_pipe=`mktemp`
+      rm -f $named_pipe
+      mkfifo $named_pipe
+      pfsin $global_arguments "$file_pattern" $extra_arguments >$named_pipe &
+
+      all_named_pipes="$all_named_pipes $named_pipe"
+      shift
+
+      if test "$do_break" = "1"; then
+         break
+      fi     
+done
+
+command=$*
+
+
+new_command=`echo -e "FILES=${all_named_pipes}\nCMD=${command}" | awk '/^FILES/ { for( i=2; i <= NF; i++ ) FILE[i-1]=$i;} /^CMD/ { gsub( "CMD=", "" ); for( i in FILE ) { PAT="@" i; subsc=gsub( PAT, FILE[i] ); if( subsc<1 ) { print( "ERROR" ); exit( 1 );} } print $0;}'`
+
+if test "$new_command" = "ERROR"; then
+   echo "pfsinmulti error: You must specify as many @1, @2, .., @n arguments in the command string as there are pfs streams" 1>&2
+   #remove named pipes
+   cat $all_named_pipes >/dev/null
+   rm -f $all_named_pipes
+   exit 1
+fi
+
+if ! ${new_command}; then
+   echo "pfsinmulti error: command returned error" 1>&2
+#   cat $all_named_pipes >/dev/null
+   rm -f $all_named_pipes
+   exit 1   
+fi   
+
+rm -f $all_named_pipes

@@ -1,0 +1,82 @@
+.TH "pfsoutrgbe" 1
+.SH NAME
+pfsoutrgbe \- Write images or frames in Radiance RGBE format
+.SH SYNOPSIS
+.B pfsoutrgbe [--verbose] [--radiance] [--quiet]
+(<file> [--frames <range>])  [<file>...]
+
+.SH DESCRIPTION
+Use this command to the incoming pfs frames (piped to standard input)
+to Radiance RGBE files (with .hdr extension).
+.PP
+Each file name can contain a \%%d pattern, which is substituted with frame
+numbers. The pattern has the same syntax as C
+.I printf
+command. For example, you can use \%%04d to make the frame number
+four digit with proceedings zeros. You can select the frames using --frames option (see below).
+
+.SH OPTIONS
+.TP
+.B \--frames <range>
+The range of frames is given in a format similar to matlab or octave:
+
+.B "startframe:step:endframe"
+
+Frame numbers start with
+.B "startframe"
+(default 0), are increased by
+.B "step"
+(default 1) and stop at
+.B "endframe"
+You can skip one of those values, for example
+.I "1:100"
+for frames 1,2,...,100 and
+.I 0:2:
+for frame 0,2,4,... up to the last file that exists. Note that --frames option must be specified after the file
+name containing \%%d string.
+higher bit depths.
+
+.TP
+.B \--radiance, -r
+Correct stored values so that the luminance is reported the same in pfsview and radiance tools (xview or Photospheare). See IMPORTANT NOTE below.
+
+.TP
+.B \--quiet, -q
+Disable warning message about the change in handling absolute values in RGBE files. See IMPORTANT NOTE below.
+
+.SH EXAMPLES
+
+.TP
+ pfsin memorial.tiff | pfsoutrgbe memorial.hdr
+Converts from one HDR format to another
+
+.TP
+pfsin test.jpg | pfsout test.png
+Convert from one image format to another.
+.SH "SEE ALSO"
+.BR pfsout (1)
+.BR pfsinppm (1)
+
+.SH IMPORTANT NOTE
+
+There is an incompatibility between viewers of RGBE format in terms of
+absolute luminance values. The ximage viewer from Radiance package
+expects radiance values in RGBE files and multiplies the resulting luminance by the WHITE_EFFICACY
+constant equal to 179.0f to convert from radiance to luminance. 
+.PP
+To remain compatible with Radiance (xview and Photospheare), 
+pfstools prior to 1.9.0 divided red, green and blue values by 179 on writing and multiplied by 
+that constant on reading RGBE files. This in turn caused incompatibility with other software, 
+such as Photoshop or HDR toolbox. Starting from 
+pfstools 1.9.0 this division / multiplication step was removed to make pfstools compatible in 
+terms of absolute values with the majority of the software. The downside is that this change made 
+.hdr files created with the earlier versions of pfstools incompatible (in terms of absolute 
+luminance units) with the pfstools 1.9.0 or later. To avoid any mistakes because of that change, 
+a long warning messages is shown each time pfsinrgbe or pfsoutrgbe is called. The message can be 
+suppressed with --quiet option.
+.PP
+To enable the old functionality and read or write RGBE files with the correction for WHITE_EFFICACY, add --radiance option to the command line.
+
+.SH BUGS
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools

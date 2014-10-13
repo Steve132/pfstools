@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2977"
+   version="1.1"
+   inkscape:version="0.47pre4 r22446"
+   inkscape:export-filename="/home/mantiuk/projects/pfstools/src/pfsview/icons/test.png"
+   inkscape:export-xdpi="113.56555"
+   inkscape:export-ydpi="113.56555"
+   sodipodi:docname="New document 9">
+  <defs
+     id="defs2979">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective2985" />
+    <inkscape:perspective
+       id="perspective2997"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="375"
+     inkscape:cy="924.06102"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="768"
+     inkscape:window-height="674"
+     inkscape:window-x="2168"
+     inkscape:window-y="173"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata2982">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path9086"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:0.57996321;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 206.70883,131.41897 -1.46803,3.12636 c -0.6991,0.0351 -1.37531,0.15396 -2.02534,0.33529 l -2.39688,-2.50562 c -0.54687,0.23401 -1.07355,0.50891 -1.57677,0.81557 l 0.65246,3.39823 c -0.53496,0.43126 -1.02252,0.92117 -1.44991,1.45897 l -3.41182,-0.62075 c -0.30202,0.50356 -0.56822,1.03034 -0.79745,1.57678 l 2.52828,2.36516 c -0.17871,0.65867 -0.2894,1.34898 -0.31717,2.05706 l -3.12183,1.49975 c 0.0539,0.59334 0.15069,1.17354 0.28545,1.73989 l 3.439,0.43044 c 0.24994,0.65185 0.57221,1.26801 0.95603,1.83957 l -1.63567,3.04027 c 0.39148,0.4445 0.81348,0.8612 1.26414,1.24602 l 3.02668,-1.67193 c 0.57263,0.37227 1.18896,0.68417 1.83957,0.92432 l 0.46669,3.42541 c 0.5718,0.12889 1.15945,0.21556 1.75801,0.26279 l 1.4635,-3.12636 c 0.69886,-0.035 1.37551,-0.14954 2.02534,-0.33076 l 2.39235,2.50109 c 0.54816,-0.23434 1.07698,-0.50372 1.58131,-0.81104 l -0.65246,-3.39822 c 0.53704,-0.43242 1.02114,-0.92381 1.44991,-1.4635 l 3.41635,0.62074 c 0.30207,-0.50364 0.5682,-1.03024 0.79745,-1.57678 l -2.52829,-2.36516 c 0.17866,-0.65858 0.28488,-1.34455 0.31265,-2.05253 l 3.12183,-1.50428 c -0.054,-0.59312 -0.15101,-1.17407 -0.28544,-1.73989 l -3.43902,-0.43044 c -0.24957,-0.6512 -0.56855,-1.26893 -0.9515,-1.83957 l 1.63568,-3.04027 c -0.39173,-0.44517 -0.81306,-0.86082 -1.26414,-1.24602 l -3.03121,1.67193 c -0.57332,-0.37246 -1.18812,-0.68431 -1.83957,-0.92432 l -0.46216,-3.42541 c -0.57148,-0.12862 -1.15983,-0.2156 -1.75802,-0.26279 z m -0.99228,6.87347 c 3.01753,0 5.47213,2.42193 5.50965,5.43262 l 0,0.068 c 0,3.03495 -2.46804,5.49605 -5.50965,5.49605 -3.04161,0 -5.50965,-2.4611 -5.50965,-5.49605 0,-3.03495 2.46804,-5.50059 5.50965,-5.50059 z"
+       inkscape:export-filename="/home/mantiuk/projects/pfstools/src/pfsview/icons/appicon.png"
+       inkscape:export-xdpi="91.980003"
+       inkscape:export-ydpi="91.980003" />
+  </g>
+</svg>

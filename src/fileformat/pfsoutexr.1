@@ -1,0 +1,84 @@
+.TH "pfsoutexr" 1
+.SH NAME
+pfsoutexr \- Write images or frames in OpenEXR format
+.SH SYNOPSIS
+
+.B pfsoutexr
+[--compression <method>] [--keep-xyz] (<file> [--frames <range>])  [<file>...]
+
+.SH DESCRIPTION
+Use this command to write frames in OpenEXR format. Source pfs frames
+should be piped to the Standard Input. This command can write arbitrary
+channels to OpenEXR, color channels XYZ however are specially handled
+(see option \fIkeep-xyz\fR).
+
+All tags from pfs stream are stored in an OpenEXR file as String
+attributes. Tags assigned to channels are stored in the format
+<channel_name>:<tag_name>, so that pfsinexr can later restore tags in
+the appropriate channels.
+
+The depth channel \fIDEPTH\fR is renamed to \fIZ\fR to keep
+compatibility with \fBpfsinexr\fR. If the luminance is absolute (tag
+\fILUMINANCE\fR set to \fIABSOLUTE\fR), \fIWhiteLuminance\fR attribute
+in OpenEXR file is set to 1.
+
+Details on the format of the pattern
+file names, which are used for saving multiple frames, can be found in the
+manual page of pfsoutppm.
+
+.TP
+.B \--compression <method>, -c <method>
+Use one the the available compression methods:
+
+\fBNO\fR - no compression
+
+\fBRLE\fR - run length encoding
+
+\fBZIPS\fR - zlib compression, one scan line at a time
+
+\fBZIP\fR - zlib compression, in blocks of 16 scan lines
+
+\fBPIZ\fR - piz-based wavelet compression (default)
+
+\fBPXR24\fR - lossy 24-bit float compression
+
+.TP
+.B \--keep-xyz
+By default, color channels XYZ from pfs stream are converted to RGB
+color space and HALF format, which is a standard format for color data
+in OpenEXR. Since Half format is 16-bit and floating points values
+used in pfs stream are 32-bit, this conversion causes loss of
+precision. When \fIkeep-xyz\fR option is specified, color channels XYZ
+are stored as they are without any conversion (32-bit float XYZ
+channels). Note however, that most OpenEXR applications can recognize
+only RGB Half format images and can not handle 32-bit XYZ.
+
+.TP
+.B \--fix-halfmax
+The maximum value that can be stored in OpenEXR file is limited to
+65504 if 16-bit HALF float is used (color channels are stored by
+default in this format unless \fB--keep-xyz\fR switch is
+specified). If the luminance data is calibrated in absolute values
+(cd/m^2), pixel values can easily exceed 65504. To avoid clamping
+large pixel values, pfsoutexr can rescale data to the range that is
+valid for 16-bit HALF float format when \fB--fix-halfmax\fR switch is
+specified. If this switch is missing, a warning message is
+displayed. Scale factor used for rescaling is stored in OpenEXR file
+as OpenEXR standard attribute \fIWhiteLuminance\fR, so that pfsinexr
+can later restore the absolute values.
+
+.SH EXAMPLES
+.TP
+ pfsin memorial.hdr | pfsoutexr memorial.exr
+
+Converts from one HDR format to another
+.SH "SEE ALSO"
+.BR pfsout (1)
+.BR pfsoutppm (1)
+.BR pfsinexr (1)
+.SH BUGS
+pfsinexr and pfsoutexr can not take stdin / stdout as an input/output
+(dash '-' instead of file name). 
+
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools

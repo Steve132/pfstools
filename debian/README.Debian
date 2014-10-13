@@ -1,0 +1,14 @@
+pfstools for Debian
+----------------------
+
+create 4 packages:
+
+ - pfstools: binaries
+
+ - libpfstools: shared libraries
+
+ - libpfstools-dev: static libraries and header files
+
+ - octave-pfstools: ovctave binding
+
+ -- Andreas Hirczy <ahi@itp.tugraz.at>, Thu Oct 27 16:25:44 2005

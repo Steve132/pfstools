@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/pfsouttiff.dir/pfsouttiff.cpp.o CMakeFiles/pfsouttiff.dir/hdrtiffio.cpp.o  -o pfsouttiff  -L/Users/rafal/pfstools/src/pfs  ../pfs/libpfs.a /usr/local/lib/libtiff.dylib -Wl,-rpath,/Users/rafal/pfstools/src/pfs 

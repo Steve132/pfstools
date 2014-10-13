@@ -1,0 +1,13 @@
+DEPRECIATED! Use pfsopen/pfsget/pfsclose instead
+Read selected PFS channels from stdin.
+
+usage: [C1 C2 ...] = pfsread( fileName, c1n, c2n, ...);
+  fileName - name of the file to read, or \"stdin\" for standard input
+  c1n - name of the first channel
+  c2n - name of the second channel
+  C1  - matrix with the first channel
+  C2  - matrix with the second channel
+  
+Channel names are case sensitive
+
+Returns \"EOF\" strings instead of matrices if there are no more frames. Note the function can read multiple frames only from the stdin

@@ -1,0 +1,41 @@
+.TH "pfsindcraw" 1
+.SH NAME
+pfsindcraw \- Read an image in a camera RAW file format supported by
+DCRAW and write pfs stream to the standard output
+.SH SYNOPSIS
+.B pfsindcraw
+[--\fBnative\fR] <file> [<file>...]
+.SH DESCRIPTION
+This command can be used to read images in a camera RAW file format
+supported by DCRAW and write pfs stream to the standard output as if
+read from 16bit ppm file (no gamma correction, white balance from
+camera if available). In principle such data should conform to the
+definition of High Dynamic Range contents used in the pfstools
+package.
+.PP
+A raw image may in some cases require clamping to remove zero values,
+see examples.
+.SH OPTIONS
+.TP
+--\fBnative\fR, -\fBn\fR
+Read images in native camera color space (instead of sRGB). 
+To be used with pfscolortransform. Must be specified before any file name.
+.SH EXAMPLES
+.TP
+pfsindcraw img_0070.cr2 | pfsview
+View a full dynamic range of a raw image from Canon 350D camera.
+.TP  
+pfsindcraw img_0070.cr2 | pfsclamp --rgb | pfstmo_drago03 | pfsout img.jpg
+Tone map a raw image and save it as JPEG. Clamping is used to remove
+zero values, which otherwise result in NaN values after tone mapping.
+.TP  
+pfsindcraw --native img_0070.cr2 | pfscolortransform --rgbxyz canon500d.txt | pfsout img.exr
+Load a RAW image in its native camera color space, calibrate using matrix stored in canon500d.txt 
+file (not supplied) and save as an EXR image. 
+.SH "SEE ALSO"
+.BR pfsout (1)
+.BR pfsinppm (1)
+.BR pfscolortransform (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

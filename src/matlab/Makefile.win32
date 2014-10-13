@@ -1,0 +1,28 @@
+#MEX=mex
+MEX=c:\progra~1\MATLAB\R2006b\bin\mex.bat
+#MEX="c:\matlab\bin\win32\mex.bat"
+MEXOPTIONS=COMPFLAGS^#"$$COMPFLAGS -GX"
+
+all: pfsclose.mexw32 pfsopen.mexw32 pfsput.mexw32 pfsget.mexw32 pfspopen.mexw32 \
+     pfspclose.mexw32 pfs_transform_colorspace.mexw32 
+
+pfsopen.mexw32: pfsopen.cpp mex_utils.cpp ../pfs/pfs.cpp
+	$(MEX) $(MEXOPTIONS) -I..\pfs\ $** 
+
+pfsclose.mexw32: pfsclose.cpp mex_utils.cpp 
+	$(MEX) $(MEXOPTIONS) -I..\pfs\ $**
+
+pfsput.mexw32: pfsput.cpp mex_utils.cpp ..\pfs\pfs.cpp 
+	$(MEX) $(MEXOPTIONS) -I..\pfs\ $** 
+
+pfsget.mexw32: pfsget.cpp mex_utils.cpp ..\pfs\pfs.cpp 
+	$(MEX) $(MEXOPTIONS) -I..\pfs\ $** 
+
+pfs_transform_colorspace.mexw32: pfs_transform_colorspace.cpp mex_utils.cpp ..\pfs\colorspace.cpp 
+	$(MEX) $(MEXOPTIONS) -I..\pfs\ $** 
+	
+pfspclose.mexw32: pfspclose.cpp mex_utils.cpp	
+	$(MEX) $(MEXOPTIONS) -I../../ -I../pfs $**
+		
+pfspopen.mexw32: pfspopen.cpp mex_utils.cpp	
+	$(MEX) $(MEXOPTIONS) -I../../ -I../pfs $**		

@@ -1,0 +1,52 @@
+.TH "pfsoutjpeghdr" 1
+.SH NAME
+pfsoutjpeghdr \- Write images or frames in JPEG-HDR format
+.SH SYNOPSIS
+
+.B pfsoutjpeghdr
+(<file> [--linear] [--quality <val>] [--correction <correct>] [--frames <range>])  [<file>...]
+
+.SH DESCRIPTION
+Use this command to write JPEG file with HDR extension. This software
+makes use of the High Dynamic Range Imaging Library from Sunnybrook
+Technologies Inc. (c) Sunnybrook Inc. 2005
+.SH OPTIONS
+.TP
+.B \--quality <val>, -q <val>
+The \fI--quality\fR setting controls the overall compression/quality
+trade-off, with 100 being the maximum setting, producing the lowest
+losses and the largest output files.  Quality settings below 70 may
+result in significant image degradation, and should be avoided in
+critical applications. Default: --quality=90
+.TP
+.B \--correction <correct>, -c <correct>
+The \fI--correction\fR setting controls the algorithm used during
+downsampling of the HDR ratio image data.  The default
+\fBprecorrect\fR option compensates for resampling errors by adjusting
+the tone-mapped image to maximize the accuracy of the HDR result.
+This option may sometimes induce modest halo artifacts in the
+tone-mapped image at lower quality settings.  If the tone-mapped
+(backwards compatible) image is more important than the HDR version,
+the \fBpostcorrect\fR option may be used, instead.  To avoid all
+artifacts from HDR resampling, specify the \fBfullsamp\fR option. This
+will result in slightly larger image files. Default:
+--correction=precorrect
+.TP
+.B \--alpha <a>, -a <a>; --beta <b>, -b <b>
+The \fI--alpha\fR and \fI--beta\fR settings control color desaturation
+during tone-mapping, which will also permits super-saturated colors to
+pass through safely.  (See the appendix of the paper by Ward and
+Simmons cited below for details.) Use --alpha < 1 to desaturate colors
+and --beta > 1 to enhance color saturation contrast. Any input color
+space will be converted to the standard YCC color space of JPEG, based
+on the CCIR-709 (sRGB) primaries. Default: --alpha=1, --beta=1.
+.SH EXAMPLES
+.TP
+ pfsin memorial.hdr | pfsoutjpeghdr memorial.jpeg
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.
+.SH "SEE ALSO"
+.BR pfsinjpeghdr (1)
+.BR "Subband Encoding of High Dynamic Range Imagery" by Ward and Simmons
+(www.anyhere.com/gward/papers/apgv04)

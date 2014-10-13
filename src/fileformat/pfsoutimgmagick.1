@@ -1,0 +1,88 @@
+.TH "pfsoutimgmagick" 1
+.SH NAME
+pfsoutimgmagick \- Write images or frames using Image Magick library
+.SH SYNOPSIS
+.B pfsoutimgmagick
+[--linear] [--quality <val>] [--bit-depth] [--frames <range>]) <file> [<file>...]
+.SH DESCRIPTION
+This command can write images or frames in the multitude of image
+formats supported by the ImageMagick library. This includes but is not
+limited to: BMP, JPG, PNG, GIF, EPS, TIFF, DPX. See the manual page of
+ImageMagick for the full list of available formats.
+.PP
+\fBpfsoutimgmagick\fR reads images or frames in \fIpfs\fR format from
+the Standard Input and writes them under the specified file name(s).
+.PP
+The input of \fBpfsinimgmagick\fR must be within 0-1 range. If \fILUMINANCE\fR
+tag set is set to \fIRELATIVE\fR or \fIABSOLUTE\fR, the linear
+values will be gamma corrected, assuming sRGB color space. Use \fI--linear\fR
+switch to disable gamma correction.
+.PP
+The images are stored using the bit-depth for which the ImageMagick
+library was compiled (default is 16 bit). Note that some formats (for
+example JPEG) do not support encoding more than 8 bits per color
+channel. To use higher bit-depths, store images in the PNG format.
+.PP
+This command stores 'ALPHA' channel if it is present in the pfs stream.
+.PP
+Each file name can contain a \%%d pattern, which is substituted with
+frame numbers. The pattern has the same syntax as C \fIprintf\fR
+command. For example, you can use \%%04d to make the frame number four
+digit with proceedings zeros. You can select the frames using the
+following options (the options must be always given after the file
+name):
+.TP
+.B \--frames <range>
+Range is given in mathlab / octave format:
+
+.B "startframe:step:endframe"
+
+Frame numbers start with
+.B "startframe"
+(default 0), are increased by
+.B "step"
+(default 1) and stop at
+.B "endframe"
+You can skip one of those values, for example
+.I "1:100"
+for frames 1,2,...,100 and
+.I 0:2:
+for frame 0,2,4,... up to the last file that exists.
+.TP
+.B --srgb, -s
+Apply the sRGB non-linearity (approximately 2.2 gamma) before writing
+a file. This can be used instead of using \fIpfsgamma -g 2.2\fR to
+store the result of some tone-mapping operators. The option will
+compress contrast to make sure that tone values are properly shown on
+a display. It should be only used with linearized (not gamma
+corrected) images that are normalized to the 0-1 range.
+.TP
+\fB--quality\fR <val>, \fB-q\fR <val>
+Set JPEG/PNG compression level from 1 to 100. Default 75.
+.TP
+\fB--bit-depth\fR <val>, \fB-b <val>
+Enforce bit-depth (per color
+channel). The allowed values are from 8 to 32. If not specified, the
+bit depth from the pfs stream ('BITDEPTH' tag) will be used
+instead. If the 'BITDEPTH' tag is missing, the ImageMagick default
+value will be used (usually 16). The bit depth of actually stored file
+may be lower of that specified, if the file format does not support
+higher bit depths.
+
+.SH EXAMPLES
+.TP
+ pfsin test.jpg | pfsout test.png
+Convert from one image format to another.
+.TP
+ pfsin --linear test.jpg | pfsout --srgb test.png
+The same as above, but apply inverse gamma correction after reading
+an image (--linear) and then apply gamma correction before writing an
+image (--srgb).
+.SH BUGS
+pfsoutimgmagick can not write frames to the standard output.
+.PP
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools
+.SH "SEE ALSO"
+.BR pfsout (1)
+.BR ImageMagick (1)

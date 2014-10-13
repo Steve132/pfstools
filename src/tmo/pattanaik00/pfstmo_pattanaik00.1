@@ -1,0 +1,82 @@
+.TH "pfstmo_pattanaik00" 1
+.SH NAME
+pfstmo_pattanaik00 \- Time-dependent Visual Adaptation Model
+.SH SYNOPSIS
+.B pfstmo_pattanaik00
+[--time-dependence]
+[--fps <val>]
+[--mul <multiplier>] [--local]
+[--cone <val>] [--rod <val>]
+[--verbose] [--help]
+.SH DESCRIPTION
+This command implements a tone mapping operator as described in:
+
+Time-Dependent Visual Adaptation for Realistic Image Display.
+S.N. Pattanaik, J. Tumblin, H. Yee, and D.P. Greenberg.
+In Proceedings of ACM SIGGRAPH 2000.
+
+This operator requires properly calibrated image data (in cd/m2) and
+its results should be gamma corrected.
+
+The local version of this operator is based on the following paper:
+
+Adaptive Gain Control For High Dynamic Range Image Display.
+S.N. Pattanaik, H. Yee.
+In proceedings of SCCG 2002.
+
+.SH OPTIONS
+.TP
+--time-dependence, -t
+
+Use time dependent model of adaptation. This should be used for tone
+mapping of an animation. It has no influence on single-frame
+input. Switched off by default.  
+Note: it is important to correctly set the speed of the input animation (--fps).
+.TP
+--fps <val>, -f <val>
+
+Speed of input animation in frames per second. Used when
+time-dependence is switched on (-t). Default value: 16.0
+.TP
+--mul <multiplier>, -m <multiplier>
+
+Multiply input values by a multiplier value. 
+Useful if input data is not calibrated. Default value: 1.0
+.TP
+--local, -l
+
+Use local version of the tone mapping. Time-dependent effects are
+cancelled while using local version, global version is used by
+default.
+.TP
+--cone <val>, -c <val>
+
+Set the adaptation level for cones. If --rod parameter is not used,
+this will also set the adaptation level for rods. By default, the
+adaptation level is calculated as a logarithmic average of luminance
+in the input image.
+.TP
+--rod <val>, -r <val>
+
+Set the adaptation level for rods. By default, the adaptation level is
+calculated as a logarithmic average of luminance in the input image.
+.TP
+--verbose
+
+Print additional information during program execution.
+.TP
+--help
+
+Print list of command line options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_pattanaik00 -m 650 | pfsgamma -g 2.2 | pfsout memorial.png
+Tone map image, apply gamma correction, and save it in png format.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <krawczyk@mpi-sb.mpg.de>.

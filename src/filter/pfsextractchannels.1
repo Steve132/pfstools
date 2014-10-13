@@ -1,0 +1,21 @@
+.TH "pfsextractchannels" 1
+.SH NAME
+pfsextractchannels \- Extract selected channels from the stream
+.SH SYNOPSIS
+.B pfsextractchannels
+<channel_name> [<channel_name> ...]
+.SH DESCRIPTION
+Removes all channels from the pfs stream that are not listed in arguments. 
+
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsextractchannels Y | pfsview
+
+View luminance channel of the memorial image.
+
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

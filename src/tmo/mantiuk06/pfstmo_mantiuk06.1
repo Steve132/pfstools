@@ -1,0 +1,90 @@
+.TH "pfstmo_mantiuk06" 1
+.SH NAME
+pfstmo_mantiuk06 \- Tone mapping in the contrast domain
+.SH SYNOPSIS
+.B pfstmo_mantiuk06
+[--\fBfactor\fR <val>] [--\fBequalize-contrast\fR <val>] [--\fBsaturation\fR <val>]
+[--\fBverbose\fR] [--\fBquiet\fR] [--\fBhelp\fR]
+.SH DESCRIPTION
+This command implements two tone mapping operators: \fIcontrast
+mapping\fR and \fIcontrast equalization\fR. Both operators can produce
+very sharp images (sometimes non-photorealistic) while minimizing
+contrast reversal (halo artifacts). More information on these
+operators can be found in:
+.IP
+.PD 0
+Rafal Mantiuk, Karol Myszkowski, Hans-Peter Seidel.
+.IP
+A Perceptual Framework for Contrast Processing of High Dynamic Range Images
+.IP
+In: ACM Transactions on Applied Perception 3 (3), pp. 286-308, 2006.
+.IP
+.PD
+http://www.mpi-inf.mpg.de/~mantiuk/contrast_domain/
+.PP
+This version contains several performance improvements made by Ed Brambley. 
+.PP
+If you find this TMO useful in your research project, please cite the
+paper above.
+.PP
+The result of this TMO requires gamma correction.
+.SH OPTIONS
+.TP
+--\fBequalize-contrast\fR <val>, -\fBe\fR <val>
+Use the \fIcontrast equalization\fR algorithm. If this option is not
+specified, the \fIcontrast mapping\fR algorithm will be used. The
+\fIcontrast equalization\fR algorithm requires scaling parameter that
+controls the amount sharpenning, which can range from 0.1 (very sharp)
+to 1 (less sharp).
+.IP
+\fIcontrast equalization\fR results in very sharp, but also less
+natural images. \fIcontrast equalization\fR may also enhance noise in
+low-quality images.
+.TP
+--\fBfactor\fR <val>, -\fBf\fR <val>
+Contrast scaling factor (values 0-1) determines how much contrast
+magnitudes should be reduced. This option cannot be used with
+\fIequalize-contrast\fR. The lower value results in a sharper
+image. Default value: 0.3
+.TP
+--\fBsaturation\fR <val>, -\fBs\fR <val>
+Saturation correction (values 0-2). The lower value results in
+stronger desaturation. Default value: 0.8
+.TP
+--\fBverbose\fR, -\fBv\fR
+Print additional information during program execution.
+.TP
+--\fBquiet\fR, -\fBq\fR
+Do not display progress report.
+.TP
+--\fBhelp\fR, -\fBh\fR
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfstmo_mantiuk06 -f 0.5 | pfsgamma -g 2.2  | pfsout memorial.png
+.IP
+Tone map an image using contrast mapping and save it in the PNG format.
+.TP
+pfsin memorial.hdr | pfstmo_mantiuk06 -e 0.5 | pfsgamma -g 2.2  | pfsout memorial.png
+.IP
+The same as above, but use the contrast equalization algorithm.
+.TP
+pfsin memorial.hdr | pfstmo_mantiuk06 -f 0.5 -s 1 | pfsview
+.IP
+For optimal results you can output the result to pfsview and manually
+adjust the dynamic range window. Then save the image in pfsview by
+selecting 'Save image...' from the 'Frame' menu or pressing 's'.
+.TP
+pfsin bridge.jpg --linear |  pfsclamp --min 0.007 | pfstmo_mantiuk06 | pfsview
+.IP
+Enhance the low-dynamic range image 'bridge' and view the
+result. pfsclamp command reduces noise for low code values.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsclamp (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

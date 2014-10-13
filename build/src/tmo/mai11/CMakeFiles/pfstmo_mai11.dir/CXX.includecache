@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/tmo/pfstmo/pfstmo.h
+assert.h
+-
+string.h
+-
+
+/Users/rafal/pfstools/src/tmo/mai11/compression_tmo.cpp
+math.h
+-
+algorithm
+-
+iostream
+-
+config.h
+-
+compression_tmo.h
+/Users/rafal/pfstools/src/tmo/mai11/compression_tmo.h
+
+/Users/rafal/pfstools/src/tmo/mai11/compression_tmo.h
+pfstmo.h
+-
+
+config.h
+

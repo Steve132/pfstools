@@ -1,0 +1,53 @@
+.TH "pfsgamma" 1
+.SH NAME
+pfsgamma \- Apply gamma correction to color or gray-scale images
+.SH SYNOPSIS
+.B pfsgamma
+[--\fBgamma\fR <gamma> | --\fBinverse-gamma\fR <inv-gamma>] [--\fBmul\fR <multiplier>]
+.SH DESCRIPTION
+Use this command to gamma correct a stream of pfs images. Gamma
+correction is equivalent to raising value of R, G and B (or Y for
+gray-scale images) channels to 1/gamma power. More information on
+gamma correction can be found at:
+.PP
+http://www.poynton.com/notes/colour_and_gamma/GammaFAQ.html
+.PP
+This command can work on color images, in which case XYZ channels are
+transformed to RGB space, then they are gamma corrected before they
+are converted back to XYZ. For gray-scale images (only Y channel and
+XZ missing) gamma correction is applied only to Y channel.
+.PP
+Data can be multiplied by an optional multiplier \fBbefore\fR gamma
+correction.
+.PP
+Note: gamma correction will set the 'LUMINANCE' tag to 'DISPLAY' thus
+cancelling any sRGB correction when saving to LDR files (like PPM,
+TIFF). This will also cause a warning message when saving to HDR
+files, because the intensities after gamma correction are not linearly
+related to luminance any more.
+.SH OPTIONS
+.TP
+--\fBgamma\fR <gamma>, -\fBg\fR <gamma>
+Perform gamma correction (input^(1/gamma)). This can be used to convert
+images from relative luminance or radiance to pixel values. Default
+value: 1.0
+.TP
+--\fBinverse-gamma\fR <inv-gamma>, -\fBi\fR <inv-gamma>
+Perform inverse gamma correction (input^(gamma)). This can be used
+to convert images from pixel values to relative radiance or luminance.
+.TP
+--\fBmul\fR <mul>, -\fBm\fR <mul>
+Multiply data by this value before gamma correction. Default value: 1 
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsgamma -g 1.8 -m 10 | pfsout memorial_gc.ppm
+.IP
+Multiply memorial image by 10, gamma correct it and save to
+memorial_gc.ppm.
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsdisplayfunction (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

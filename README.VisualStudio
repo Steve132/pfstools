@@ -1,0 +1,39 @@
+pfstools can be compiled with Visual Studio using CMake build system. This file contains some troubleshooting hints.
+
+Refer to README.CMake for details on building pfstools using CMake.
+
+The compilation was tested with Visual Studio Express 2013.
+
+Note that this compilation procedure is an alternative to using cygwin (refer to README.Cygwin). 
+
+=== QT ===
+Download and install Qt4 (not Qt5) for Visual Studio from: http://qt-project.org/downloads
+
+Then add entry to CMake variables:
+QT_QMAKE_EXECUTABLE:FILEPATH=E:\Qt\4.8.5\bin\qmake
+where E:\Qt\4.8.5\bin\qmake should be replaced with the path to qmake on your computer.
+
+You may need to compile in Release mode. Otherwise some DLLs might be missing.
+
+=== OpenEXR ===
+
+Compiling OpenEXR on Windows with Visual Studio is not a task for faint hearted. Be prepared to fix quite a few issues with the code.
+
+* If the compiler complains about missing "__builtin_trap()", add 
+
+#define PLATFORM_WINDOWS 1
+
+to config/IlmBaseConfig.h 
+
+see
+
+https://lists.nongnu.org/archive/html/openexr-devel/2013-12/msg00001.html
+
+* If the compiler complains about "std::max", add missing include in all offending files:
+
+#include <algorithm>
+
+Other useful web pages:
+
+http://buildopenexr.blogspot.co.uk/
+http://blog.gmane.org/gmane.comp.video.openexr.devel

@@ -1,0 +1,60 @@
+.TH "pfspad" 1
+.SH NAME
+pfspad \- Add borders to a frame in PFS stream
+.SH SYNOPSIS
+.B pfspad
+[--left <columns>] [--right <columns>] 
+[--top <rows>] [--bottom <rows>]
+[--width <new_width>] [--height <new_height>]
+[--R <val>] [--G <val>] [--B <val>] [--Y <val>] [--help]
+.SH DESCRIPTION
+Add borders to each frame in PFS stream. User specifies size of left, 
+right, top and bottom border or size of an output image. Color of 
+borders can be specified as well.
+.SH OPTIONS
+.TP	
+--left <columns>, -l <columns>
+Width in pixels of the left border. 
+.TP
+--right <columns>, -r <columns>
+Width in pixels of the right border. 
+.TP
+--top <rows>, -t <rows>
+Height in pixels of the top border. 
+.TP
+--bottom <rows>, -b <rows>
+Height in pixels of the bottom border. 
+.TP
+--width <new_width>, -W <new_width>
+Width of an output image. Note that --width can be mixed with either
+--left or --right option.
+.TP
+--height <new_height>, -H <new_height>
+Height of an output image. Note that --height can be mixed with either
+--top or --bottom option.
+.TP
+--R <val>, -R <val>, --G <val>, -G <val>, --B <val>, -B <val>
+Color of borders in RGB mode. Default color is black, and if some of 
+the components is not specified, its value is set to 0.0. 
+.TP
+--Y <val>, -Y <val>
+Color of borders in luminance mode. 
+.TP
+--help, -h
+Print a list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin image.hdr | pfspad --left 50 --bottom 20 | pfsout out.hdr
+Add 50 columns to the left and 20 rows to the bottom side of image.hdr. 
+Color of borders is default black.   
+.TP
+pfsin image.hdr | pfspad --top 20 --height 500 --width 400 --R 1.0 | pfsout out.hdr
+Add 20 rows to the top side of image.hdr and create output image out.hdr
+500 pixels in height and 400 pixels in width. Color of borders is set to red.
+.SH SEE ALSO
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to Dorota Zdrojewska
+<dzdrojewska@wi.ps.pl>.
+		

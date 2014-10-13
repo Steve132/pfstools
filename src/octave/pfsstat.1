@@ -1,0 +1,44 @@
+.TH "pfsstat" 1
+.SH NAME
+pfsstat \- Show frame / image statistics
+.SH SYNOPSIS
+.B pfsstat 
+.SH DESCRIPTION
+This command will show a short text statistic on each image in the pfs
+stream. In the statistics you can find:
+.TP
+\fBFile\fR - name of the input file
+.TP
+\fBWidth, Height\fR - image dimensions
+.TP
+\fBMinimum\fR - minimum luminance of an image(*), given in linear
+units (relative luminance in cd/m^2) and logarithmic units
+.TP
+\fBMaximum\fR - maximum luminance of an image(*)
+.TP
+\fBAverage\fR - average luminance of an image(*)
+.TP
+\fBMean\fR - mean luminance of an image(*)
+.PP
+(*) Before min, max, average, median and dynamic range is computed,
+the following processing is performed on an image: 1) negative and
+zero values are replaced with the smallest positive value (to compute
+logarithms); 2) the image is low-pass filtered. The low-pass filtering
+removes few very dark or very bright pixels that can significantly
+influence estimation of the dynamic range. The percentile, instead of
+a low-pass filter, is sometimes used for the same purpose. However, a
+low-pass filter is preferred to the percentile in pfstools since,
+taking into account the processing that is happening in the human
+visual system, low-frequency band filter is more plausible.
+.PP
+Note: This command requires GNU Octave.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfsstat
+.PP
+Show statistics for the memorial image.
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.
+
+

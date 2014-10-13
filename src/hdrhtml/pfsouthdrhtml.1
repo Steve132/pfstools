@@ -1,0 +1,109 @@
+.TH "pfsouthdrhtml" 1
+.SH NAME
+pfsouthdrhtml \- Create a web page with an HDR viewer
+.SH SYNOPSIS
+
+\fBpfsouthdrhtml\fR [<page_name>] [\fB--quality\fR <1-5>] [\fB--image-dir\fR <directory_name>] [\fB--page-template\fR <template_file>] [\fB--image-template\fR <template_file>] [\fB--object-output\fR <file_name.js>] [\fB--html-output\fR <file_name.html>]
+
+.SH DESCRIPTION
+The command creates in the current directory an HTML web page
+containing multi-exposure HDR viewer. The multi-exposure viewer
+displays a portion of the available dynamic range with minimum
+contrast distortions and provides a slider control to move the dynamic
+range window towards brighter or darker tones. The interface is very
+similar to \fIpfsview\fR, which is a pfstools application for displaying
+HDR images. The web page employs only JavaScript and CSS opacity
+property and does not require Java applets or the Flash plugin. Note
+that because this techniques encodes 20-60 exposures using only few
+images, the displayed exposures may not be identical to the exposures
+that are shown in pfsview. For examples and more information, visit
+.PP
+\fIhttp://pfstools.sourceforge.net/hdrhtml/\fR.
+.PP
+\fI<page_name>\fR specifies the file name, of
+the web page to be generated. If \fI<page_name>\fR is missing, the
+file name of the first image with .html extension will be used.
+.PP
+The command can take as input several images and put them all on the
+same web page. For each image, its file name (from the FILE_NAME tag
+in the pfsstrem) without extension and a leading path will be
+used as a name for all JavaScript variables corresponding to that
+image. If the filename contains illegal characters (such as
+space, '-', '[', etc), these will be converted to '_'.
+.TP
+\fB--quality\fR <1-5>, \fB-q\fR <1-5>
+Quality of the interpolated exposures, from the worst (1) to the best
+(5). The default is 2, which is sufficient for most
+applications. Higher quality will introduce less distortions in the
+brightest and the darkest tones, but will also generate more
+images. More images means that there is more data that needs to be
+transferred to the web-browser, making HDR viewer less responsive.
+.TP
+\fB--image-dir\fR <directory_name>, \fB-d\fR <directory_name>
+Specify where to store the resulting image files. Links to images in
+HTML will be updated accordingly. This must be a relative path and the
+directory must exist.  Useful to avoid clutter in the current
+directory.
+.TP
+\fB--page-template\fR <template_file>, \fB-p\fR <directory_name>, \fB--image-template\fR <template_file>, \fB-i\fR <template_file>
+Replaces the template files used to generate an HTML web page. The
+template files contain all HTML and JaveScript code with special
+keywords (@keyword@) that are replaced with image specific data, such
+as width, height, image base name, etc. The default template files can
+be found in \fIINSTALL_DIR/share/pfstools/hdrhtml_default_templ/hdrhtml_*_templ.html\fR. There is an alternative template bundled with pfstools in the hdrhtml_hdrlabs_templ directory, which contains many improvements and looks much better but requires additional asset files.  The example at the end of this manual shows how to use alternative template. More details on how to design own templates can be found in \fBTEMPLATE FILE FORMAT\fR below.
+.TP
+\fB--object-output\fR <file_name.js>, \fB-o\fR <file_name.js>
+Store JavaScript objects (\fIhdr_<base_name>\fR) associated with each
+image in a separate file. This is useful if you want to script
+creating HTML pages.
+.TP
+\fB--html-output\fR <file_name.html>, \fB-l\fR <file_name.html>
+Store HTML code that shows HDRHTML viewer for each
+image in a separate file. This is useful if you want to script
+creating HTML pages.
+.SH TEMPLATE FILE FORMAT
+pfsouthdrhtml uses two template files \fIhdrhtml_page_templ.html\fR
+and \fIhdrhtml_image_templ.html\fR, located in
+\fIINSTALL_DIR/share/pfstools/\fR, to generate a web page with an HDR
+HTML viewer. The 'page' file contains the HTML of the entire web page
+and the 'image' file is used to paste a viewer code for a single
+image. You can replace one or both these templates with your own using
+\fB--page-template\fR and \fB--image-template\fR options.
+.PP
+Each template contains HTML code with additional keywords surrounded
+by @ marks (@keyword@), which are replaced with HDR HTML specific
+code. Most of the keywords are self explanatory, therefore only the
+most important are described below.
+.TP
+@hdr_img_def@ JavaScript objects that must be put in the 'body'
+section before any images. These define all the parameters needed to
+control HDR HTML viewer.
+.TP
+@cf_array_def@
+Pre-computed array of opacity coefficients. The same array is used for
+all images that use the same quality setting. Currently only one such
+array could be used per web-page, so images generated with different
+quality setting cannot be mixed on a single web page.
+.TP
+@image_htmlcode@ or @image_htmlcode[base_name]@
+Inserts HTML code of all images or a single image with the base_name
+(name with no file extension) specified as a parameter. This should be
+put where HDR HTML viewer should be located.
+.SH EXAMPLES
+.TP
+pfsin memorial.hdr | pfshdrhtml memorial_church
+Generates a web page memorial_church.html with a set of images
+memorial_church_*.jpg in the current directory.
+.TP
+pfsin ~/hdr_images/*.exr | pfssize --maxx 512 --maxy 512 | pfsouthdrhtml hdr_images
+Generate a web page with all OpenEXR images from ~/hdr_images/. The
+images are resized so that they are not larger than 512x512.
+.TP
+templ_dir=$INST_DIR/share/pfstools/hdrhtml_hdrlabs_templ/; pfsin img1.hdr img2.exr | pfssize -r 0.2 | pfsouthdrhtml -p ${templ_dir}/hdrhtml_page_templ.html -i ${templ_dir}/hdrhtml_image_templ.html test.html && cp -r ${templ_dir}/hdrhtml_assets ./
+The commands above will use an improved template from hdrlabs.com instead of the default one. Note that this template requires html_assets directory to be copied manually to the destination directory. Replace $INST_DIR with the directory where pfstools is installed (/usr/local by default). 
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.SH BUGS
+Please report bugs and comments to the discussion group
+http://groups.google.com/group/pfstools

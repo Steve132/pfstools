@@ -1,0 +1,39 @@
+.TH "pfsinpfm" 1
+.SH NAME
+pfsinpfm \- Load images or frames in PFM format
+.SH SYNOPSIS
+.B pfsinpfm
+(<file> [--frames <range>] [--skip-missing])  [<file>...]
+
+.SH DESCRIPTION
+Use this command to read frames in PFM format. PFM format is used for
+HDR Shop plug-ins and is also supported by some recent versions of
+NetPBM package (pamtopfm and pfmtopam commands). The frames are
+converted to pfs stream and send to the Standard Output. This command
+can handle both color and gray-scale images.
+
+Details on the format of the pattern file names, which are used for
+reading multiple frames, can be found in the manual page of pfsinppm.
+
+To automatically recognize a file format from the extension, use
+\fIpfsin\fR command instead.
+
+.SH EXAMPLES
+.TP
+ pfsin memorial.pfm | pfsout memorial.hdr
+
+Converts from one HDR format to another
+
+.SH BUGS
+pfsinpfm does not handle images that store floating point numbers
+using big-endian format. pfsoutpfm may also read floating point
+numbers incorrectly on big-endian machines.
+
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsinppm (1)
+.BR pfsoutpfm (1)
+
+

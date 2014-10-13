@@ -1,0 +1,43 @@
+.TH "pfsretime" 1
+.SH NAME
+pfsretime \- Retime an animation stream from one frame-rate to another
+.SH SYNOPSIS
+.B pfsretime
+[--\fBin-fps\fR <fps> | --\fBout-fps\fR <fps>] [--\fBspeedup\fR <factor>]
+.SH DESCRIPTION
+Changes the frame-rate of the animation stream from the input-frame rate
+to the output frame-rate. Currently this is done by skipping or
+replicating frames. The command can be useful for creating time-lapse
+animations with temporal tone-mapping operators.
+.SH OPTIONS
+.TP
+--\fBin-fps\fR <fps>, -\fBi\fR <fps>
+The frame-rate of the input animation stream in frames per
+second. Fractional numbers are supported. By default, the FPS tag
+in the stream is used. If the tag cannot be found, 30 frames per
+second is assumed. 
+.TP
+--\fBout-fps\fR <fps>, -\fBo\fR <fps>
+The frame-rate of the output animation stream in frames per
+second. Fractional numbers are supported. The default value is 30 frames per
+second. 
+.TP
+--\fBspeedup\fR <factor>, -\fBs\fR <factor>
+How much faster (factor > 1) or slower (factor < 1) the output
+animation should run as compared with the input animation. The output
+frame-rate is kept the same as the input frame-rate. 
+.SH EXAMPLES
+.TP
+pfsin frame%04d.hdr | pfsretime -v -i 1 -o 30 | pfstmo_mantiuk08 | pfsout res/frame%04d.jpg
+.IP
+Read the sequence of animation frames at 1 frame per second and
+output the sequence at 30 frames per second. This will replicate each
+input frame 30 times. The frames are then tone-mapped and stored in
+the res folder. 
+.SH "SEE ALSO"
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfstmo_mantiuk08 (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

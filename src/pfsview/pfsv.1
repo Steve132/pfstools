@@ -1,0 +1,26 @@
+.TH "pfsv" 1
+.SH NAME
+pfsv \- Viewer for high-dynamic range images
+.SH SYNOPSIS
+.B pfsv
+[files...]
+.SH DESCRIPTION
+Display a HDR image or sequence of images using pfsview. This is a
+shell wrapper that invokes pfsin to load an image in one of the
+several recognized formats (see pfsin for the list of formats) and
+displays it using pfsview.
+
+Note: This program was renamed from \fBpv\fR to avoid conflict with
+the pipe viewer 'pv'.
+.SH EXAMPLES
+.TP
+pfsv memorial.hdr
+Display memorial image.
+
+.SH "SEE ALSO"
+.BR pfsview (1)
+.BR pfsin (1)
+
+.SH BUGS
+Please report bugs and comments to Rafal Mantiuk
+<mantiuk@mpi-sb.mpg.de>.

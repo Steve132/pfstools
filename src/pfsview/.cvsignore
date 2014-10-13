@@ -1,0 +1,6 @@
+*.moc.cpp
+Makefile
+Makefile.in
+pfsview
+moc_*
+echo semantic.cache

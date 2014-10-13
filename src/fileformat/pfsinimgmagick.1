@@ -1,0 +1,98 @@
+.TH "pfsinimgmagick" 1
+.SH NAME
+pfsinimgmagick \- Load images or frames using ImageMagick++ library
+.SH SYNOPSIS
+.B pfsinimgmagick
+(<file> [--linear] [--absolute <max_lum>] [--frames <range>] [--skip-missing])  [<file>...]
+
+.SH DESCRIPTION
+This command can load images or frames in the multitude of image
+formats supported by the ImageMagick library. This includes but is not
+limited to: BMP, JPG, PNG, GIF, EPS, TIFF, DPX. See the manual page of
+ImageMagick for the full list of available formats.
+.PP
+\fBpfsinimgmagick\fR reads images or frames from files and writes
+\fIpfs\fR stream to the Standard Output. The \fIpfs\fR stream is
+usually piped to another program for further processing. To detect the
+format automatically based on the extension, use \fIpfsin\fR
+command. 
+.PP
+The output of \fBpfsinimgmagick\fR is scaled to 0-1 range,
+unless '--absolute' option is specified. By default, the 'LUMINANCE' tag
+is set to 'DISPLAY' contents. Using the '--linear' switch you can force the
+inverse sRGB transformation to provide linear data. In this case
+the 'LUMINANCE' tag is set to 'RELATIVE' contents. '--absolute' switch can
+be used to convert pixels to absolute luminance values.
+.PP
+This command handles properly 'alpha' channel (transparency) stored in
+images.
+.PP
+Each file can contain a \%%d pattern, which is substituted with frame
+numbers. The pattern has the same syntax as C
+.I printf
+command. For example, you can use \%%04d to make the frame number
+four digit with proceedings zeros. You can select the frames using the
+following options (the options must be always given after the file
+name):
+
+.TP
+.B \--frames <range>
+Range is given in mathlab / octave format:
+
+.B "startframe:step:endframe"
+
+Frame numbers start with
+.B "startframe"
+(default 0), are increased by
+.B "step"
+(default 1) and stop at
+.B "endframe"
+You can skip one of those values, for example
+.I "1:100"
+for frames 1,2,...,100 and
+.I 0:2:
+for frame 0,2,4,... up to the last file that exists.
+
+.TP
+.B \--skip-missing
+Skip up to ten frames in a row if corresponding files are
+missing. Otherwise the program stops reading sequence at the first
+file that does not exists. This switch does not apply to the first
+frame in a sequence. This switch can be useful if there is a rendered
+animation where some of the frame has not been generated.
+
+.TP
+.B \--linear, -l
+Converts pixel values to linear luminance (XYZ), assuming the sRGB
+color space for the input image. The maximum pixel value (255,255,255)
+is mapped to Y=1. \fILUMINANCE\fR tag is set to RELATIVE.
+
+.TP
+.B \--absolute <max_lum>, -a <max_lum>
+\fB--absolute\fR converts pixel values to an absolute linear luminance
+(XYZ), that is the color space, in which channel Y contains luminance
+given in cd/m^2. The sRGB color space is assumed for the input
+image. The maximum pixel value (255,255,255) is mapped to
+Y=\fI<max_lum>\fR. \fI<max_lum>\fR is typically set to 80 [cd/m^2] for
+a CRT monitor. \fILUMINANCE\fR tag is set to
+ABSOLUTE. \fB--absolute\fR process images almost the same as
+\fB--relative\fR, but additionally it scales all pixels by
+\fI<max_lum>\fR.
+
+.SH EXAMPLES
+.TP
+pfsinimgmagick frame\%%04d.dpx \--frames 0:10 | pfsview
+
+Read frames from files frame0000.dpx, frame0001.dpx, ...,
+frame0010.dpx and show them using pfsview.
+
+.SH BUGS
+pfsinimgmagick can not read frames from the Standard Input.
+.PP
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools
+.SH "SEE ALSO"
+.BR pfsin (1),
+.BR pfsout (1)
+.BR ImageMagick (1)
+
