@@ -223,9 +223,17 @@ OPTION(WITH_fftw "Use fftw to speed up some operations" ON)
 
 if( WITH_fftw )
 
-# TODO
+find_package (FFTW)
 
+if( NOT FFTW_FOUND )
+	MESSAGE( STATUS "FFTW library not found. Acceleration for pfstmo_durand02 disabled. " )
+	set( HAVE_FFTW3F 0 )
+else( NOT FFTW_FOUND )
+	set( HAVE_FFTW3F 1 )
+endif( NOT FFTW_FOUND )
 
+else( WITH_fftw )
+	set( HAVE_FFTW3F 0 )
 endif( WITH_fftw )
 
 
@@ -233,14 +241,6 @@ endif( WITH_fftw )
 # ======== HDRVC ===========
 # This is an experimental implementation of HDR-MPEG codec, not included in the official release.
 OPTION(WITH_HDRVC "Compile HDRVC (internal release only)" OFF)
-
-
-add_subdirectory (src) 
-
-configure_file (
-  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
-  "${PROJECT_BINARY_DIR}/config.h"
-  )
 
 # ======== MKOCTFILE/OCTAVE ===========
 
@@ -256,3 +256,12 @@ endif()
 if(MKOCTFILE)
 	message(STATUS "mkoctfile found.")
 endif()
+
+# ======== Config and sub dirs ===========
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
+  )
+
+add_subdirectory (src) 

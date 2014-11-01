@@ -22,6 +22,10 @@
   #define CYGWIN
 #endif
 
+#if ${HAVE_FFTW3F}
+  #define HAVE_FFTW3F
+#endif
+
 
 /* Output stream for debug messages. */
 #ifdef DEBUG
