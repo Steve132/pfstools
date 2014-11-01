@@ -6,3 +6,7 @@ add_subdirectory (pattanaik00)
 add_subdirectory (fattal02)
 add_subdirectory (durand02)
 add_subdirectory (mai11)
+
+if( GSL_FOUND )
+	add_subdirectory (mantiuk08)
+endif( GSL_FOUND )

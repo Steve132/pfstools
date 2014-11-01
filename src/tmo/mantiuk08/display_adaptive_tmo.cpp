@@ -45,9 +45,8 @@
 #include <gsl/gsl_interp.h>
 #include "cqp/gsl_cqp.h"
 
-#include "pfstmo_config.h"
+#include <config.h>
 
-//#include "config.h"
 
 // Computing Conditional Density takes about 90% of the time
 #define PROGRESS_CDF 90

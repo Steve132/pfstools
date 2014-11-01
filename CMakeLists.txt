@@ -237,6 +237,20 @@ else( WITH_fftw )
 endif( WITH_fftw )
 
 
+# ========= FFTW  ===========
+
+OPTION(WITH_GSL "Use Gnu Scientific Libarary required for some TMOs" ON)
+
+if( WITH_GSL )
+
+find_package (GSL)
+
+if( NOT GSL_FOUND )
+	MESSAGE( STATUS "GSL library not found. pfstmo_mantiuk08 will not be compiled." )
+endif( NOT GSL_FOUND )
+
+endif( WITH_GSL )
+
 
 # ======== HDRVC ===========
 # This is an experimental implementation of HDR-MPEG codec, not included in the official release.

@@ -29,7 +29,7 @@
  * $Id: pfstmo_mantiuk08.cpp,v 1.19 2013/12/28 14:00:54 rafm Exp $
  */
 
-//#include <config.h>
+#include <config.h>
 
 #include <iostream>
 #include <stdio.h>
@@ -43,8 +43,6 @@
 #include <sys/time.h>
 
 #include <pfs.h>
-
-#include "pfstmo_config.h"
 
 #include "display_adaptive_tmo.h"
 
