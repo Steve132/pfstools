@@ -1,0 +1,71 @@
+#!/bin/bash
+#  
+# This file is a part of PFS CALIBRATION package.
+# ---------------------------------------------------------------------- 
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# ---------------------------------------------------------------------- 
+#
+# @author Rafal Mantiuk, <mantiuk@users.sourceforge.net>
+#
+# $Id: pfsinme,v 1.6 2013/12/25 16:13:45 rafm Exp $
+
+if test -z "$1" || test "$1" = "--help"; then
+cat <<EOF
+Read several exposures for merging them with pfshdrcalibrate
+
+Usage: pfsinme <file> [<file>...]
+
+Recognized file formats and extensions:
+ JPEG - .jpeg, .jpg 
+ Canon 350D RAW - .cr2
+ (and other camera RAW formats recognized by dcraw)
+
+All listed files must be the same type, that is mising JPEG and RAW
+images is not allowed. You can use wildcards.
+ 
+See the man page for more information.
+EOF
+    exit 1
+fi
+
+extension=${1##*.}
+
+HDRGEN_CMD="dcraw2hdrgen"
+
+case $extension in
+          ("jpg"|"JPG"|"jpeg"|"JPEG")
+          HDRGEN_CMD="jpeg2hdrgen"          
+          ;;
+esac
+
+unamestr=`uname`
+
+if [[ "$unamestr" == 'Darwin' ]]; then
+  hdrgen_file=`mktemp  -t pfsinme`
+else
+  hdrgen_file=`mktemp`
+fi
+
+${HDRGEN_CMD} "$@" | sort -k 2 -n >$hdrgen_file
+
+#echo 1>&2 $hdrgen_file
+
+echo 1>&2 "pfsinme: Recognized exposures: "
+cat 1>&2 $hdrgen_file
+
+pfsinhdrgen $hdrgen_file
+
+rm $hdrgen_file

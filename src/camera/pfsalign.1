@@ -1,0 +1,83 @@
+.TH "pfsalign" 1
+.SH NAME
+pfsalign \- Align image stack
+.SH SYNOPSIS
+.B pfsalign
+[--\fBreference\fR <index>|-\fBr\fR <index>] [-\fBc\fR (min|max)|--\fBcrop\fR (min|max)]
+[-\fBs\fR val|--\fBsensitivity\fR val] [-\fBf\fR|--\fBfail-no-match\fR] [--\fBdisplay-matches\fR|-\fBd\fR] [--\fBverbose\fR] [--\fBhelp\fR]
+.SH DESCRIPTION
+Use this command to align image stack, for example for HDR
+merging. The command will use a feature-point-based matching method to
+find a homographic transformation that maps all images in the stack to
+the coordinates of the reference image. Then, it will output
+transformed (aligned) images, all of the same resolution. The
+resolution of input images may vary. The command can eliminate a
+substantial misalignment due to camera rotation (along any axis) and
+slight movement. 
+.PP
+The method is essentially similar to the one presented in the paper:
+Tomaszewska, Anna, and Radoslaw Mantiuk. "Image Registration for
+Multi-Exposure High Dynamic Range Image Acquisition." In International
+Conferences in Central Europe on Computer Graphics, Visualization and
+Computer Vision, pp. 49-56, 2007. However, the code is not based on the
+authors' implementation.
+.PP
+The images are matched pairwise in the same order as they
+are send to the command. Make sure that all consecutive image pairs
+contain overlapping parts. When aligning multiple exposure, use
+\fBpfsinme\fR command, which sorts exposures according to the
+shutter speed and thus improves matching between image pairs. The
+command will assume no misalignment (or fail with \fB-f\fR option) if there is no overlap, or it cannot find a
+sufficient number of features in one of the pairs. 
+.PP
+Homographic alignment will not eliminate all misalignment
+artefacts. In particular, it will not eliminate ghosting due to moving
+objects. The alignment algorithm assumes that the effect of parallax
+is negligible. Therefore, if the camera moves rather than rotates and
+there are objects close to the camera, they will most likely remain misaligned.
+.SH OPTIONS
+.TP
+--\fBreference\fR <index>, -\fBr\fR <index>
+Index of the reference image. The first image has index 1. Default: 1 (first image).
+.TP
+--\fBdisplay-matches\fR, -\fBd\fR
+Display matching key-points for each image pair. This option is useful
+for inspecting what went wrong with key-point matching. 
+.TP
+--\fBcrop\fR min|max, -\fBc\fR min|max
+Crop either to the image that contains all pixels (max) or to the
+image that contains only the pixels that overlap in all exposures
+(min). The latter option will eliminate black (empty) pixels from all
+exposures.
+.TP
+--\fBsensitivity\fR value, -\fBs\fR value
+Higher sensitivity will result in detecting more feature points and
+potentially a better alignment but also longer computation
+time. "value" parameter must be in the range from 1 to 10. Default: 5.
+.TP
+--\fBfail-no-match\fR, -\fBf\fR
+If the option is present, the program will exit with a fail status when no match was
+found for one or more of image pairs. Otherwise, the program will assume
+that the failed image pair is perfectly align (assume identity matrix
+as a homograhy).
+.SH EXAMPLES
+.TP
+pfsin img1.exr img2.exr | pfsalign -v -r 2 | pfsview
+.IP
+Align two EXR images using the second image (img2.exr) as a
+reference. Then, preview the result.
+.TP 
+pfsinme *.CR2 | pfssize  --maxx 1200 | pfsalign -v -c min  | pfshdrcalibrate -r linear -v --bpp 16 | pfsout result.exr
+.IP 
+Align a stack of RAW image exposures (from Canon camera), resize them so that the width is equal or less 1200 pixels, align exposures, and merge them to an HDR image.
+.SH "SEE ALSO"
+.BR pfsin (1)
+.SH BUGS
+The current implementation is rather inefficient in terms of memory
+management and can consume a considerable amount of memory. This is
+due to the pfstools architecture, which requires that all aligned
+frames must be loaded into memory. It should be possible to align 3-4
+10 mega-pixels images for 1.5GB of available memory. 
+.PP
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

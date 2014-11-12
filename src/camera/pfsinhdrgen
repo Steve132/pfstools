@@ -1,0 +1,68 @@
+#!/usr/bin/perl -w
+#  
+# This file is a part of PFS CALIBRATION package.
+# ---------------------------------------------------------------------- 
+# Copyright (C) 2004 Grzegorz Krawczyk, <gkrawczyk@users.sourceforge.net>
+# 
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# ---------------------------------------------------------------------- 
+#
+# $Id: pfsinhdrgen,v 1.5 2007/08/28 15:15:24 gkrawczyk Exp $
+
+use Getopt::Long;
+
+#--- check params
+GetOptions ('v|verbose' => \$verbose,
+            'h|help' => \$help);
+
+if( $help or @ARGV<1 ) {
+    print STDERR "Usage: pfsinhdrgen [--verbose] <file.hdrgen>\n";
+    exit;
+}
+
+($hdrgen) = $ARGV[0];
+
+(-e $hdrgen) or die "File does not exist '$hdrgen'";
+open HDRGEN, "<$hdrgen";
+
+#--- parse file
+while( $line=<HDRGEN> )
+{
+    @token = split " ", $line;
+    $file = $token[0];
+    $inv_exposure_time = $token[1];
+    $aperture = $token[2];
+    $iso_speed = $token[3];
+
+    ## defaults
+    $iso_speed = 100 if( $iso_speed==0);
+    $aperture = 1.0 if( $aperture==0);
+
+    ## APEX calculations
+    $Av = 2 * log($aperture) / log(2);
+    $Tv = log($inv_exposure_time) / log(2);
+    $Sv = log( $iso_speed / 3.125 ) / log(2);
+
+    ## Brightness value
+    $Bv = $Av+$Tv-$Sv;
+    
+    (-e $file) or die "Missing image '$file'";
+    
+    print STDERR "pfsinhdrgen: reading $file (iso$iso_speed,f/$aperture,t=$inv_exposure_time)\n" if( $verbose );;
+    system "pfsin $file | pfstag --set \"BV=$Bv\"\n";
+}
+
+close HDRGEN;
+

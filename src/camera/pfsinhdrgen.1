@@ -1,0 +1,50 @@
+.TH "pfsinhdrgen" 1
+.SH NAME
+pfsinhdrgen \- Create a pfs stream with different exposures defined by
+hdrgen script.
+
+.SH SYNOPSIS
+.B pfsinhdrgen
+<sample.hdrgen>
+
+.SH DESCRIPTION
+This program reads files defined in given hdrgen script and outputs
+them in a PFS stream. Each frame has a tag BV with corresponding
+brightness value (APEX standard). Larger BV corresponds to less
+exposure (darker image), necessary to capture a bright scene.
+
+The generated PFS stream is to be used with photo-metric calibration
+software and with generators of HDR images.
+
+HDRGEN script file is a plain text file in which each line contains:
+<path_to_an_image> <inverse_of_exposure_time_in_seconds> <aperture_size> <iso_speed> 0
+
+In most cases it is convenient to use the jpeg2hdrgen program to
+create such a file automatically. In case it could not parse the exif
+information from jpeg files, it is necessary to create this file by
+hand. Below are the sample contents of such file:
+
+<--- cut here: sample.hdrgen
+/var/tmp/images/img08.jpg 4 2.8 100 0
+/var/tmp/images/img09.jpg 58.8235 2.8 100 0
+/var/tmp/images/img10.jpg 76.9231 2.8 100 0
+/var/tmp/images/img11.jpg 322.581 2.8 100 0
+/var/tmp/images/img12.jpg 400 2.8 100 0
+<--- cut here: sample.hdrgen
+
+
+.SH EXAMPLES
+.TP
+pfsinhdrgen sample.hdrgen | pfsview
+
+View exposures defined in sample.hdrgen script.
+
+.SH "SEE ALSO"
+.BR jpeg2hdrgen (1)
+.BR pfshdrcalibrate (1)
+.BR pfsinme (1)
+.SH BUGS
+The command cannot handle files with a space in the name.
+.PP
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <gkrawczyk@users.sourceforge.net>.

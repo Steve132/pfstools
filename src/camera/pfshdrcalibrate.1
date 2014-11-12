@@ -1,0 +1,195 @@
+.TH "pfshdrcalibrate" 1
+.SH NAME
+pfshdrcalibrate \- Create an HDR image or calibrate a response curve
+from a set of differently exposed images supplied in PFS stream.
+
+.SH SYNOPSIS
+.B pfshdrcalibrate
+[--response <type>] [--calibration <type>]
+[--gauss <val>]
+[--response-file <filename.m>]
+[--save-response <filename.m>]
+[--multiplier <val>] [--bpp <val>]
+[--luminance] [--samples <val>]
+[--help] [--verbose]
+
+.SH DESCRIPTION
+Create an HDR image or calibrate a response curve from a set of
+differently exposed images supplied in PFS stream.
+
+When used with 8bit images, luminance in the output HDR image
+corresponds to real world values in [cd/m^2] provided that hdrgen
+script contained correct information on exposure time, aperture and
+iso speed. Note that sometimes ISO speed indicated by camera does not
+correspond to standard (ISO-100 is in fact ISO-125).
+
+The accuracy of absolute calibration has not been thoroughly tested
+with different camera models, however one can expect the relative
+measurement error below 8%. Use pfsabsolute in case of systematic
+error.
+
+.SH OPTIONS
+.TP
+--response <type>, -r <type>
+
+Allows to choose from predefined response curves. This can be used
+either to apply this response or use it as an initialization for
+automatic self-calibration. Predefined response curves are: "linear",
+"gamma", "log". Default is "linear". This option can be used only with Robertson method.
+
+.TP
+--calibration <type>, -c <type>
+
+Type of automatic self-calibration method used for recovery of the
+response curve and/or type of method used for HDR merging. Accepted
+types include: "robertson", "mitsunaga". "robertson" is the default
+and recommended algorithm (see commends in the Bugs section
+below). More infomation on the algorithms can be found in:
+.IP
+M.A. Robertson,  S. Borman and R.L. Stevenson
+.PD 0
+.IP
+Dynamic range improvement through multiple exposures
+.IP
+In: Proc. of International Conference on Image Processing 1999 (ICIP 99), pp 159-163 vol.3
+.PD
+.IP
+and
+.IP
+T. Mitsunaga and S. K. Nayar
+.PD 0
+.IP
+Radiometric Self Calibration
+.IP
+In: Proc on IEEE Conf. on Computer Vision and Pattern Recognition (CVPR'99). Volume 1, p. 1374
+.PD
+.TP
+--gauss <val>, -g <val>
+
+Sigma value for the Gaussian used as a weighting function (in the
+range 0-1). Applies to Robertson02 algorithm. Default value: 0.2
+
+.TP
+--response-file <filename.m>, -f <filename.m>
+
+Use response curve saved in the matlab format file. Turns off
+automatic self-calibration. Uses Robertson02 or Mitsunaga99 model to apply the
+response curve (see -c option).
+
+.TP
+--save-response <filename.m>, -s <filename.m>
+
+Saves the response curve calculated during automatic self-calibration
+stage in a matlab format file. Can be later reused for set of images
+captured with given camera. Also works fine for plotting with gnuplot.
+
+.TP
+--multiplier <val>, -m <val>
+
+Input multiplier value. Can be used to manipulate the range of source
+exposures. Default value for Robertson method is 256 since LDR images
+are by default scaled to 0..1. This value is set to 1.0 for Mitsunaga
+method.
+
+.TP
+--bpp <val>, -b <val>
+
+Number of bits per pixel in input data from the camera. Default value
+is 8.
+
+.TP
+--samples <val>, -p <val>
+
+Number of samples used during the self-calibration in Mitsunaga
+algorithm. Default is 50000.
+
+.TP
+--fix-saturated, -x
+
+Use this option if you see black pixels in overexposed / saturated
+areas. The black pixels are visible if all exposures contain pixel
+values that are outside reliable range (are under- or
+over-exposed). This flag gives non-zero weight for the brightest and
+the darkest pixels, thus avoiding zero-weighted pixels. Note that the
+calculated luminance values for these pixels are not reliable.
+
+.TP
+--luminance, -Y
+
+Recovery of response curve will be performed for luminance channel only.
+
+.TP
+--verbose
+
+Print additional information during program execution.
+.TP
+--help
+
+Print list of command line options.
+
+.SH EXAMPLES
+.TP
+pfsinme *.JPG | pfshdrcalibrate -v -s response.m | pfsview
+.IP
+Recover the response curve from set of all JPEG files in the current
+directory and save it to response.m file. To view the response curve,
+use pfsplotresponse command.
+.TP
+pfsinme *.CR2 | pfssize  --maxx 1200 | pfshdrcalibrate -r linear -v --bpp 16 | pfsout result.exr
+.IP
+Read Camera RAW images (from Canon), resize them so that the image
+width is equal or less 1200 pixels, merge them into an HDR image
+using all 16 bits and save as an Open EXR image.
+.TP
+pfsinhdrgen sample.hdrgen | pfshdrcalibrate -x -f response.m | pfsview
+.IP
+Create an HDR image from exposures defined in sample.hdrgen using the
+response curve "response.m" and view it. Fix the problem with black
+values given to overexposed pixels.
+.TP
+pfsinhdrgen sample.hdrgen | pfshdrcalibrate | pfsview
+.IP
+Create an HDR image from exposures defined in sample.hdrgen using the
+default self-calibration method and view it.
+.TP
+pfsinhdrgen sample_dcraw.hdrgen | pfshdrcalibrate -b 16 -r linear -c none | pfsview
+.IP
+Given that the script sample_dcraw.hdrgen refers to camera RAW files
+(see pfsindcraw), this example will generate an HDR image assuming a
+linear response.
+.TP
+pfsinhdrgen sample.hdrgen | pfshdrcalibrate | pfsview
+.IP
+Create an HDR image from exposures defined in sample.hdrgen using the
+default self-calibration method and view it.
+.TP
+pfsinhdrgen sample.hdrgen | pfshdrcalibrate -c mitsunaga -samples 100000 -s resp_mitsunaga.m >/dev/null
+.IP
+Create an HDR image from exposures defined in sample.hdrgen using the
+mitsunaga self-calibration method with 100000 samples and save it to "resp_mitsunaga.m".
+.SH "SEE ALSO"
+.BR pfsplotresponse (1)
+.BR pfsinhdrgen (1)
+.BR jpeg2hdrgen (1)
+.BR pfsview (1)
+.BR pfsindcraw (1)
+.BR pfsabsolute (1)
+.BR pfsglview (1)
+.SH BUGS
+Currently Mitsunaga and Nayar's method does not produce reliable
+camera response curves. Robertson's method should be used instead.
+.PP
+Robertson's method may produce noisy pixels in strongly over-saturated
+and under-saturated areas, banding, or black pixels if all exposures
+are over-saturated. For best results, there should be a sufficient
+numbers of exposures in which no pixels is over- or under-saturated in
+all the exposures. It is possible to fix these issues with some
+heuristics (as most HDR merging software does), but it is currently
+not done in this release. pfscalibration was meant to be used for
+research purposes and getting accurate result is more important than
+generating good looking images. The heuristics could hide the well
+visible artifacts, but would also introduce error to the measurements.
+.PP
+For any other issues please report bugs and comments on implementation
+to the discussion group http://groups.google.com/group/pfstools
+

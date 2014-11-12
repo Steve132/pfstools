@@ -1,0 +1,37 @@
+.TH "pfsinme" 1
+.SH NAME
+pfsinme \- Read image files containing multiple exposures to be merged into an HDR image
+
+.SH SYNOPSIS
+.B pfsinme <file> [<file>]
+
+.SH DESCRIPTION
+Use this program to read multiple exposure JPEG or RAW images. The
+output of this command should be piped to \fIpfshdrcalibrate\fR to
+recover a camera response or merge images into an HDR image.
+
+All listed files must be the same type, that is mixing JPEG and RAW
+images is not allowed. You can use wildcards.
+
+This command is a convinience wrapper for \fIjpeg2hdrgen\fR,
+\fIdcraw2hdrgen\fR and \fIpfsinhdrgen\fR, which skips the step of
+generating an \fIhdrgen\fR file
+
+.SH EXAMPLES
+.TP
+pfsinme *.jpg | pfsrotate -r | pfshdrcalibrate -s response.m -v
+
+Read all JPEG images in the current directory, rotate them and merge
+into an HDR image
+
+.SH "SEE ALSO"
+.BR pfshdrcalibrate (1)
+.BR jpeg2hdrgen (1)
+.BR dcraw2hdrgen (1)
+.BR pfsinhdrgen (1)
+.SH BUGS
+The command cannot handle files with a space in the file name because
+of the pfsinhdrgen limitation. 
+.PP
+Please report bugs and comments on implementation to 
+the discussion group http://groups.google.com/group/pfstools

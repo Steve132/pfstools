@@ -1,0 +1,47 @@
+#!/bin/bash
+#  
+# This file is a part of PFS CALIBRATION package.
+# ---------------------------------------------------------------------- 
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# ---------------------------------------------------------------------- 
+#
+# @author Rafal Mantiuk, <mantiuk@users.sourceforge.net>
+#
+# $Id: pfsplotresponse,v 1.1 2011/03/04 10:00:59 rafm Exp $
+
+if test -z $1 || test "$1" = "--help"; then
+cat <<EOF
+Plot response function using gnuplot
+
+Usage: pfsplotresponse <file_1> [<file_2> ...]
+ 
+See the man page for more information.
+EOF
+    exit 1
+fi
+
+if ! which gnuplot >/dev/null; then
+   cat <<EOF
+Error: 'gnuplot' does not seem to be installed. Install 'gnuplot' and try again.
+EOF
+    exit 1
+fi
+
+#RESP_FILE=$1;
+
+for RESP_FILE in $*; do
+    echo "set title \"$RESP_FILE\"; set xlabel \"Log relative radiance\"; set ylabel \"Pixel value\"; plot \"$RESP_FILE\";" | gnuplot -persist -
+done

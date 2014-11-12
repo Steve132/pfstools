@@ -1,0 +1,31 @@
+.TH "jpeg2hdrgen" 1
+.SH NAME
+jpeg2hdrgen \- Parse EXIF information in given JPEG files and output a
+hdrgen script for generation of HDR images.
+
+.SH SYNOPSIS
+.B jpeg2hdrgen
+<file1.jpg> [<file2.jpg>...]
+
+.SH DESCRIPTION
+This program can be used to automatically create a hdrgen script for
+use with software creating HDR images. The exposure information is
+extracted from EXIF data contained in jpeg images created using
+digital cameras.
+
+If this script doesn't recognise the exposure settings from the images
+taken by your camera, send me an output of a `jhead your_image.jpg`
+program.
+
+.SH EXAMPLES
+.TP
+jpeg2hdrgen IMG_0001.JPG IMG_0002.JPG IMG_0003.JPG > sample.hdrgen
+
+Creates a sample.hdrgen script for given images.
+
+.SH "SEE ALSO"
+.BR pfsinhdrgen (1)
+.BR pfshdrcalibrate (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <gkrawczyk@users.sourceforge.net>.

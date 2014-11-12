@@ -31,3 +31,4 @@ if( MKOCTFILE )
 endif( MKOCTFILE )
 
 add_subdirectory (tmo)
+add_subdirectory (camera)

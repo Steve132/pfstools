@@ -1,0 +1,34 @@
+.TH "dcraw2hdrgen" 1
+.SH NAME
+dcraw2hdrgen \- Parse information in given Digital Camera RAW files and output a
+hdrgen script for generation of HDR images.
+
+.SH SYNOPSIS
+.B dcraw2hdrgen
+<file1.cr2> [<file2.cr2>...]
+
+.SH DESCRIPTION
+This program can be used to automatically create an hdrgen script for
+use with software creating HDR images. The exposure information is
+extracted from RAW files using the `dcraw` tool.
+
+If this script doesn't recognise the exposure settings from the images
+taken by your camera, please verify if dcraw supports your camera:
+`dcraw -i -v your_image.cr2`. You should see a detailed information on
+shot settings including exposure time. Maybe compiling the newest
+version will help.
+
+.SH EXAMPLES
+.TP
+dcraw2hdrgen IMG_0001.CR2 IMG_0002.CR2 IMG_0003.CR2 > sample.hdrgen
+
+Creates a sample.hdrgen script for given images.
+
+.SH "SEE ALSO"
+.BR dcraw (1)
+.BR pfsindcraw (1)
+.BR pfsinhdrgen (1)
+.BR pfshdrcalibrate (1)
+.SH BUGS
+Please report bugs and comments on implementation to 
+Grzegorz Krawczyk <gkrawczyk@users.sourceforge.net>.
