@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!@PERL_PATH@ -w
 #  
 # This file is a part of PFS CALIBRATION package.
 # ---------------------------------------------------------------------- 

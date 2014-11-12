@@ -54,6 +54,15 @@ endif( HAS_BRANCH_PREDICTION )
 find_program (BASH_EXECUTABLE bash)
 message( "Using bash: ${BASH_EXECUTABLE}" )
 
+# ======== Find perl =======
+
+find_program (PERL_EXECUTABLE perl)
+if( PERL_EXECUTABLE )
+	message( "Using perl: ${PERL_EXECUTABLE}" )
+else( PERL_EXECUTABLE )
+	message( "Perl interpreter not found. Reading multiple exposures (pfsinhdrgen, pfsinme) will not work" )
+endif( PERL_EXECUTABLE )
+
 # ======== Build static or dynamic libraries =======
 
 OPTION (BUILD_SHARED_LIBS "Build pfs as a shared library" OFF)
@@ -270,6 +279,14 @@ endif()
 if(MKOCTFILE)
 	message(STATUS "mkoctfile found.")
 endif()
+
+# ======== OpenCV ===========
+
+find_package( OpenCV )
+
+if( NOT OpenCV_FOUND )
+	message( "OpenCV library not found. 'pfsalign' will not be compiled" )
+endif( NOT OpenCV_FOUND )
 
 # ======== Config and sub dirs ===========
 

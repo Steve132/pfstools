@@ -1,4 +1,4 @@
-#!/bin/bash
+#!@BASH_PATH@
 #  
 # This file is a part of PFS CALIBRATION package.
 # ---------------------------------------------------------------------- 
@@ -20,28 +20,52 @@
 #
 # @author Rafal Mantiuk, <mantiuk@users.sourceforge.net>
 #
-# $Id: pfsplotresponse,v 1.1 2011/03/04 10:00:59 rafm Exp $
+# $Id: pfsinme,v 1.6 2013/12/25 16:13:45 rafm Exp $
 
-if test -z $1 || test "$1" = "--help"; then
+if test -z "$1" || test "$1" = "--help"; then
 cat <<EOF
-Plot response function using gnuplot
+Read several exposures for merging them with pfshdrcalibrate
 
-Usage: pfsplotresponse <file_1> [<file_2> ...]
+Usage: pfsinme <file> [<file>...]
+
+Recognized file formats and extensions:
+ JPEG - .jpeg, .jpg 
+ Canon 350D RAW - .cr2
+ (and other camera RAW formats recognized by dcraw)
+
+All listed files must be the same type, that is mising JPEG and RAW
+images is not allowed. You can use wildcards.
  
 See the man page for more information.
 EOF
     exit 1
 fi
 
-if ! which gnuplot >/dev/null; then
-   cat <<EOF
-Error: 'gnuplot' does not seem to be installed. Install 'gnuplot' and try again.
-EOF
-    exit 1
+extension=${1##*.}
+
+HDRGEN_CMD="dcraw2hdrgen"
+
+case $extension in
+          ("jpg"|"JPG"|"jpeg"|"JPEG")
+          HDRGEN_CMD="jpeg2hdrgen"          
+          ;;
+esac
+
+unamestr=`uname`
+
+if [[ "$unamestr" == 'Darwin' ]]; then
+  hdrgen_file=`mktemp  -t pfsinme`
+else
+  hdrgen_file=`mktemp`
 fi
 
-#RESP_FILE=$1;
+${HDRGEN_CMD} "$@" | sort -k 2 -n >$hdrgen_file
 
-for RESP_FILE in $*; do
-    echo "set title \"$RESP_FILE\"; set xlabel \"Log relative radiance\"; set ylabel \"Pixel value\"; plot \"$RESP_FILE\";" | gnuplot -persist -
-done
+#echo 1>&2 $hdrgen_file
+
+echo 1>&2 "pfsinme: Recognized exposures: "
+cat 1>&2 $hdrgen_file
+
+pfsinhdrgen $hdrgen_file
+
+rm $hdrgen_file
