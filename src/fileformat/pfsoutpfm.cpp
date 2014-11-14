@@ -65,7 +65,7 @@ void writePFMFileColor( FILE *fh, int width, int height,
   const int lineSize = width*3;
   float *line = new float[lineSize];
   
-  for( int l = height-1; l >= 0; l-- ) {
+  for( int l = 0; l < height; l++ ) {
     for( int x = 0; x < width; x++ ) {
       const int lineOffset = l*width;
       line[x*3+0] = R[lineOffset+x];
@@ -87,7 +87,7 @@ void writePFMFileGrayscale( FILE *fh, int width, int height, float *Y )
   const int lineSize = width;
   float *line = new float[lineSize];
   
-  for( int l = height-1; l >= 0; l-- ) {
+  for( int l = 0; l < height; l++ ) {
     for( int x = 0; x < width; x++ ) {
       const int lineOffset = l*width;
       line[x] = Y[lineOffset+x];

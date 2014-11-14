@@ -282,11 +282,17 @@ endif()
 
 # ======== OpenCV ===========
 
-find_package( OpenCV )
+OPTION(WITH_OpenCV "Use OpenCV library requires for pfsalign" ON)
 
-if( NOT OpenCV_FOUND )
-	message( "OpenCV library not found. 'pfsalign' will not be compiled" )
-endif( NOT OpenCV_FOUND )
+if( WITH_OpenCV )
+
+  find_package( OpenCV )
+
+  if( NOT OpenCV_FOUND )
+    message( "OpenCV library not found. 'pfsalign' will not be compiled" )
+  endif( NOT OpenCV_FOUND )
+
+endif( WITH_OpenCV )
 
 # ======== Config and sub dirs ===========
 

@@ -1,5 +1,7 @@
 pfstools 2.0.0 <?>
-	* This is an experimental release
+	* added: Starting from pfstools 2.0.0, pfstmo and pfscalibration are included in the pfstools source package
+	* fixed: pfsinpfm now handles both big and little endian files correctly
+	* fixed: pfsinpfm and pfsoutpfm do not flip images (top-bottom)
 
 pfstools 1.9.0 <17.09.2014>
 	* added: CMake build system (to replace automake in future releases)

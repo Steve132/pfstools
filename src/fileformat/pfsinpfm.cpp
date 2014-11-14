@@ -25,11 +25,6 @@
  * The format description was based on:
  * http://netpbm.sourceforge.net/doc/pfm.html
  *
- * however the order of the lines in pfm file seems to be reversed -
- * from bottom to top
- *
- * does not handle big-endian files
- *
  * $Id: pfsinpfm.cpp,v 1.1 2005/06/15 13:36:54 rafm Exp $
  */
 
@@ -38,10 +33,12 @@
 #include <iostream>
 
 #include <stdio.h>
-#include <pfs.h>
+#include <stdint.h>
 #include <getopt.h>
 #include <stdlib.h>
 #include <math.h>
+
+#include <pfs.h>
 
 #define PROG_NAME "pfsinpfm"
 
@@ -50,7 +47,35 @@ struct PFMHeader
   int width, height;
   bool grayscale;
   float scale;
+  bool need_swap;
 };
+
+
+static inline uint32_t bswap_32(uint32_t x)
+{
+  x= ((x<<8)&0xFF00FF00) | ((x>>8)&0x00FF00FF);
+  x= (x>>16) | (x<<16);
+  return x;
+}
+
+static float swap_if_needed(float x, bool swap_needed )
+{
+  if( swap_needed ) {
+    uint32_t *xi = (uint32_t*)&x;
+    uint32_t yi = bswap_32( *xi );
+    float *y = (float*)&yi;    
+    return *y;
+  } else
+    return x;
+}
+
+
+static bool isBigEndian()
+{
+  int x = 1;
+  char *y = (char*)&x;
+  return y[0] == 0;
+}
 
 
 PFMHeader readPFMHeader( FILE *fh )
@@ -78,8 +103,8 @@ PFMHeader readPFMHeader( FILE *fh )
   if( read != 1 || headerID[0] != 0x0a ) 
     throw pfs::Exception( "Wrong file header" );
 
-  if( header.scale > 0 )
-    throw pfs::Exception( "Can not handle big endian PFM files" );
+  // Check if swapping bytes because of endianness is required
+  header.need_swap = (isBigEndian() ^ header.scale > 0);
   
   return header;
 }
@@ -89,20 +114,20 @@ void readPFMFileColor( FILE *fh, PFMHeader &header, float *R, float *G, float *B
   const int lineSize = header.width*3;
   float *line = new float[lineSize];
   
-  for( int l = header.height-1; l >= 0; l-- ) {
+  for( int l = 0; l < header.height; l++ ) {
     int read = fread( line, sizeof( float ), lineSize, fh );
     if( read != lineSize )
       throw pfs::Exception( "Unexpected EOF" );
     for( int x = 0; x < header.width; x++ ) {
       const int lineOffset = l*header.width;
-      R[lineOffset+x] = line[x*3+0];
-      G[lineOffset+x] = line[x*3+1];
-      B[lineOffset+x] = line[x*3+2];      
+      R[lineOffset+x] = swap_if_needed( line[x*3+0], header.need_swap );
+      G[lineOffset+x] = swap_if_needed( line[x*3+1], header.need_swap );
+      B[lineOffset+x] = swap_if_needed( line[x*3+2], header.need_swap );      
     }
   }
   delete[] line;
 
-  if( header.scale != -1 ) {
+  if( fabs(header.scale) != 1 ) {
     const float scaleFactor = fabs( header.scale );
     for( int i = 0; i < header.width*header.height; i++ ) {
       R[i] *= scaleFactor;
@@ -115,13 +140,21 @@ void readPFMFileColor( FILE *fh, PFMHeader &header, float *R, float *G, float *B
 
 void readPFMFileGrayscale( FILE *fh, PFMHeader &header, float *Y )
 {
-  for( int l = header.height-1; l >= 0; l-- ) {
+  for( int l = 0; l < header.height; l++ ) {
     int read = fread( Y + header.width*l,
       sizeof( float ), header.width, fh );
+
+    if( header.need_swap ) {
+      const int lineOffset = l*header.width;
+      for( int x = 0; x < header.width; x++ ) {
+        Y[lineOffset+x] = swap_if_needed( Y[lineOffset+x], 1 );
+      }
+    }
+    
     if( read != header.width )
       throw pfs::Exception( "Unexpected EOF" );
   }
-  if( header.scale != -1 ) {
+  if( fabs(header.scale) != 1 ) {
     const float scaleFactor = fabs( header.scale );
     for( int i = 0; i < header.width*header.height; i++ ) {
       Y[i] *= scaleFactor;
@@ -155,7 +188,7 @@ void readFrames( int argc, char* argv[] )
     { "linear", no_argument, NULL, 'l' },
     { NULL, 0, NULL, 0 }
   };
-  static const char optstring[] = "";
+  static const char optstring[] = "hvl";
     
   pfs::FrameFileIterator it( argc, argv, "rb", NULL, stdin,
     optstring, cmdLineOptions );
@@ -191,6 +224,7 @@ void readFrames( int argc, char* argv[] )
     PFMHeader header = readPFMHeader( ff.fh );
 
     VERBOSE_STR << "reading file '" << ff.fileName << "'" << std::endl;
+    VERBOSE_STR << "PFM file endianness: " << (header.scale > 0 ? "Big" : "Little" ) << std::endl;    
     
     pfs::Frame *frame = pfsio.createFrame( header.width, header.height );
 
