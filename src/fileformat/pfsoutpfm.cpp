@@ -50,6 +50,13 @@ class QuietException
 
 #define min(x,y) ( (x)<(y) ? (x) : (y) )
 
+static bool isBigEndian()
+{
+  int x = 1;
+  char *y = (char*)&x;
+  return y[0] == 0;
+}
+
 void printHelp()
 {
   fprintf( stderr, PROG_NAME " [--verbose] [--help]\n"
@@ -60,7 +67,10 @@ void writePFMFileColor( FILE *fh, int width, int height,
   float *R, float *G, float *B )
 {
   // Write header
-  fprintf( fh, "PF" PFMEOL "%d %d" PFMEOL "-1" PFMEOL, width, height );
+  int scale = -1;
+  if( isBigEndian() ) // Is this a big endian ?
+    scale = 1;  
+  fprintf( fh, "PF" PFMEOL "%d %d" PFMEOL "%d" PFMEOL, width, height, scale );
   
   const int lineSize = width*3;
   float *line = new float[lineSize];
@@ -82,7 +92,10 @@ void writePFMFileColor( FILE *fh, int width, int height,
 void writePFMFileGrayscale( FILE *fh, int width, int height, float *Y )
 {
   // Write header
-  fprintf( fh, "Pf" PFMEOL "%d %d" PFMEOL "-1" PFMEOL, width, height );
+  int scale = -1;
+  if( isBigEndian() ) // Is this a big endian ?
+    scale = 1;  
+  fprintf( fh, "Pf" PFMEOL "%d %d" PFMEOL "%d" PFMEOL, width, height, scale );
   
   const int lineSize = width;
   float *line = new float[lineSize];
