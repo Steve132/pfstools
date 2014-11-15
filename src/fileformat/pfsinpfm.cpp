@@ -51,7 +51,7 @@ struct PFMHeader
 };
 
 
-static inline uint32_t bswap_32(uint32_t x)
+static inline uint32_t pfs_bswap_32(uint32_t x)
 {
   x= ((x<<8)&0xFF00FF00) | ((x>>8)&0x00FF00FF);
   x= (x>>16) | (x<<16);
@@ -62,7 +62,7 @@ static float swap_if_needed(float x, bool swap_needed )
 {
   if( swap_needed ) {
     uint32_t *xi = (uint32_t*)&x;
-    uint32_t yi = bswap_32( *xi );
+    uint32_t yi = pfs_bswap_32( *xi );
     float *y = (float*)&yi;    
     return *y;
   } else
