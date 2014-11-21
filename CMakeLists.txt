@@ -232,21 +232,21 @@ OPTION(WITH_fftw "Use fftw to speed up some operations" ON)
 
 if( WITH_fftw )
 
-find_package (FFTW)
+  find_package (FFTW)
 
-if( NOT FFTW_FOUND )
-	MESSAGE( STATUS "FFTW library not found. Acceleration for pfstmo_durand02 disabled. " )
-	set( HAVE_FFTW3F 0 )
-else( NOT FFTW_FOUND )
-	set( HAVE_FFTW3F 1 )
-endif( NOT FFTW_FOUND )
+  if( NOT FFTW_FOUND )
+    MESSAGE( STATUS "FFTW library not found. Acceleration for pfstmo_durand02 disabled. " )
+    set( HAVE_FFTW3F 0 )
+  else( NOT FFTW_FOUND )
+    set( HAVE_FFTW3F 1 )
+  endif( NOT FFTW_FOUND )
 
 else( WITH_fftw )
-	set( HAVE_FFTW3F 0 )
+  set( HAVE_FFTW3F 0 )
 endif( WITH_fftw )
 
 
-# ========= FFTW  ===========
+# ========= GSL  ===========
 
 OPTION(WITH_GSL "Use Gnu Scientific Libarary required for some TMOs" ON)
 
@@ -268,17 +268,20 @@ OPTION(WITH_HDRVC "Compile HDRVC (internal release only)" OFF)
 # ======== MKOCTFILE/OCTAVE ===========
 
 #OPTION(WITH_OCTAVE "Compile Octave files" ON)
-
 SET (OCTAVE_DEST_DIR "${CMAKE_INSTALL_PREFIX}/share/pfstools/octave"
 CACHE PATH  "Copy octave functions to this directory")
 
-find_program(MKOCTFILE mkoctfile)
-if(NOT MKOCTFILE)
-  message(STATUS "Failed to find mkoctfile. Maybe liboctave-dev is not installed.")
-endif()
-if(MKOCTFILE)
-	message(STATUS "mkoctfile found.")
-endif()
+if( WITH_Octave )
+
+  find_program(MKOCTFILE mkoctfile)
+  if(NOT MKOCTFILE)
+    message(STATUS "Failed to find mkoctfile. Maybe liboctave-dev is not installed.")
+  endif()
+  if(MKOCTFILE)
+    message(STATUS "mkoctfile found.")
+  endif()
+
+endif( WITH_Octave )
 
 # ======== OpenCV ===========
 
