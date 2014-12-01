@@ -23,6 +23,6 @@ find_library (FFTW3F_LIB NAMES fftw3f)
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (FFTW DEFAULT_MSG FFTW3_LIB FFTW3F_LIB FFTW_INCLUDES)
 
-SET(FFTW_LIBRARIES ${FFTW3_LIB} ${FFTW3F_LIB} )
+SET(FFTW_LIBS ${FFTW3_LIB} ${FFTW3F_LIB} )
 
 mark_as_advanced (FFTW_LIBRARIES FFTW_INCLUDES)
