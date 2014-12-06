@@ -267,12 +267,12 @@ OPTION(WITH_HDRVC "Compile HDRVC (internal release only)" OFF)
 
 # ======== MKOCTFILE/OCTAVE ===========
 
-OPTION(WITH_OCTAVE "Compile Octave files" ON)
+OPTION(WITH_Octave "Compile Octave files" ON)
 SET (OCTAVE_DEST_DIR "${CMAKE_INSTALL_PREFIX}/share/pfstools/octave"
 CACHE PATH  "Copy octave functions to this directory")
 
 if( WITH_Octave )
-
+  
   find_program(MKOCTFILE mkoctfile)
   if(NOT MKOCTFILE)
     message(STATUS "Failed to find mkoctfile. Maybe liboctave-dev is not installed.")

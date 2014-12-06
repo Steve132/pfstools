@@ -10,7 +10,8 @@ function pfs_write_rgb( fileName, R, G, B )
     fid = popen( sprintf( "pfsout %s", fileName ), "w" );
     
     pfs = pfsopen( fid, size( R ) );
-    [pfs.channels.X pfs.channels.Y pfs.channels.Z] = \
+    pfs.channels = struct;
+    [pfs.channels.X pfs.channels.Y pfs.channels.Z] = ...
         pfstransform_colorspace( "RGB", R, G, B, "XYZ" );   
     pfsput( pfs );
   unwind_protect_cleanup
