@@ -6,13 +6,15 @@
 REL=2.0.0
 
 DIR="pfstools-${REL}"
+DEST="${DIR}.tgz"
 
-echo "Preparing ${DIR}.tgz"
+echo "Preparing ${DEST}"
 
 cd ..
 
 # Create a clean copy
 rm -rf ${DIR}
+rm -rf ${DEST}
 cp -r pfstools ${DIR}
 
 # Remove unnecessary files
@@ -21,7 +23,7 @@ rm -r ${DIR}/debian
 rm ${DIR}/make_src_dist.sh
 
 # Put into .tgz
-tar -czf ${DIR}.tgz ${DIR}
+tar -czf ${DEST} ${DIR}
 
 # Test
-tar -tzf ${DIR}.tgz ${DIR}
+tar -tzf ${DEST} ${DIR}
