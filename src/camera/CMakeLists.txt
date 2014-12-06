@@ -10,7 +10,6 @@ install (TARGETS ${TRG} DESTINATION bin)
 install (FILES ${TRG}.1 DESTINATION ${MAN_DIR})
 
 if( OpenCV_FOUND )
-  message( "OpenCV libs: ${OpenCV_LIBS}" )
   
 	set(TRG pfsalign)
 	add_executable(${TRG} ${TRG}.cpp  "${GETOPT_OBJECT}")			  
