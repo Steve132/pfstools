@@ -11,6 +11,7 @@ pfstools 2.0.0 <06.12.2014>
 	* fixed: pfsinpfm and pfsoutpfm do not flip images (top-bottom)
 	* added: new tone-mapping operator: pfstmo_mai11
 	* changed: Thoroughly updated README files
+	* fixed: several issues with octave scripts (compatibility with newer Octave releases), in particular pfs_write_rgb
 
 
 pfstools - README 
@@ -162,7 +163,7 @@ Matlab (mex)
 Octave	
 	CMake switch: WITH_Octave
 	Tools: All Octave scripts in src/octave
-	This part of pfstools is not very well maintained and there is a number of known issues.
+	There are still some unresolved issues running Octave scripts under cygwin. 
 	
 FFTW
 	CMake switch: WITH_FFTW
