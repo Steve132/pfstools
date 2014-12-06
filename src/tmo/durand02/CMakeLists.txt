@@ -3,11 +3,14 @@ include_directories ("${PROJECT_BINARY_DIR}/"
 if( NOT HAS_GETOPT )
 	include_directories ("${GETOPT_INCLUDE}")
 endif( NOT HAS_GETOPT )
+
 link_directories("${PROJECT_SOURCE_DIR}/src/pfs")
 
 if( FFTW_FOUND )
-	set( FFTW_LIBS ${FFTW_LIBRARIES} )
-	set( FAST_BILATERAL "fastbilateral.cpp" )
+  set( FFTW_LIBRARIES ${FFTW_LIBS} )
+  set( FAST_BILATERAL "fastbilateral.cpp" )
+else( FFTW_FOUND )
+  set( FFTW_LIBRARIES )
 endif( FFTW_FOUND )
 
 set(TRG pfstmo_durand02)
