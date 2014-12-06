@@ -112,6 +112,8 @@ src - all sources go there
                  (formerly pfscalibration)
   hdrhtml      - makes HTML5 web-pages with viewable HDR images
   getopt       - used on Windows to compile using Visual Studio
+  debian       - scripts to create Debian distro package. The scripts has not been updated and currently is not 
+                 working.
 
 
 3. Dependencies
