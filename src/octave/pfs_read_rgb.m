@@ -12,12 +12,10 @@ function [R G B] = pfs_read_rgb( fileName )
   fclose( fid );
 
   unwind_protect
-    fid = popen( sprintf( "pfsin %s", fileName ), "r" );
+    fid = popen( sprintf( 'pfsin %s', fileName ), 'r' );
     pin = pfsopen( fid );      
     pin = pfsget( pin );
-    [R G B] = pfstransform_colorspace( "XYZ", pin.channels.X, 
-				      pin.channels.Y, pin.channels.Z, \
-                                      "RGB" );    
+    [R G B] = pfstransform_colorspace( 'XYZ', pin.channels.X, pin.channels.Y, pin.channels.Z, 'RGB' );    
   unwind_protect_cleanup
     pfsclose( pin );
     fclose( fid );

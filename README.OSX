@@ -5,14 +5,7 @@ To compile pfstools from sources on OSX, you need:
    Fink - http://www.finkproject.org/
    MacPorts - https://www.macports.org/
 
-It is recommended to use cmake to compile pfstools on OSX. Refer to
-REAME file for the instruction on how to compile with cmake.
-
-pfstools requires a number of libraries to compile. The most important are:
-OpenEXR
-qt4
-imagemagick (with C++ library)
-
+Refer to REAME file for the instruction on how to compile with cmake.
 
 ===== Image Magick =====
 

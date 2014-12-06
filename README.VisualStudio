@@ -1,6 +1,6 @@
 pfstools can be compiled with Visual Studio using CMake build system. This file contains some troubleshooting hints.
 
-Refer to README.CMake for details on building pfstools using CMake.
+Refer to README for details on building pfstools using CMake.
 
 The compilation was tested with Visual Studio Express 2013.
 

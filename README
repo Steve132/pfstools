@@ -1,36 +1,30 @@
-pfstools 1.9.0 - Release Notes
+pfstools 2.0.0 - Release Notes
 
-This release brings two major changes: The way the Radiance RGBE files
-are handled has been altered to be compatible with most of the
-software; and this is the first release with CMake build
-system. Although automake files are still supported, that support will
-be dropped in future releases. Other changes include two new tools:
-pfsretime and pfscolortransform, performance improvements and bug
-fixes.
+This version contains two major changes as compared with 1.9.x: pfstools now includes all "tools" from pfstmo and pfscalibration in one package; and the build system has been changed from automake to cmake. The former change should make it easier and faster to build the entire set of tools. The latter change should make it easier to compile pfstools on different platforms. 
 
-Change log:
-	* added: CMake build system (to replace automake in future releases)
-	* changed: pfsinrgbe & pfsoutrgbe do not correct for Radiance WHITE_EFFICACY by default. Note that this makes absolute values stored in .hdr files using earlier pfstools version smaller then they should be. Check manual pages for pfsinrgbe.
-	* added: pfsretime - simple frame duplication
-	* added: pfscolortransform - color calibration
-	* updated: pfsglview contains many improvement and multithreading (thanks to Oliver Barth)
-	* updated: pfsview is multithreaded if openmp present
-	* fixed: pfsindcraw uses sRGB rather than the native RGB color space. This should improve colors in HDR images merged from RAW.
-	* fixed: bugs in pfsintiff
-	* fixed: Building OSX app bundle for pfsview disabled by default (use --enable-osxapp to enable again)
+This version adds also a new tone-mapping operator (mai11) and a number of bug fixes and minor improvements. Refer to the change log below. 
+
+pfstools 2.0.0 <06.12.2014>
+	* added: Starting from pfstools 2.0.0, pfstmo and pfscalibration are included in the pfstools source package
+	* changed: support for automake dropped in favour of cmake
+	* fixed: pfsinpfm and pfsoutpfm now handle both big and little endian files correctly
+	* fixed: pfsinpfm and pfsoutpfm do not flip images (top-bottom)
+	* added: new tone-mapping operator: pfstmo_mai11
+	* changed: Thoroughly updated README files
 
 
 pfstools - README 
 -------------------------------------------------------------------     
 
-For Mac OSX installation - see README.OSX
+For issues related to Mac OSX installation - see README.OSX
 
-For Windows installation - see README.Cygwin
+For issues related to Windows installation - see README.Cygwin
 
 For specific notes on Matlab installation - see README.matlab
 
+For compilation with Visual Studio (experimental) - see README.VisualStudio
 
-pfstools is a set of command line (and one GUI) programs for reading,
+pfstools is a set of command line (and two GUI) programs for reading,
 writing, manipulating and viewing high-dynamic range (HDR) images and
 video frames. All programs in the package exchange data using unix
 pipes and a simple generic HDR image format (pfs). The concept of the
@@ -38,12 +32,11 @@ pfstools is similar to netpbm package for low-dynamic range images.
 
 pfstools offers also a good integration with GNU Octave and
 matlab. pfstools can serve as a matlab or Octave toolbox for reading
-and writing HDR images or simply to effectively store large matrices.
+and writing HDR images.
 
-pfs in not just another format for storing HDR images (and there are
-already quite a few of them). It is more an attempt to integrate the
-existing HDR image formats by providing a simple data format that can
-be used to exchange data between applications.
+pfs in not just another format for storing HDR images. It is more an attempt to 
+integrate the existing HDR image formats by providing a simple data format that can 
+be used to exchange data between applications. 
 
 If you use the software for your research work, please consider citing
 the paper:
@@ -70,20 +63,11 @@ In: Proc. of Human Vision and Electronic Imaging XII. 649212.
 The paper is an introduction to both pfstools and HDR imaging in
 general. It can be downloaded from:
 
-http://www.mpi-inf.mpg.de/resources/pfstools/papers/mantiuk07hdr_pipeline.pdf
-
+http://pfstools.sourceforge.net/papers/mantiuk07hdr_pipeline.pdf
         
 1. Compilation
 -------------------------------------------------------------------
-
-Startimg from versiomn 1.9.0, pfstools can be compiled using
-cmake. This is recommended methods of compilation. Version 1.9.0 still
-supports automake, but this support will be dropped in future
-releases.
-
-1.1 To build using cmake:
-
-Is is strongly recommended to compile into out-of-source directory:
+Is is strongly recommended to compile into an out-of-source directory:
 
 cd <pfstools_dir>
 mkdir build
@@ -91,7 +75,7 @@ cd build
 cmake ../
 make 
 
-If the compilation fails because of a missing library, you can disable the offending component by setting WWITH_<component_name> to false. For example:
+If the compilation fails because of a missing library, you can disable the offending component by setting WITH_<component_name> to false. For example:
 
 cmake -DWITH_MATLAB=false ../
 
@@ -109,105 +93,95 @@ and report the problem with the complete error message to the google discussion 
 
 https://groups.google.com/forum/#!forum/pfstools
 
-
-1.2 To build using automake (pre-packaged .tar archive):
-
-> ./configure <options>
-
-for example following command will configure PFS tools to be installed
-in user's 'local/' directory:
-
-> ./configure --prefix=$HOME/local --with-octave-dir=$HOME/local/lib
-
-then compile
-
-> make
-
-and install
-
-> make install
-
-NOTE: When you specify a different compiler using for example
-CXX=g++-3.2, libtool may incorrectly interpret compiler and use gcc
-instead of g++ to link the pfs library. This results in reallocation
-error in programs that link dynamically to that library. 
-
-NOTE: Automake 1.6 or later is required!
-        
-1.3 To build from CVS (automake):
-
-> ./reconf
-
-or
-
-> libtoolize
-> aclocal
-> autoheader
-> automake --add-missing
-> autoconf
-
-then proceed as for the 'tar' archive distribution. You may
-need to experiment with different versions of automake, aclocal and
-autoconf (automake-1.9, aclocal-1.9 and automake2.50 work on Debian).
-
 2. Directory Layout
 -------------------------------------------------------------------
 
 doc - documentation
 src - all sources go there
-  pfs          - pfs library
+  pfs          - pfs library (used by all tools)
   fileformat   - readers and writters for various file formats
+  filter       - a range of "filters" from resize to changing color space
   octave       - GNU Octave scripts and libraries
   matlab       - matlab mex sources and functions
   pfsview      - qt application for viewing hdr images and other data
                  that can be stored in the pfs stream
   pfsglview    - similar as pfsview, but uses OpenGL & GLUT instead of Qt
-  visualc      - (CVS only) preliminary project files for compiling under
-                 MS Visual C++ (only a few commands)
+  tmo          - contains tone-mapping operators (formerly pfstmo package)
+  camera       - contains HDR merging and camera calibration tools
+                 (formerly pfscalibration)
+  hdrhtml      - makes HTML5 web-pages with viewable HDR images
+  getopt       - used on Windows to compile using Visual Studio
 
 
 3. Dependencies
 -------------------------------------------------------------------
 
-Some of the pfs tools require external libraries to be built. As
-reusing as much of existing code as possible is quite reasonable, it
-also causes quite a lot of problems when linking with several
-libraries that come in different versions. To alleviate some of such
-linking problems, the configure script of the pfs tools disables
-compilation of those applications for which the external libraries can
-not be found. Consequently, some of the pfs applications may not be
-installed after 'make install', even though the compilation was
-successful.
+pfstools relies on a large number of libraries and other dependencies. However, the build script was designed to succeed even if some dependencies are missing. In that case, the tools that rely on those dependencies will not be compiled. If building with a certain dependency causes problems, it is possible to manually switch off that component by passing -DWITH_??=false to cmake.
 
-A list of external libraries and applications that depend on them:
+Note that the development packages must be installed for all dependencies. They usually have '-dev' suffix. 
 
-libtiff  - pfsintiff, pfsouttiff
-libpbm   - pfsinppm, pfsoutppm
-        http://netpbm.sourceforge.net/
-ImageMagick++ - pfsinimgmagick, pfsoutimgmagick
-        http://www.imagemagick.org/script/index.php
-jpeghdr - pfsinjpeghdr, pfsoutjpeghdr
-        jpeghdr library can be found on the DVD included with the book
-        "High Dynamic Range Imaging: Acquisition, Display, and
-        Image-Based Lighting" by Erik Reinhard, Greg Ward, Sumanta
-        Pattanaik and Paul Debevec. (The Morgan Kaufmann Series in
-        Computer Graphics)       
-openexr libraries - pfsinexr, pfsoutexr
-        http://www.openexr.com/
-        
-octave, octave-forge - pfsstat, pfsoctavergb, pfsoctavelum
-        Note: testing or stable release is required.  Currently pfstools
-        do not compile with development Octave releases.
+Below is the list of all dependencies requires for pfstools. They are more or less given on an order of importance.
 
-mkoctfile (for building Octave's modules) - pfsread.oct,
-           pfswrite.oct, pfstransform_colorspace.oct, and others
-libqt4-gui    - pfsview
-        http://www.trolltech.com/
-dcraw - pfsindcraw
-        http://www.cybercom.net/~dcoffin/dcraw/
-opengl - pfsglview
-matlab, mex - matlab scripts and mex sources
+OpenEXR 
+	CMake switch: WITH_OpenEXR
+	Tools: pfsinexr, pfsoutexr	
+	
+ImageMagick
+	CMake switch: WITH_ImageMagick
+	Tools: pfsinimgmagick, pfsoutimgmagick
+	Used to read/write most LDR files. Required for 16-bit file support. "pfsin"/"pfsout" will use NetPBM if ImageMagick is not available
+	
+NetPBM
+	CMake switch: WITH_NetPBM
+	Tools: pfsinppm, pfsoutppm, (pfsindcraw)
+	Alternative method of reading/writing LDR images. Note that this package is also required for pfsindcraw as ImageMagick cannot handle files read from unix pipes.
 
+TIFF	
+	CMake switch: WITH_TIFF
+	Tools: pfsintiff, pfsouttiff
+	TIFF images can also be read with pfsinimgmagick. This is a custom reader/writer, which supports LogLuv TIFF HDR image format.
+
+QT 4
+	CMake switch: WITH_QT
+	Tools: pfsview
+	"pfsview" is a primary HDR image viewer.
+	If Qt library is not found, you need to specify the path to qmake exacutable
+
+		cmake -D "QT_QMAKE_EXECUTABLE=/usr/bin/qmake" ../	
+
+OpenGL, GLUT (or FreeGLUT)
+	CMake switch: WITH_pfsglview
+	Tools: pfsglview
+	pfsglview is a "backup" or alternative viewer. It is missing some features of pfsview, but offers faster zooming.
+
+Matlab (mex)
+	CMake switch: WITH_MATLAB
+	Tools: all matlab scripts in src/matlab
+	Note that you need to set matlab path to <install_dir>/share/pfstools/matlab
+
+Octave	
+	CMake switch: WITH_Octave
+	Tools: All Octave scripts in src/octave
+	This part of pfstools is not very well maintained and there is a number of known issues.
+	
+FFTW
+	CMake switch: WITH_FFTW
+	Tools: acceleration in pfstmo_durand02 (the TMO will be *very* slow otherwise)
+
+GSL
+	CMake switch: WITH_GSL
+	Tools: pfstmo_mantiuk08
+	The GSL math library is required for this TMO.
+
+OpenCV	
+	CMake switch: WITH_OpenCV
+	Tools: pfsalign	
+	Note that pfsalign requires SURF features, which are available on "nonfree" part of the library. Since part of the library is currently not included in most Linux distributions, so you will need to compile OpenCV from sources.
+
+dcraw
+	CMake switch: none
+	Tools: pfsindcraw
+	Download code from: http://www.cybercom.net/~dcoffin/dcraw/
 
 3. Documentation
 -------------------------------------------------------------------

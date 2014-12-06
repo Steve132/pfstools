@@ -228,9 +228,9 @@ endif( WITH_pfsglview )
 
 # ========= FFTW  ===========
 
-OPTION(WITH_fftw "Use fftw to speed up some operations" ON)
+OPTION(WITH_FFTW "Use fftw to speed up some operations" ON)
 
-if( WITH_fftw )
+if( WITH_FFTW )
 
   find_package (FFTW)
 
@@ -241,9 +241,9 @@ if( WITH_fftw )
     set( HAVE_FFTW3F 1 )
   endif( NOT FFTW_FOUND )
 
-else( WITH_fftw )
+else( WITH_FFTW )
   set( HAVE_FFTW3F 0 )
-endif( WITH_fftw )
+endif( WITH_FFTW )
 
 
 # ========= GSL  ===========
@@ -267,7 +267,7 @@ OPTION(WITH_HDRVC "Compile HDRVC (internal release only)" OFF)
 
 # ======== MKOCTFILE/OCTAVE ===========
 
-#OPTION(WITH_OCTAVE "Compile Octave files" ON)
+OPTION(WITH_OCTAVE "Compile Octave files" ON)
 SET (OCTAVE_DEST_DIR "${CMAKE_INSTALL_PREFIX}/share/pfstools/octave"
 CACHE PATH  "Copy octave functions to this directory")
 
@@ -293,6 +293,8 @@ if( WITH_OpenCV )
 
   if( NOT OpenCV_FOUND )
     message( "OpenCV library not found. 'pfsalign' will not be compiled" )
+  else( NOT OpenCV_FOUND )
+    message(STATUS "OpenCV library found.")  
   endif( NOT OpenCV_FOUND )
 
 endif( WITH_OpenCV )

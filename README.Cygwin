@@ -5,78 +5,10 @@ The compilation with cygwin was tested on 4 Oct 2014 using
 cmake. Refer to the README file for the instruction how to compile
 with cmake.
 
-You may need to install x window client, such as http://sourceforge.net/projects/xming/ to use pfsview or pfsglview. 
+You may need to install x window client to use pfsview or pfsglview. 
 
-
-To compile pfstools under cygwin you need at least the
-following packages:
-
-gcc-core (***)
-gcc-g++ (***)
-gcc-gcc (***)
-libbz2
-make
-pkgconfig (****)
-
-Other packages that are needed to enable certain functionality:
-
-doxygen
-libMagick-devel
-jpeg
-libnetpbm-devel
-libnetpbm10
-libpng12
-libpng12-devel
-libtiff-devel
-libxml2-devel
-readline
-octave
-octave-headers
-tetex
-tetex-base
-tetex-bin
-qt3 (**)
-qt3-bin (**)
-qt3-devel (**)
-OpenGL (*5)
+Check README file for the complete list of dependencies. 
 
 OpenEXR library must be build from sources since no cygwin development package is
 available. Sources can be downloaded from http://www.openexr.com/. It is recommended to use cmake to compile OpenEXR.
-
-(**) qt3 is needed to build pfsview. Since qt3 for cygwin is not
-always working as it should, compilation of pfsview under windows is
-sometimes problematic. pfsview compiles with the recent version of qt3
-(tested on 01.03.2007). If fonts are displayed improperly, make sure that
-both a font sever and font packages are installed.  QT support is
-detected by pkg-config.
-
-If some libraries are missing on linking, make sure that the following
-packages are installed:
-
-XFree86-lib-compat
-xorg-x11-devel
-minires-devel
-
-You need an X server client, such as XThinPro, XConnectPro or X-Win32,
-to run qt applications under cygwin.
-
-(****) When pkg-config tests fail, even though everything is
-installed, try setting PKG_CONFIG environment variable to the path
-where pkg-config is located:
-
-export PKG_CONFIG=/usr/bin/pkg-config.
-
-From our experience, cygwin development packages (-dev) get often
-broken and some dependencies are missing. If this is your case and you
-do no need the functionality that causes the problem, try disabling it
-with --disable-feature option (automake) or -DWITH_feature=false (cmake). If you need certain functionality that
-fails to compile, look for problem at the cygwin mailing list
-archives.
-
-(*5) OpenGL is needed to build pfsglview. Please assure that w32api
-package is installed and that opengl32.dll and glut32.dll are present
-in Windows directory (if not, OpenGL and GLUT should be installed
-under MS Windows (not only in Cygwin)).
-
-To configure and compile, follow the procedure from the README file.
 

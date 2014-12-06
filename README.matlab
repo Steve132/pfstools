@@ -16,22 +16,20 @@ to diagnose for common problems.
 
 Follow the instructions below to install matlab interface to pfstools.
 
-Linux installation
-===================
+Linux, OSX and cygwin 
+=====================
+cmake will search for matlab's mex scripts in typical locations. If it cannot be found, you need to pass the matlab directory to cmake:
+	cmake -DMATLAB_ROOT=<path> ../
 
-* Run './configure' then 'make install' as for ordinary installation
 
-'configure' script may fail to detect matlab support. The most common
-problem is missing or wrong matlab "mex" compiler in the PATH. On some
-Linux distributions matlab "mex" command can be replaced with octave
-mex command . In such case, you have to explicitly specify mex path by
-passing --with-mex=<path-to-matlab-mex> to the 'configure' script.
-
-* Add directory INSTALLDIR/share/pfstools/pfstools_matlab to matlab path
+Add directory INSTALLDIR/share/pfstools/pfstools_matlab to matlab path
   (File->Set Path).
+  
+  
+Windows installation 
+====================
 
-Windows installation
-===================
+Note that matlab support on Windows has not been tested in 2.0.0. The notes below refer to 1.9.x version. 
 
 Under Windows you have to invoke NMAKE file manually. From ordinary DOS
 shell (not cygwin), cd to src/matlab, then execute:
@@ -58,8 +56,6 @@ pfs_shell function, which extends command line so that pfs* commands
 are executed from bash (assuming that bash sets all necessary
 environmental variables in .bashrc). If bash is not your default
 shell, you may need to change this.
-
-Good luck.
 
 
 If no good-luck, then below is a loosely written trouble shooting:
