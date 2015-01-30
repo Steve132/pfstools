@@ -1,0 +1,43 @@
+.TH "pfstmo_ferradans11" 1
+.SH NAME
+pfstmo_ferradans11 \- Tone mapping operator with visual adaptation and local contrast enhancement
+.SH SYNOPSIS
+.B pfstmo_ferradans11
+[--rho-r <val>] [--inv_alpha-a <val>] [--help]
+.SH DESCRIPTION
+This command implements a tone mapping operator as described in:
+.PD 0
+.IP
+S. Ferradans, M. Bertalmio, E. Provenzi and V. Caselles
+.IP
+An analysis of visual adaptation and contrast perception for tone mapping.
+.IP
+In: Trans. on Pattern Analysis and Machine Intelligence, 2011.
+.PD
+.PP
+Note that this operator does NOT require gamma correction. See the example below.
+.PP
+.SH OPTIONS
+.TP
+\fB--rho-r\fR <val>, \fB-r\fR <val>
+Controls over all lightness(related to the adaptation level), the greater the value the brighter the final image. Default value: -4
+.TP
+\fB--inv_alpha-a\fR <val>, \fB-a\fR<val>
+Controls the level of detail, the higher the value the bigger the level of detail enhancement. Default value: 0.1
+\fB--verbose\fR
+Print additional information during program execution.
+.TP
+\fB--help\fR, \fB-h\fR
+Print list of commandline options.
+.SH EXAMPLES
+.TP
+pfsin Tree.pfm | pfstmo_ferradans11  --rho -3 --inv_alpha 10 | pfsout tree.png
+Tone map image and save it in png format.
+.SH "SEE ALSO"
+.BR pfsgamma (1)
+.BR pfsin (1)
+.BR pfsout (1)
+.BR pfsview (1)
+.SH BUGS
+Please report bugs and comments to the pfstools discussion group
+(http://groups.google.com/group/pfstools).

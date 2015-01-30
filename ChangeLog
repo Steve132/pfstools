@@ -1,3 +1,6 @@
+pfstools 2.0.1 <??>
+	* added: new tone-mapping operator "pfstmo_ferradans11" (thanks to Sira)
+
 pfstools 2.0.0 <06.12.2014>
 	* added: Starting from pfstools 2.0.0, pfstmo and pfscalibration are included in the pfstools source package
 	* changed: support for automake dropped in favour of cmake

@@ -7,6 +7,10 @@ add_subdirectory (fattal02)
 add_subdirectory (durand02)
 add_subdirectory (mai11)
 
+if( FFTW_FOUND )
+	add_subdirectory (ferradans11)
+endif( FFTW_FOUND )
+
 if( GSL_FOUND )
 	add_subdirectory (mantiuk08)
 endif( GSL_FOUND )
