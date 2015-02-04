@@ -181,6 +181,16 @@ float Imagen::maxval()
   return m;
 }
 
+float Imagen::maxabsval()
+{
+    float m=-1e20;
+    int largo=dim[0]*dim[1];
+    for(int i=0; i<largo; i++)
+        m=max(m,fabs(datos[i]));
+    
+    return m;
+}
+
 
 float Imagen::medval()
 {

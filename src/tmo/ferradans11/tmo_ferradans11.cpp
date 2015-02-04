@@ -43,6 +43,11 @@
 #include "pfstmo.h"
 #include <pfs.h>
 
+#include <cstring>
+#include <iostream>
+
+#include <stdlib.h>
+
 using namespace std;
 
 
@@ -71,7 +76,26 @@ static void dumpPFS( const char *fileName, const pfstmo::Array2D *data, const ch
 }
 #endif
 
+
 //--------------------------------------------------------------------
+
+
+/*Implementation, hardcoded of the R function */
+float apply_arctg_slope10(float Ip,float I,float I2,float I3,float I4,float I5,float I6,float I7)
+{
+    //Arctan, slope 10
+    float  gr1,gr2,gr3,gr4,gr5,gr6,gr7;
+    gr1=Ip-I;
+    gr2=Ip*Ip-2*Ip*I+I2;
+    gr3=Ip*Ip*Ip-3*Ip*Ip*I+3*Ip*I2-I3;
+    gr4=Ip*Ip*Ip*Ip+4*Ip*Ip*I2+I4-4*Ip*I3+2*Ip*Ip*(I2-2*Ip*I);
+    gr5=Ip*gr4-Ip*Ip*Ip*Ip*I-4*Ip*Ip*I3-I5+4*Ip*I4-2*Ip*Ip*(I3-2*Ip*I2);
+    gr6=Ip*Ip*gr4-Ip*Ip*Ip*Ip*Ip*I-4*Ip*Ip*Ip*I3-Ip*I5+4*Ip*Ip*I4-2*Ip*Ip*Ip*(I3-2*Ip*I2)-(I*Ip*gr4-Ip*Ip*Ip*Ip*I2-4*Ip*Ip*I4-I6+4*Ip*I5-2*Ip*Ip*(I4-2*Ip*I3)    );
+    gr7=Ip*Ip*(Ip*(  Ip*Ip*Ip*Ip+4*Ip*Ip*I2+I4-4*Ip*I3+2*Ip*Ip*(I2-2*Ip*I)     )-Ip*Ip*Ip*Ip*I-4*Ip*Ip*I3-I5+4*Ip*I4-2*Ip*Ip*(I3-2*Ip*I2))-2*Ip*(Ip*(Ip*Ip*Ip*Ip*I+4*Ip*Ip*I3+I5-4*Ip*I4+2*Ip*Ip*(I3-2*Ip*I2)) -Ip*Ip*Ip*Ip*I2-4*Ip*Ip*I4-I6+4*Ip*I5-2*Ip*Ip*(I4-2*Ip*I3))+Ip*(Ip*Ip*Ip*Ip*I2+4*Ip*Ip*I4+I6-4*Ip*I5+2*Ip*Ip*(I4-2*Ip*I3)) -Ip*Ip*Ip*Ip*I3-4*Ip*Ip*I5-I7+4*Ip*I6-2*Ip*Ip*(I5-2*Ip*I4);
+    
+    // Hardcoded coefficients of the polynomial of degree 9 that allows to approximate the neighborhood averaging as a sum of convolutions
+    return(( -7.7456e+00)*gr7+ (3.1255e-16)*gr6+(1.5836e+01)*gr5+(-1.8371e-15)*gr4+(-1.1013e+01)*gr3+(4.4531e-16)*gr2+(3.7891e+00)*gr1+ 1.2391e-15 ) ;
+}
 
 
 
@@ -150,8 +174,10 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
     Imagen RGBorig[3],*pIm;
     
     pIm = new Imagen(fil,col);
-    for (int c =0;c<3;c++)
+    for (int c =0;c<3;c++){
         RGBorig[c] = *pIm;
+        
+    }
     
     for(int i=0;i<length;i++){
         RGBorig[0].datos[i] = (double)imR[i];
@@ -179,9 +205,9 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
     Imagen aux;
     float median,mu[3];
     
-    int cInit=clock();  //empieza a contar el tiempo para la parte 1
+    int cInit=clock();  //start counting time for first step 
     
-    // PASAMOS DE RGB ORIGINAL AL ESPACIO LMS DE LOS CONOS
+    fprintf(stderr,"inv_alpha=%f, rho=%f\n",invalpha,rho);
     
     for(int k=0;k<3;k++)
     {
@@ -193,16 +219,14 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
         RGB[k]=RGBorig[k] ;
     }
     
-    // LA CONSTANTE DE SEMISATURACIÓN SIGMA DEPENDE DE LA ILUMINACIÓN
-    // DEL BACKGROUND. DATOS DE LA TABLA1 DE VALETON+VAN NORREN.
-    // TOMAMOS COMO REFERENCIA EL CANAL CON ILUMINACIÓN MÁXIMA.
-    // SI NO HACEMOS ESTE PASO (SI SIMPLEMENTE IGUALAMOS SIGMA
-    // A MU ORIGINAL, O MU+RHO) LOS COLORES NO QUEDAN BIEN
+    // SEMISATURATION CONSTANT SIGMA DEPENDS ON THE ILUMINATION
+    // OF THE BACKGROUND. DATA IN TABLA1 FROM VALETON+VAN NORREN.
+    // TAKE AS REFERENCE THE CHANNEL WITH MAXIMUM ILUMINATION.
     float muMax=max(max(mu[0],mu[1]),mu[2]);
     for(int k=0;k<3;k++)
     {
-        //DESPLAZAMOS log(mu) POR IGUAL PARA LOS 3 CANALES: rho ES EL UNICO
-        //PARAMETRO DE NUESTRO ALGORITMO
+        //MOVE log(mu) EQUALLY FOR THE 3 COLOR CHANNELS: rho DOES NOT CHANGE
+        //PARAMETER OF OUR ALGORITHM
         float x=log10(muMax)-log10(mu[k]);
         
         float z= - 0.37*(log10(mu[k])+4-rho) + 1.9;
@@ -211,13 +235,13 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
     
     
     // VALETON + VAN NORREN:
-    // RANGO = 4 ÓRDENES; r ES LA MITAD DEL RANGO
-    // n=0.74 : EXPONENTE EN FÓRMULA DE NAKA-RUSHTON
+    // range = 4 orders; r is half the range
+    // n=0.74 : EXPONENT in NAKA-RUSHTON formula 
     float r=2;
     float n=0.74;
     for(int k=0;k<3;k++)
     {
-        //ENCONTRAMOS CONSTANTES DE WEBER-FECHNER A PARTIR DE NAKA-RUSHTON
+        //find ctes. for WEBER-FECHNER from NAKA-RUSHTON
         float logs=log10(mu[k]);
         float I0=mu[k]/pow(10,1.2);
         float sigma_n=pow(mu[k],n);
@@ -228,14 +252,14 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
             K_= 100.0/8.7;
         float Ir=pow(10,logs+r);
         float mKlogc=pow(Ir,n)/(pow(Ir,n)+pow(mu[k],n))-K_*log10(Ir+I0);
-        
-        //MEZCLAMOS W-F Y N-R
+    
+        //mix W-F and N-R
         for(int d=0;d<length;d++)
       	{
             float x=log10(RGBorig[k].datos[d]);
             float In= pow(RGBorig[k].datos[d],n);
             float srn=pow(pow(10,logs+r),n);
-            // ANTES DE logs+r APLICAMOS W-F, DESPUÉS N-R
+            // before logs+r apply W-F, after N-R
             if(x<=logs+r)
                 RGB[k].datos[d]=K_*log10( RGBorig[k].datos[d] + I0)+mKlogc;
             else
@@ -326,12 +350,11 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
     for(int i=0;i<length;i++)
         suma+=g.datos[i];
     
-    g*=(1.0/suma); //ahora la integral del nucleo vale 1
+    g*=(1.0/suma); //now integral of the weight sums 1
     
     fftwf_complex* G = (fftwf_complex*) fftw_malloc(sizeof(fftwf_complex) * length);
     fftwf_plan pG = fftwf_plan_dft_r2c_2d(fil, col, g.datos, G,FFTW_ESTIMATE);
     fftwf_execute(pG);
-    
     
     while(difference>threshold_diff)
     {
@@ -385,35 +408,28 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
             
             for(int i=0;i<length;i++)
             {
-                float Ip=u0.datos[i];
-                float I =iu.datos[i];
-                float I2=iu2.datos[i];
-                float I3=iu3.datos[i];
-                float I4=iu4.datos[i];
-                float I5=iu5.datos[i];
-                float I6=iu6.datos[i];
-                float I7=iu7.datos[i];
-                float gr1=Ip-I;
-                float gr2=Ip*Ip-2*Ip*I+I2;
-                float gr3=Ip*Ip*Ip-3*Ip*Ip*I+3*Ip*I2-I3;
-                float gr4=Ip*Ip*Ip*Ip+4*Ip*Ip*I2+I4-4*Ip*I3+2*Ip*Ip*(I2-2*Ip*I);
-                float gr5=Ip*gr4-Ip*Ip*Ip*Ip*I-4*Ip*Ip*I3-I5+4*Ip*I4-2*Ip*Ip*(I3-2*Ip*I2);
-                float gr6=Ip*Ip*gr4-Ip*Ip*Ip*Ip*Ip*I-4*Ip*Ip*Ip*I3-Ip*I5+4*Ip*Ip*I4-2*Ip*Ip*Ip*(I3-2*Ip*I2)-(I*Ip*gr4-Ip*Ip*Ip*Ip*I2-4*Ip*Ip*I4-I6+4*Ip*I5-2*Ip*Ip*(I4-2*Ip*I3)    );
-                float gr7=Ip*Ip*(Ip*(  Ip*Ip*Ip*Ip+4*Ip*Ip*I2+I4-4*Ip*I3+2*Ip*Ip*(I2-2*Ip*I)     )-Ip*Ip*Ip*Ip*I-4*Ip*Ip*I3-I5+4*Ip*I4-2*Ip*Ip*(I3-2*Ip*I2))-2*Ip*(Ip*(Ip*Ip*Ip*Ip*I+4*Ip*Ip*I3+I5-4*Ip*I4+2*Ip*Ip*(I3-2*Ip*I2)) -Ip*Ip*Ip*Ip*I2-4*Ip*Ip*I4-I6+4*Ip*I5-2*Ip*Ip*(I4-2*Ip*I3))+Ip*(Ip*Ip*Ip*Ip*I2+4*Ip*Ip*I4+I6-4*Ip*I5+2*Ip*Ip*(I4-2*Ip*I3)) -Ip*Ip*Ip*Ip*I3-4*Ip*Ip*I5-I7+4*Ip*I6-2*Ip*Ip*(I5-2*Ip*I4);
+                // compute contrast component
+                 u0.datos[i]=apply_arctg_slope10(u0.datos[i],iu.datos[i],iu2.datos[i],iu3.datos[i],iu4.datos[i],iu5.datos[i],iu6.datos[i],iu7.datos[i]);
                 
-                u0.datos[i]=( -7.7456e+00)*gr7+ (3.1255e-16)*gr6+(1.5836e+01)*gr5+(-1.8371e-15)*gr4+(-1.1013e+01)*gr3+(4.4531e-16)*gr2+(3.7891e+00)*gr1+ 1.2391e-15 ;//Arctan, slope 10
-                
-                //dt*(lambda*I_0)+I_t*(1-dt*(lambda+1))
-                u0.datos[i] = dt*( RGBorig[color].datos[i]*lambda + 0.5*u0.datos[i]+med[color]);
-                
-                RGB[color].datos[i] = (1-dt*(lambda+1))*RGB[color].datos[i]+u0.datos[i];
-                
+                //project onto the interval [-1,1]
+                 u0.datos[i] = max( min( u0.datos[i],1) , -1 );
             }
-            RGB[color].recorta(1,0);
+            
+            // normalizing R term to estandarize results
+            u0 *= (1.0/u0.maxabsval());
+            
+            double norm = (1.0 + dt*(1.0+255.0/253.0));// assuming alpha=255/253,beta=1 
+            for(int i=0;i<length;i++)
+            {
+                RGB[color].datos[i] = (RGB[color].datos[i] + dt*(RGBorig[color].datos[i] + 0.5*u0.datos[i]+255.0/253.0 *med[color])) / norm;
+                //project onto the interval [0,1]
+                RGB[color].datos[i] = max( min( RGB[color].datos[i],1) , 0 );
+            }
             
             difference+=RGB0.MSE(RGB[color],1.0);
             
-          //  fprintf(stderr,"diff=%f, it=%d, range:(%f,%f)\n",difference,iteration, RGB[color].minval(),RGB[color].maxval());
+            //for debugging purposes only:
+            //fprintf(stderr,"diff=%f, it=%d, range:(%f,%f)\n",difference,iteration, RGB[color].minval(),RGB[color].maxval());
         }
         c1=clock();
     }
@@ -434,7 +450,6 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
     delete[] U7G;
     
     fprintf(stderr,"\nComplete execution done in: %f secs\n", (float)(c1 - cInit)/(float)CLOCKS_PER_SEC);
-    
     
     for(int c=0;c<3;c++)
         RGB[c].escala(1,0);

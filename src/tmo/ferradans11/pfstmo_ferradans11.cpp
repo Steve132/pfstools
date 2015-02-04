@@ -50,8 +50,8 @@ class QuietException
 void printHelp()
 {
   fprintf( stderr, PROG_NAME " (" PACKAGE_STRING ") : \n"
-    "\t[--rho <val>] related to overall intensity of the final output. Its range is approx (-10,10) although it might depend on the image. \n"
-    "\t[--inv_alpha <val>] related to the contrast resolution. The bigger the more local contrast. For a good constrast resolution we suggest the value 0.2\n"
+    "\t[--rho <val>] controls the overall intensity of the final output, the bigger the value the darker the image. Its range is approx (-10,10), recommended 0, although it might depend on the image. \n"
+    "\t[--inv_alpha <val>] related to the contrast resolution. The bigger the more local contrast. For a good constrast resolution we suggest the value 20. Valid values:(0.1,100)\n"
     "See man page for more information.\n" );
 }
 
@@ -60,10 +60,10 @@ void pfstmo_ferradans11( int argc, char* argv[] )
   pfs::DOMIO pfsio;
 
   //--- default tone mapping parameters;
-  float rho = -4;
-  float inv_alpha = 0.1;
+  float rho = 1;
+  float inv_alpha = 5;
     
-
+    
   static struct option cmdLineOptions[] = {
     { "help", no_argument, NULL, 'h' },
     { "rho", required_argument, NULL, 'r' },
@@ -75,11 +75,12 @@ void pfstmo_ferradans11( int argc, char* argv[] )
     
   int optionIndex = 0;
   while( 1 ) {
-   // int c = getopt_long (argc, argv, "hvma:b:g:s:n:d:w:k:", cmdLineOptions, &optionIndex);
       int c = getopt_long (argc, argv, optstring, cmdLineOptions, &optionIndex);
-     
-      if( c == -1 ){ break;}
       
+      
+
+      if( c == -1 ){ break;}
+          
     switch( c ) {
     case 'h':
       printHelp();

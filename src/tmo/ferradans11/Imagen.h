@@ -93,6 +93,7 @@ class Imagen
   void setvalues(int fil, int col, float* val);
     
     float maxval();
+    float maxabsval();
   float minval();
   float medval();
 
