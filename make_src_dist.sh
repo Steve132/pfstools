@@ -3,7 +3,7 @@
 # This script is used to create a clean source distribution (starting from 2.0.0)
 #
 
-REL=2.0.0
+REL=2.0.1
 
 DIR="pfstools-${REL}"
 DEST="${DIR}.tgz"

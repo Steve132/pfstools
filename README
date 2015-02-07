@@ -1,6 +1,10 @@
+pfstools 2.0.1
+
+This is a minor release, which adds a new tone-mapping operator - pfstmo_ferradans11.
+
 pfstools 2.0.0 - Release Notes
 
-This version contains two major changes as compared with 1.9.x: pfstools now includes all "tools" from pfstmo and pfscalibration in one package; and the build system has been changed from automake to cmake. The former change should make it easier and faster to build the entire set of tools. The latter change should make it easier to compile pfstools on different platforms. 
+This version contains two major changes as compared with 1.9.x: 1) pfstools now include all "tools" from pfstmo and pfscalibration in one package so there is no need to install and compile them separately, which should save time; and 2) the build system has been changed from automake to cmake. This should make it easier to compile pfstools on different platforms. 
 
 This version adds also a new tone-mapping operator (mai11) and a number of bug fixes and minor improvements. Refer to the change log below. 
 
