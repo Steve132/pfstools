@@ -7,7 +7,7 @@
 #define PACKAGE_STRING "pfstools ${pfstools_VERSION_MAJOR}.${pfstools_VERSION_MINOR}" 
 
 /* Directory where data files are located. */
-#define PKG_DATADIR "${DESTDIR}"
+#define PKG_DATADIR "${PKG_DATADIR}"
 
 /* Define to 1 if you have the ANSI C header files. */
 //#undef STDC_HEADERS

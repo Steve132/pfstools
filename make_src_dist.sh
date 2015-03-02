@@ -20,6 +20,7 @@ cp -r pfstools ${DIR}
 # Remove unnecessary files
 rm -rf ${DIR}/.git
 rm -r ${DIR}/debian
+rm -r ${DIR}/build
 rm ${DIR}/make_src_dist.sh
 
 # Put into .tgz

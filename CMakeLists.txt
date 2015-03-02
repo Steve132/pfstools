@@ -301,6 +301,7 @@ endif( WITH_OpenCV )
 
 # ======== Config and sub dirs ===========
 
+set(PKG_DATADIR "${CMAKE_INSTALL_PREFIX}/share/pfstools")
 configure_file (
   "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
