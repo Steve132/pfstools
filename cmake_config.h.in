@@ -22,10 +22,18 @@
   #define CYGWIN
 #endif
 
+#if ${HAVE_OpenMP}
+  #define HAVE_OpenMP
+#endif
+
+
 #if ${HAVE_FFTW3F}
   #define HAVE_FFTW3F
 #endif
 
+#if ${HAVE_FFTW3}
+  #define HAVE_FFTW3
+#endif
 
 /* Output stream for debug messages. */
 #ifdef DEBUG

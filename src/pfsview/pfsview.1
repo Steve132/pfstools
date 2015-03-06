@@ -61,6 +61,16 @@ where \fIy\fR is the gray-scale value after mapping, \fIx\fR
 is an input HDR value, \fImin\fR and \fImax\fR are lower and upper bounds
 of the dynamic range window.
 
+.SH REPRODUCING MAPPING WITH PFSGAMMA
+
+To reproduce the displayed image and save it to LDR image using pfs
+commands, you can use the following commands:
+
+pfsin image.hdr | pfsgamma -g 2.2 -m 0.01 | pfsout image.png
+
+where "2.2" is the gamma value from the "Mapping" combo box, and 0.01
+is the exposure value. The exposure is shown as the right-most number
+in the window status bar of pfsview.
 
 .SH OPTIONS
 .TP

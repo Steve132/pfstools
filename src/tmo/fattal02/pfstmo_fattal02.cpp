@@ -81,7 +81,13 @@ void pfstmo_fattal02( int argc, char* argv[] )
   int   opt_detail_level=-1;  // not set (2 for fft solver, 0 otherwise)
   float opt_black_point=0.1f;
   float opt_white_point=0.5f;
+
+  // Use multigrid if FFTW lib not available
+#if !defined(HAVE_FFTW3) || !defined(HAVE_OpenMP)
+  bool  opt_fftsolver=false;
+#else  
   bool  opt_fftsolver=true;
+#endif
   
   static struct option cmdLineOptions[] = {
     { "help", no_argument, NULL, 'h' },

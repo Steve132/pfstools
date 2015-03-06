@@ -33,10 +33,6 @@
 // atimes(). This means the assembly of the right hand side F is different
 // for both solvers.
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <iostream>
 
 #include <stdio.h>
@@ -47,6 +43,8 @@
 #include <fftw3.h>
 
 #include <array2d.h>
+
+#include <config.h>
 
 #include "pde.h"
 

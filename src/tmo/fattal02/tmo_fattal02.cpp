@@ -47,7 +47,7 @@
 using namespace std;
 
 
-#ifndef HAVE_FFTW3
+#if !defined(HAVE_FFTW3) || !defined(HAVE_OpenMP)
 
 // Dummy function, compiled when FFTW3 not available
 void solve_pde_fft(pfstmo::Array2D *F, pfstmo::Array2D *U, bool adjust_bound)

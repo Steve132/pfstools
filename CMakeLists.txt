@@ -6,7 +6,7 @@ set(CPACK_SOURCE_GENERATOR TGZ)
 # CPack version numbers for release tarball name.
 set(CPACK_PACKAGE_VERSION_MAJOR 2)
 set(CPACK_PACKAGE_VERSION_MINOR 0)
-set(CPACK_PACKAGE_VERSION_PATCH 0)
+set(CPACK_PACKAGE_VERSION_PATCH 2)
 set(CPACK_SOURCE_IGNORE_FILES
 "~$"
 "\\\\.cvsignore$"
@@ -37,6 +37,12 @@ include( CheckCXXSourceCompiles )
 # ======== Check for OpenMP =======
 
 find_package(OpenMP)
+if( OPENMP_FOUND )
+  set( HAVE_OpenMP 1 )
+else( OPENMP_FOUND )
+  set( HAVE_OpenMP 0 )
+endif( OPENMP_FOUND )
+  
 
 # ======== Has branch prediction =======
 
@@ -237,12 +243,15 @@ if( WITH_FFTW )
   if( NOT FFTW_FOUND )
     MESSAGE( STATUS "FFTW library not found. Acceleration for pfstmo_durand02 disabled. " )
     set( HAVE_FFTW3F 0 )
+    set( HAVE_FFTW3 0 )
   else( NOT FFTW_FOUND )
     set( HAVE_FFTW3F 1 )
+    set( HAVE_FFTW3 1 )
   endif( NOT FFTW_FOUND )
 
 else( WITH_FFTW )
   set( HAVE_FFTW3F 0 )
+  set( HAVE_FFTW3 0 )
 endif( WITH_FFTW )
 
 
