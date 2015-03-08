@@ -180,9 +180,9 @@ void tmo_ferradans11(int col,int fil,float* imR, float* imG, float* imB,float rh
     }
     
     for(int i=0;i<length;i++){
-        RGBorig[0].datos[i] = (double)imR[i];
-        RGBorig[1].datos[i] = (double)imG[i];
-        RGBorig[2].datos[i] = (double)imB[i];
+        RGBorig[0].datos[i] = (double)max(imR[i],0);
+        RGBorig[1].datos[i] = (double)max(imG[i],0);
+        RGBorig[2].datos[i] = (double)max(imB[i],0);
     }
     
     delete(pIm);

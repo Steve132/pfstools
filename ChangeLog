@@ -1,6 +1,8 @@
-pfstools 2.0.2 <06.03.2015>
+pfstools 2.0.2 <08.03.2015>
 	* fixed: Fixed build and install scripts for hdrhtml
 	* fixed: Fixed building FFT solver for pfstmo_fattal02
+	* updated: Added check for libexif
+	* updated: improvements in pfstmo_ferradans11 to produce brighter results
 	* updated: Updated some manual pages
 
 pfstools 2.0.1 <07.01.2015>

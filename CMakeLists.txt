@@ -308,6 +308,15 @@ if( WITH_OpenCV )
 
 endif( WITH_OpenCV )
 
+# ======== libexif ==========
+
+find_package(EXIF)
+if( NOT EXIF_FOUND )
+    message( "EXIF library (libexif) not found. 'pfsalign' will not be compiled" )
+else( NOT EXIF_FOUND )
+    message(STATUS "libexif library found.")  
+endif( NOT EXIF_FOUND )
+
 # ======== Config and sub dirs ===========
 
 set(PKG_DATADIR "${CMAKE_INSTALL_PREFIX}/share/pfstools")

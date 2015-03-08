@@ -60,7 +60,7 @@ void pfstmo_ferradans11( int argc, char* argv[] )
   pfs::DOMIO pfsio;
 
   //--- default tone mapping parameters;
-  float rho = 1;
+  float rho = -2;
   float inv_alpha = 5;
     
     

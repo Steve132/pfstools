@@ -9,15 +9,17 @@ target_link_libraries(${TRG} pfs)
 install (TARGETS ${TRG} DESTINATION bin)
 install (FILES ${TRG}.1 DESTINATION ${MAN_DIR})
 
-if( OpenCV_FOUND )
+if( OpenCV_FOUND AND EXIF_FOUND )
   
 	set(TRG pfsalign)
 	add_executable(${TRG} ${TRG}.cpp  "${GETOPT_OBJECT}")			  
-	target_link_libraries(${TRG} pfs ${OpenCV_LIBS})
+	target_link_libraries(${TRG} pfs ${OpenCV_LIBS}
+	${EXIF_LIBRARIES})
+	include_directories( ${EXIF_INCLUDE_DIRS} )
 	install (TARGETS ${TRG} DESTINATION bin)
 	install (FILES ${TRG}.1 DESTINATION ${MAN_DIR})
 
-endif( OpenCV_FOUND )
+endif( OpenCV_FOUND AND EXIF_FOUND )
 
 
 # Shell scripts
