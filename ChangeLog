@@ -1,3 +1,6 @@
+pfstools 2.0.3 <?>
+	* fixed: permission issues in the cmake scripts
+
 pfstools 2.0.2 <08.03.2015>
 	* fixed: Fixed build and install scripts for hdrhtml
 	* fixed: Fixed building FFT solver for pfstmo_fattal02
