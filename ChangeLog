@@ -1,5 +1,6 @@
 pfstools 2.0.3 <?>
 	* fixed: permission issues in the cmake scripts
+	* fixed: Out-of-source compilation issues in octave (thanks to Tomas)
 
 pfstools 2.0.2 <08.03.2015>
 	* fixed: Fixed build and install scripts for hdrhtml

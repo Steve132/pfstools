@@ -31,7 +31,10 @@
 #include <config.h>
 #endif
 
-#if defined(_MSC_VER) || defined(__CYGWIN__)
+// This does not seem to be needed under Cygwin
+//#if defined(_MSC_VER) || defined(__CYGWIN__)
+
+#if defined(_MSC_VER)
 #include <io.h>
 #define HAVE_SETMODE
 #endif

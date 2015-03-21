@@ -24,7 +24,7 @@ add_custom_command(
 	OUTPUT ${OCT_NAME}.oct
 	COMMAND ${MKOCTFILE} "${CMAKE_CURRENT_SOURCE_DIR}/${OCT_NAME}.cpp"
 	ARGS -I${HEADERS} -I${CMAKE_CURRENT_SOURCE_DIR}/help_files
-	-L${PROJECT_SOURCE_DIR}/src/pfs -lpfs
+	-L${PROJECT_BINARY_DIR}/src/pfs -lpfs
 	DEPENDS ${OCT_NAME}.cpp
 	COMMENT "Generating ${OCT_NAME}.oct"
 	VERBATIM)
