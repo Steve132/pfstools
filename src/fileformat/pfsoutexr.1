@@ -4,13 +4,12 @@ pfsoutexr \- Write images or frames in OpenEXR format
 .SH SYNOPSIS
 
 .B pfsoutexr
-[--compression <method>] [--keep-xyz] (<file> [--frames <range>])  [<file>...]
+[--compression <method>] [--float32] [--clamp-halfmax] (<file> [--frames <range>])  [<file>...]
 
 .SH DESCRIPTION
 Use this command to write frames in OpenEXR format. Source pfs frames
 should be piped to the Standard Input. This command can write arbitrary
-channels to OpenEXR, color channels XYZ however are specially handled
-(see option \fIkeep-xyz\fR).
+channels to OpenEXR as 32-bit floating point numbers. However, color channels are converted to 16-bit half-float format by default unless \fB--float32\fR option is specified.
 
 All tags from pfs stream are stored in an OpenEXR file as String
 attributes. Tags assigned to channels are stored in the format
@@ -43,29 +42,20 @@ Use one the the available compression methods:
 \fBPXR24\fR - lossy 24-bit float compression
 
 .TP
-.B \--keep-xyz
-By default, color channels XYZ from pfs stream are converted to RGB
-color space and HALF format, which is a standard format for color data
-in OpenEXR. Since Half format is 16-bit and floating points values
-used in pfs stream are 32-bit, this conversion causes loss of
-precision. When \fIkeep-xyz\fR option is specified, color channels XYZ
-are stored as they are without any conversion (32-bit float XYZ
-channels). Note however, that most OpenEXR applications can recognize
-only RGB Half format images and can not handle 32-bit XYZ.
+.B \--float32, -3
+If this option is specified, color channels are stored as 32-bit floating point numbers instead of 16-bit half-floats. In most cases half-float numbers offer sufficient precision so this the default behavior. Note that storing color channels in 32-bit format makes resulting files very large. 
 
 .TP
-.B \--fix-halfmax
+.B \--clamp-halfmax, -p
 The maximum value that can be stored in OpenEXR file is limited to
 65504 if 16-bit HALF float is used (color channels are stored by
-default in this format unless \fB--keep-xyz\fR switch is
+default in this format unless \fB--float32\fR switch is
 specified). If the luminance data is calibrated in absolute values
 (cd/m^2), pixel values can easily exceed 65504. To avoid clamping
-large pixel values, pfsoutexr can rescale data to the range that is
-valid for 16-bit HALF float format when \fB--fix-halfmax\fR switch is
-specified. If this switch is missing, a warning message is
-displayed. Scale factor used for rescaling is stored in OpenEXR file
+large pixel values, pfsoutexr rescales data to the range that is
+valid for 16-bit HALF float format and the scale factor used for rescaling is stored in OpenEXR file
 as OpenEXR standard attribute \fIWhiteLuminance\fR, so that pfsinexr
-can later restore the absolute values.
+can later restore the absolute values. Use the option \fB--clamp-halfmax\fR to disable this behavior and clamp half-float values instead. 
 
 .SH EXAMPLES
 .TP

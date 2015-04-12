@@ -57,7 +57,7 @@ class QuietException
 
 void printHelp()
 {
-  fprintf( stderr, PROG_NAME " [--compression <method>] [--keep-xyz] [--fix-halfmax] [--linear] [--verbose] [--help]\n"
+  fprintf( stderr, PROG_NAME " [--compression <method>] [--float32] [--clamp-halfmax] [--linear] [--verbose] [--help]\n"
     "See man page for more information.\n" );
 }
 
@@ -85,6 +85,8 @@ void writeFrames( int argc, char* argv[] )
   bool verbose = false;
   bool keepXYZ = false;
   bool fixHalfMax = false;
+  bool float32 = false;
+  bool clampHalfMax = false;
 
   // Parse command line parameters
   static struct option cmdLineOptions[] = {
@@ -93,10 +95,12 @@ void writeFrames( int argc, char* argv[] )
     { "compression", required_argument, NULL, 'c' },
     { "keep-xyz", no_argument, NULL, 'k' },
     { "fix-halfmax", no_argument, NULL, 'f' },
+    { "clamp-halfmax", no_argument, NULL, 'p' },
+    { "float32", no_argument, NULL, '3' },
     { "linear", no_argument, NULL, 'l' },
     { NULL, 0, NULL, 0 }
   };
-  static const char optstring[] = "c:kf";
+  static const char optstring[] = "hvc:kf3pl";
 
   pfs::FrameFileIterator it( argc, argv, "wb", NULL, NULL,
     optstring, cmdLineOptions );
@@ -116,7 +120,13 @@ void writeFrames( int argc, char* argv[] )
       keepXYZ = true;
       break;
     case 'f':
-      fixHalfMax = true;
+      std::cerr << PROG_NAME << " warning: fix-halfmax is the default behavior starting from 2.0.3. This option is depreciated and will be removed in the future.";
+      break;
+    case '3':
+      float32 = true;
+      break;
+    case 'p':
+      clampHalfMax = true;
       break;
     case 'c':
       if( !strcasecmp( optarg, "NO" ) ) {
@@ -151,14 +161,21 @@ void writeFrames( int argc, char* argv[] )
 //   // argv+optind-1
 //   int newArgc = argc-optind+1;
 
-  if( verbose && keepXYZ )
-    fprintf( stderr, PROG_NAME ": keeping XYZ channels untouched\n" );
+  if( verbose ) {
+//	&& keepXYZ )
+    //fprintf( stderr, PROG_NAME ": keeping XYZ channels untouched\n" );
+	
+	fprintf( stderr, PROG_NAME ": Color channel precision: %s\n", float32 ? "32-bit float" : "16-bit float" );
+	
+   }
   
   pfs::DOMIO pfsio;
  
   bool firstFrame = true;
 
-  half *halfR = NULL, *halfG = NULL, *halfB = NULL;
+  half *halfRGB[3] = { NULL, NULL, NULL }; //*halfG = NULL, *halfB = NULL;
+//  float *floatRGB[3] = { NULL, NULL, NULL }; //*floatG = NULL, *floatB = NULL;
+  size_t pix_count_prev = 0;
   
   while( true ) {
     pfs::Frame *frame = pfsio.readFrame( stdin );
@@ -193,10 +210,11 @@ void writeFrames( int argc, char* argv[] )
     // Write the frame to EXR file
     {
 
-      bool colorChannelsToHalf = false;
+//      bool colorChannelsToHalf = false;
+	  bool storeRGBChannels = false;
       pfs::Channel *R= NULL, *G = NULL, *B = NULL; // for clarity of the code
-      if( !keepXYZ ) {  
-        pfs::Channel *X, *Y, *Z;
+//      if( !keepXYZ ) {  
+		pfs::Channel *X, *Y, *Z;
         frame->getXYZChannels( X, Y, Z );
         if( X != NULL ) {       // Has color
           R = X;
@@ -204,9 +222,10 @@ void writeFrames( int argc, char* argv[] )
           B = Z;
           pfs::transformColorSpace( pfs::CS_XYZ, X, Y, Z,
             pfs::CS_RGB, R, G, B );
-          colorChannelsToHalf = true;
+//          colorChannelsToHalf = true;
+		  storeRGBChannels = true;
         }
-      }
+  //    }
 
       Header header( frame->getWidth(), frame->getHeight(),
         1,                      // aspect ratio
@@ -221,17 +240,23 @@ void writeFrames( int argc, char* argv[] )
         pfs::ChannelIteratorPtr cit( frame->getChannelIterator() );
         while( cit->hasNext() ) {
           pfs::Channel *ch = cit->getNext();
-          if( colorChannelsToHalf && isColorChannel( ch ) )
+          if( storeRGBChannels && isColorChannel( ch ) ) // Skip color channels
             continue;
 
           const char *channelName = exrChannelName( ch->getName() );
           
           header.channels().insert( channelName, Channel(FLOAT) );        
-        }      
-        if( colorChannelsToHalf ) {
-          header.channels().insert( "R", Channel(HALF) );     
-          header.channels().insert( "G", Channel(HALF) );		  
-          header.channels().insert( "B", Channel(HALF) );
+        }      		
+        if( storeRGBChannels ) {
+			if( float32 ) {
+				header.channels().insert( "R", Channel(FLOAT) );     
+				header.channels().insert( "G", Channel(FLOAT) );		  
+				header.channels().insert( "B", Channel(FLOAT) );
+			} else {
+				header.channels().insert( "R", Channel(HALF) );     
+				header.channels().insert( "G", Channel(HALF) );		  
+				header.channels().insert( "B", Channel(HALF) );
+			}
         }
       }
 
@@ -269,7 +294,7 @@ void writeFrames( int argc, char* argv[] )
         pfs::ChannelIterator *it = frame->getChannels();
         while( it->hasNext() ) {
           pfs::Channel *ch = it->getNext();
-          if( colorChannelsToHalf && isColorChannel( ch ) )
+          if( storeRGBChannels && isColorChannel( ch ) )
             continue;
           frameBuffer.insert( exrChannelName( ch->getName() ), // name
             Slice( FLOAT,			// type	 
@@ -278,71 +303,89 @@ void writeFrames( int argc, char* argv[] )
               sizeof(float) * frame->getWidth()) ); // yStride        
         }
         
-        if( colorChannelsToHalf ) {
+        if( storeRGBChannels ) {
 
-          if( firstFrame ) {
-            halfR = new half[frame->getWidth()*frame->getHeight()];
-            halfG = new half[frame->getWidth()*frame->getHeight()];
-            halfB = new half[frame->getWidth()*frame->getHeight()];
-            firstFrame = false;
-          }
+			static const char *rgb_strings[3] = { "R", "G", "B" };			
+			bool whiteLuminanceUsed = false;
+			if( float32 ) {			
+				frameBuffer.insert( rgb_strings[0], // name
+					Slice( FLOAT,			// type	 
+					(char*)R->getRawData(), // base	 
+					sizeof(float) * 1,	// xStride
+					sizeof(float) * frame->getWidth()) ); // yStride        
+
+				frameBuffer.insert( rgb_strings[1], // name
+					Slice( FLOAT,			// type	 
+					(char*)G->getRawData(), // base	 
+					sizeof(float) * 1,	// xStride
+					sizeof(float) * frame->getWidth()) ); // yStride        
+
+				frameBuffer.insert( rgb_strings[2], // name
+					Slice( FLOAT,			// type	 
+					(char*)B->getRawData(), // base	 
+					sizeof(float) * 1,	// xStride
+					sizeof(float) * frame->getWidth()) ); // yStride        
+					
+			} else { // Half-float
+				const size_t pix_count = frame->getWidth()*frame->getHeight();			
+				if( pix_count_prev != pix_count ) { // Reallocate memory if needed			
+					for( int cc=0; cc<3; cc++ ) {								
+						delete [] halfRGB[cc];
+						halfRGB[cc] = new half[pix_count];
+					}
+					pix_count_prev = pix_count;
+				}
+
+				for( int cc=0; cc<3; cc++ ) {
+					frameBuffer.insert( rgb_strings[cc],		// name
+						Slice( HALF,			// type	 
+						(char*)halfRGB[cc],		// base	 
+						sizeof(half) * 1,	// xStride
+						sizeof(half) * frame->getWidth()) ); // yStride
+				}			
+
+	//          Check if pixel values do not exceed maximum HALF value            
+				bool maxHalfExceeded = false;
+				float maxValue = -1;
+				if( !clampHalfMax ) {
+					for( int i = 0; i < pix_count; i++ ) {
+						if( (*R)(i) > maxValue ) maxValue = (*R)(i);
+						if( (*G)(i) > maxValue ) maxValue = (*G)(i);
+						if( (*B)(i) > maxValue ) maxValue = (*B)(i);
+					}
+					maxHalfExceeded = maxValue > HALF_MAX;
+				}
           
-          frameBuffer.insert( "R",				// name
-            Slice( HALF,			// type	 
-              (char*)halfR,		// base	 
-              sizeof(half) * 1,	// xStride
-              sizeof(half) * frame->getWidth()) ); // yStride
-
-          frameBuffer.insert( "G",				// name
-            Slice( HALF,			// type	 
-              (char*)halfG,		// base	 
-              sizeof(half) * 1,	// xStride
-              sizeof(half) * frame->getWidth()) ); // yStride
-
-          frameBuffer.insert( "B",				// name
-            Slice( HALF,			// type	 
-              (char*)halfB,		// base	 
-              sizeof(half) * 1,	// xStride
-              sizeof(half) * frame->getWidth()) ); // yStride
-
-          int pixelCount = frame->getHeight()*frame->getWidth();
+				if( maxHalfExceeded && verbose && !clampHalfMax )
+					fprintf( stderr, PROG_NAME " warning: Some pixels exceed maximum value that can be stored in an OpenEXR file (maximum value of HALF-16 float). The values are scaled and the \"WhiteLuminance\" tag is added to preserve those values.\n" );
           
-//          Check if pixel values do not exceed maximum HALF value            
-          float maxValue = -1;
-          for( int i = 0; i < pixelCount; i++ ) {
-            if( (*R)(i) > maxValue ) maxValue = (*R)(i);
-            if( (*G)(i) > maxValue ) maxValue = (*G)(i);
-            if( (*B)(i) > maxValue ) maxValue = (*B)(i);
-          }
-
-          bool maxHalfExceeded = maxValue > HALF_MAX;
-          
-          if( maxHalfExceeded && !fixHalfMax )
-            fprintf( stderr, PROG_NAME " warning: Some pixels exceed maximum value that can be stored in an OpenEXR file (maximum value of HALF-16 float) and will be clamped to that maximum. Use --fix-halfmax switch to rescale the data to the valid range.\n" );
-          
-          if( fixHalfMax && maxHalfExceeded ) {
-//          Rescale and copy pixels to half-type buffers
-            float scaleFactor = HALF_MAX/maxValue;
-            for( int i = 0; i < pixelCount; i++ ) {
-              halfR[i] = (half)((*R)(i)*scaleFactor);
-              halfG[i] = (half)((*G)(i)*scaleFactor);
-              halfB[i] = (half)((*B)(i)*scaleFactor);          
-            }
-            // Store scale factor as WhileLuminance standard sttribute
-            // in order to restore absolute values later
-            addWhiteLuminance( header, 1/scaleFactor );
-          } else {
-//          Copy pixels to half-type buffers
-            for( int i = 0; i < pixelCount; i++ ) {
-              halfR[i] = min( (*R)(i), HALF_MAX );
-              halfG[i] = min( (*G)(i), HALF_MAX );
-              halfB[i] = min( (*B)(i), HALF_MAX );          
-            }
-            if( luminanceTag != NULL && !strcmp( luminanceTag, "ABSOLUTE" ) )
-            {
-              addWhiteLuminance( header, 1 );
-            }
-          }
+				if( maxHalfExceeded ) {
+		//          Rescale and copy pixels to half-type buffers
+					float scaleFactor = HALF_MAX/maxValue;
+					for( size_t i = 0; i < pix_count; i++ ) {
+						halfRGB[0][i] = (half)((*R)(i)*scaleFactor);
+						halfRGB[1][i] = (half)((*G)(i)*scaleFactor);
+						halfRGB[2][i] = (half)((*B)(i)*scaleFactor);          
+					}
+					// Store scale factor as WhileLuminance standard sttribute
+					// in order to restore absolute values later
+					addWhiteLuminance( header, 1/scaleFactor );
+					whiteLuminanceUsed = true;
+				} else {
+		//          Copy pixels to half-type buffers
+					for( size_t i = 0; i < pix_count; i++ ) {
+						halfRGB[0][i] = min( (*R)(i), HALF_MAX );
+						halfRGB[1][i] = min( (*G)(i), HALF_MAX );
+						halfRGB[2][i] = min( (*B)(i), HALF_MAX );          
+					}
+				}
+			}
+			if( luminanceTag != NULL && !strcmp( luminanceTag, "ABSOLUTE" ) && !whiteLuminanceUsed )			
+			{
+				// Use WhiteLuminance tag to signalize absolute values
+				addWhiteLuminance( header, 1 );
+			}
+			
         }
       }
 
@@ -356,9 +399,9 @@ void writeFrames( int argc, char* argv[] )
     pfsio.freeFrame( frame );
   }
   
-  delete[] halfR;
-  delete[] halfG;
-  delete[] halfB;    
+  for( int cc=0; cc<3; cc++ ) {								
+	delete [] halfRGB[cc];
+  }
   
 }
 

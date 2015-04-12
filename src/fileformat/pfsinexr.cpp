@@ -249,8 +249,8 @@ void readFrames( int argc, char* argv[] )
           (*Y)(i) *= scaleFactor;
           (*Z)(i) *= scaleFactor;
         }
-        const StringAttribute *relativeLum =
-          file.header().findTypedAttribute<StringAttribute>("RELATIVE_LUMINANCE");
+//        const StringAttribute *relativeLum =
+//          file.header().findTypedAttribute<StringAttribute>("RELATIVE_LUMINANCE");
 
         const char *luminanceTag = frame->getTags()->getString( "LUMINANCE" );
         if( luminanceTag == NULL )
