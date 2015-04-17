@@ -39,6 +39,11 @@
 #include <responses.h>
 #include <robertson02.h>
 
+#include <iostream>
+
+using namespace std;
+
+
 #define PROG_NAME "robertson02"
 
 // maximum iterations after algorithm accepts local minima
@@ -52,11 +57,98 @@ extern bool verbose; /* verbose should be declared for each standalone code */
 float normalize_rcurve( float *rcurve, int M );
 
 
+int robertson02_applyResponseRGB( pfs::Array2D *rgb_out[],         
+  const ExposureList *imgs[], 
+  const float *resp_curve[], 
+  const float *weights, 
+  int M )
+{
+  // number of exposures
+  int N = imgs[0]->size();
+
+  // frame size
+  int width  = rgb_out[0] -> getCols( );
+  int height = rgb_out[0] -> getRows( );
+
+  // number of saturated pixels
+  int saturated_pixels = 0;
+
+                     
+  
+  // all pixels
+  for( int j = 0; j < width * height; j++ )
+  {
+    bool saturatedRGB[3] = { false, false, false };  
+    
+    // All color channels
+    for( int cc=0; cc < 3; cc++ )
+    {
+        
+      // all exposures for each pixel
+      float sum = 0.0f;
+      float div = 0.0f;
+
+      for( int i = 0 ; i < N ; i++ )
+      {
+        const Exposure &ex = (*imgs[cc])[i];          
+        int   m  = (int) (*ex.yi)( j );
+        float ti = ex.ti;
+	   
+        sum += weights [ m ] / ti * resp_curve[cc][ m ];
+        div += weights [ m ];
+      }
+      
+      if( div >= 0.01f )
+	(*rgb_out[cc])(j) = sum / div;
+      else {
+        saturatedRGB[cc] = true;
+      }      
+    }
+    
+
+    for( int cc=0; cc < 3; cc++ ) {
+      // TODO: Some fancy stuff to deal with distorted colors
+      
+      if( saturatedRGB[cc] ) {        
+        // If none of the exposures can give actual pixel value, make
+        // the best (clipped) estimate using the longest or the
+        // shortest exposure;
+
+        const Exposure &ex = (*imgs[cc])[0];
+        // If pixel value > gray level, use the shortest exposure;        
+        float short_long = ( (*ex.yi)(j) > M/2 ) ? 1.f : -1.f;        
+        
+        float best_ti = 1e10f * short_long;
+        int best_v = short_long == 1.f ? M-1 : 0;        
+        for( int i = 0 ; i < N ; i++ )
+	{
+          const Exposure &ex = (*imgs[cc])[i];          
+	  int   m  = (int) (*ex.yi)( j );
+	  float ti = ex.ti;          
+          if( ti*short_long < best_ti*short_long ) {            
+            best_ti = ti;
+            best_v = (int)(*ex.yi)(j);
+          }          
+	}        
+        (*rgb_out[cc])(j) = 1/best_ti * resp_curve[cc][best_v];
+      }
+      
+    }
+    
+    
+  }
+
+  return saturated_pixels;
+  
+}
+
+
+
 int robertson02_applyResponse( pfs::Array2D *xj,         
-			       const ExposureList &imgs, 
-			       const float *rcurve, 
-			       const float *weights, 
-			       int M )
+  const ExposureList &imgs, 
+  const float *rcurve, 
+  const float *weights, 
+  int M )
 {
 
   // number of exposures
@@ -68,31 +160,54 @@ int robertson02_applyResponse( pfs::Array2D *xj,
 
   // number of saturated pixels
   int saturated_pixels = 0;
-  
+
+  cerr << "M = " << M << endl;
+  cerr << "W[0] = " << weights[0] << endl;
+  cerr << "W[end] = " << weights[M-1] << endl;
   
   // all pixels
   for( int j = 0; j < width * height; j++ )
+  {
+    // all exposures for each pixel
+    float sum = 0.0f;
+    float div = 0.0f;
+
+    for( int i = 0 ; i < N ; i++ )
     {
-      // all exposures for each pixel
-      float sum = 0.0f;
-      float div = 0.0f;
-
-      for( int i = 0 ; i < N ; i++ )
-	{
-	  int   m  = (int) (*imgs[ i ].yi)( j );
-	  float ti = imgs[ i ].ti;
+      int   m  = (int) (*imgs[ i ].yi)( j );
+      float ti = imgs[ i ].ti;
 	   
-	  sum += weights [ m ] / ti * rcurve [ m ];
-	  div += weights [ m ];
-	}
+      sum += weights [ m ] / ti * rcurve [ m ];
+      div += weights [ m ];
+    }
 
     
-      if( div != 0.0f )
+/*      if( div != 0.0f )
 	(*xj)( j ) = sum / div;
-      else
-	(*xj)( j ) = 0.0f;
-    
+        else
+        (*xj)( j ) = 0.0f;*/
+
+    if( div >= 0.01f )
+      (*xj)( j ) = sum / div;
+    else {
+      float best_ti = 1e10;
+      int best_v = M-1;        
+      for( int i = 0 ; i < N ; i++ )
+      {
+        int   m  = (int) (*imgs[ i ].yi)( j );
+        float ti = imgs[ i ].ti;          
+        if( ti < best_ti ) {            
+          best_ti = ti;
+          best_v = (int)(*imgs[i].yi)(j);
+        }          
+      }        
+      (*xj)( j ) = (M-1) / best_ti * rcurve [best_v];        
+        
     }
+      
+      
+    
+  }
 
   return saturated_pixels;
 
@@ -100,10 +215,10 @@ int robertson02_applyResponse( pfs::Array2D *xj,
 
 
 int robertson02_getResponse( pfs::Array2D       *xj, 
-			     const ExposureList &imgs,
-			     float              *rcurve, 
-			     const float        *weights, 
-			     int M )
+  const ExposureList &imgs,
+  float              *rcurve, 
+  const float        *weights, 
+  int M )
 {
   // number of exposures
   int N = imgs.size();
@@ -121,10 +236,10 @@ int robertson02_getResponse( pfs::Array2D       *xj,
   float* rcurve_prev = new float[ M ];	// previous response
 
   if( rcurve_prev == NULL )
-    {
-      std::cerr << "robertson02: could not allocate memory for camera response" << std::endl;
-      exit(1);
-    }
+  {
+    std::cerr << "robertson02: could not allocate memory for camera response" << std::endl;
+    exit(1);
+  }
 
   // 0. Initialization
 
@@ -141,95 +256,95 @@ int robertson02_getResponse( pfs::Array2D       *xj,
   float *sum        = new float[ M ];
 
   if( sum    == NULL || 
-      cardEm == NULL )
-    {
-      std::cerr << "robertson02: could not allocate memory for optimization process" << std::endl;
-      exit(1);
-    }
+    cardEm == NULL )
+  {
+    std::cerr << "robertson02: could not allocate memory for optimization process" << std::endl;
+    exit(1);
+  }
   
   int   cur_it  = 0;
   float pdelta  = 0.0f;
 
   while( !converged )
-    {
+  {
   
-      // 1. Minimize with respect to rcurve
-      for( m = 0 ; m < M ; m++ )
-	{
-	  cardEm [ m ] = 0;
-	  sum[ m ] = 0.0f;
-	}
-    
-      for( i = 0 ; i < N ; i++ )
-	{
-
-	  pfs::Array2D* yi = imgs[i].yi;
-	  float         ti = imgs[ i ].ti;
-
-	  for( j = 0 ; j < width * height ; j++ )
-	    {
-	      m = (int) (*yi)( j );
-
-	      if( m < M && m >= 0 )
-		{
-		  sum[ m ] += ti * (*xj)( j );
-		  cardEm[ m ] ++;
-		}
-	      else
-		std::cerr << "robertson02: m out of range: " << m << std::endl;
-	    }
-	}
-
-
-      for( m = 0; m < M ; m++ )
-	{
-	  if( cardEm[ m ] != 0 )
-	    rcurve [ m ] = sum [ m ] / cardEm [ m ];
-	  else
-	    rcurve [ m ] = 0.0f;
-	}
-
-      // 2. Normalize rcurve
-      float middle_response = normalize_rcurve( rcurve, M );
-
-      // 3. Apply new response
-      saturated_pixels = robertson02_applyResponse( xj, imgs, rcurve, weights, M );
-
-      // 4. Check stopping condition
-      float delta = 0.0f;
-      int   hits  = 0;
-
-      for( m = 0 ; m < M ; m++ )
-	{
-	  if( rcurve[ m ] != 0.0f )
-	    {
-	      float diff = rcurve [ m ] - rcurve_prev [ m ];
-	      
-	      delta += diff * diff;
-	      
-	      rcurve_prev [ m ] = rcurve[ m ];
-	      
-	      hits++;
-	    }
-	}
-
-      delta /= hits;
-
-      VERBOSE_STR << " #" << cur_it
-		  << " delta=" << delta
-		  << " (coverage: " << 100*hits/M << "%)\n";
-    
-      if( delta < MAX_DELTA )
-	converged = true;
-      else if( isnan(delta) || cur_it > MAXIT )
-	{
-	  VERBOSE_STR << "algorithm failed to converge, too noisy data in range\n";
-	  break;
-	}
-
-      pdelta = delta;
-      cur_it++;
+    // 1. Minimize with respect to rcurve
+    for( m = 0 ; m < M ; m++ )
+    {
+      cardEm [ m ] = 0;
+      sum[ m ] = 0.0f;
     }
+    
+    for( i = 0 ; i < N ; i++ )
+    {
+
+      pfs::Array2D* yi = imgs[i].yi;
+      float         ti = imgs[ i ].ti;
+
+      for( j = 0 ; j < width * height ; j++ )
+      {
+        m = (int) (*yi)( j );
+
+        if( m < M && m >= 0 )
+        {
+          sum[ m ] += ti * (*xj)( j );
+          cardEm[ m ] ++;
+        }
+        else
+          std::cerr << "robertson02: m out of range: " << m << std::endl;
+      }
+    }
+
+
+    for( m = 0; m < M ; m++ )
+    {
+      if( cardEm[ m ] != 0 )
+        rcurve [ m ] = sum [ m ] / cardEm [ m ];
+      else
+        rcurve [ m ] = 0.0f;
+    }
+
+    // 2. Normalize rcurve
+    float middle_response = normalize_rcurve( rcurve, M );
+
+    // 3. Apply new response
+    saturated_pixels = robertson02_applyResponse( xj, imgs, rcurve, weights, M );
+
+    // 4. Check stopping condition
+    float delta = 0.0f;
+    int   hits  = 0;
+
+    for( m = 0 ; m < M ; m++ )
+    {
+      if( rcurve[ m ] != 0.0f )
+      {
+        float diff = rcurve [ m ] - rcurve_prev [ m ];
+	      
+        delta += diff * diff;
+	      
+        rcurve_prev [ m ] = rcurve[ m ];
+	      
+        hits++;
+      }
+    }
+
+    delta /= hits;
+
+    VERBOSE_STR << " #" << cur_it
+                << " delta=" << delta
+                << " (coverage: " << 100*hits/M << "%)\n";
+    
+    if( delta < MAX_DELTA )
+      converged = true;
+    else if( isnan(delta) || cur_it > MAXIT )
+    {
+      VERBOSE_STR << "algorithm failed to converge, too noisy data in range\n";
+      break;
+    }
+
+    pdelta = delta;
+    cur_it++;
+  }
 
   if( converged )
     VERBOSE_STR << " #" << cur_it
@@ -260,44 +375,44 @@ float normalize_rcurve( float* rcurve, int M )
   float to_sort [ 2 * FILTER_SIZE + 1 ];
 
   for ( int i = 0; i < M; i++ )
-    {
-      mean += rcurve [ i ];
-    }
+  {
+    mean += rcurve [ i ];
+  }
   mean /= M;
 
   if( mean != 0.0f )
     for( int m = 0 ; m < M ; m++ )
-      {
-	rcurve [ m ] /= mean;
+    {
+      rcurve [ m ] /= mean;
 
-	/* filtered curve - initialization */
-	rcurve_filt [ m ] = 0.0f;
-      }
+      /* filtered curve - initialization */
+      rcurve_filt [ m ] = 0.0f;
+    }
 
   /* median filter response curve */
   for ( int m = FILTER_SIZE ; m < M - FILTER_SIZE; m++ )
-    {
-      for ( int i = -FILTER_SIZE; i <= FILTER_SIZE; i++ )
-	to_sort [ i + FILTER_SIZE ] = rcurve[ m + i ];
+  {
+    for ( int i = -FILTER_SIZE; i <= FILTER_SIZE; i++ )
+      to_sort [ i + FILTER_SIZE ] = rcurve[ m + i ];
       
-      qsort ( to_sort, 2 * FILTER_SIZE + 1 , sizeof(float), comp_floats );
+    qsort ( to_sort, 2 * FILTER_SIZE + 1 , sizeof(float), comp_floats );
       
-      rcurve_filt [ m ]  = to_sort [ FILTER_SIZE ]; 
+    rcurve_filt [ m ]  = to_sort [ FILTER_SIZE ]; 
       
-    }
+  }
 
   /* boundaries */
   for( int m = 0 ; m < FILTER_SIZE ; m++ )
-    {
-      rcurve_filt [ m ]     = rcurve_filt [ FILTER_SIZE ];
-      rcurve_filt [ M - m - 1 ] = rcurve_filt [ M - FILTER_SIZE - 1 ];
-    }
+  {
+    rcurve_filt [ m ]     = rcurve_filt [ FILTER_SIZE ];
+    rcurve_filt [ M - m - 1 ] = rcurve_filt [ M - FILTER_SIZE - 1 ];
+  }
     
   /* copy curve */
   for( int m = 0 ; m < M ; m++ )
-      {
-	rcurve [ m ] = rcurve_filt [ m ];
-      }
+  {
+    rcurve [ m ] = rcurve_filt [ m ];
+  }
 
   return mean;
 }

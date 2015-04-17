@@ -759,7 +759,14 @@ void pfshdrcalibrate( int argc, char* argv[] )
 	  else
 	    {
 
-	      VERBOSE_STR << "applying response to R channel..." << endl;
+              pfs::Array2D *RGB_out[3] = { Xj, Yj, Zj };
+              const ExposureList *exposures[] = { &imgsR, &imgsG, &imgsB };
+              const float *resp_curves[] = { Ir, Ig, Ib };
+              
+	      sp = robertson02_applyResponseRGB( RGB_out, exposures, resp_curves, w, M);
+
+                                            /*
+              VERBOSE_STR << "applying response to R channel..." << endl;
 	      sp = robertson02_applyResponse( Xj, imgsR, Ir, w, M);
 
 	      VERBOSE_STR << "applying response to G channel..." << endl;
@@ -767,8 +774,9 @@ void pfshdrcalibrate( int argc, char* argv[] )
 
 	      VERBOSE_STR << "applying response to B channel..." << endl;
 	      sp += robertson02_applyResponse( Zj, imgsB, Ib, w, M);
-
-	      sp /= 3;
+                                            
+                                            
+	      sp /= 3;*/
 
 	      if( sp > 0 )
 		{

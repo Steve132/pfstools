@@ -3,6 +3,7 @@ pfstools 2.0.3 <?>
 	* fixed: Out-of-source compilation issues in octave (thanks to Tomas)
 	* added: pfsoutexr has new --float32 option to store color as 32-bit float
 	* upated: pfsoutexr assumes --fix-halfmax as default and has additional switch --clamp-halfmax to disable this behavior
+	* fixed: pfshdrcalibrate: Improved clipping of saturated pixels should avoid most of the artefacts
 
 pfstools 2.0.2 <08.03.2015>
 	* fixed: Fixed build and install scripts for hdrhtml

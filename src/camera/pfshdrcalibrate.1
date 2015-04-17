@@ -179,9 +179,8 @@ mitsunaga self-calibration method with 100000 samples and save it to "resp_mitsu
 Currently Mitsunaga and Nayar's method does not produce reliable
 camera response curves. Robertson's method should be used instead.
 .PP
-Robertson's method may produce noisy pixels in strongly over-saturated
-and under-saturated areas, banding, or black pixels if all exposures
-are over-saturated. For best results, there should be a sufficient
+Robertson's method may banding or wrong colors in strongly over-saturated
+and under-saturated areas. For best results, there should be a sufficient
 numbers of exposures in which no pixels is over- or under-saturated in
 all the exposures. It is possible to fix these issues with some
 heuristics (as most HDR merging software does), but it is currently
