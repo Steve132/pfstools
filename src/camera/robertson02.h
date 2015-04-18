@@ -67,4 +67,11 @@ int robertson02_applyResponse( pfs::Array2D* xj,
 			       int M );
 
 
+int robertson02_applyResponseRGB( pfs::Array2D *rgb_out[],         
+  const ExposureList *imgs[], 
+  const float *resp_curve[], 
+  const float *weights, 
+  int M );
+
+  
 #endif /* #ifndef _robertson02_h_ */
