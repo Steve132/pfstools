@@ -34,7 +34,7 @@ char *get_mex_string( const mxArray *arg )
     mexErrMsgTxt("Input must be a string.");
 
   /* Input must be a row vector. */
-  if (mxGetM(arg) != 1)
+  if (mxGetM(arg) != 1 && !(mxGetM(arg) == 0 && mxGetN(arg) == 0) )
     mexErrMsgTxt("Input must be a row vector.");
     
   /* Get the length of the input string. */

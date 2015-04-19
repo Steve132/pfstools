@@ -192,7 +192,7 @@ endif( WITH_QT )
 
 OPTION(WITH_MATLAB "Compile Matlab MEX files" ON)
 
-SET (MATLAB_DEST_DIR "${CMAKE_INSTALL_PREFIX}/share/pfstools/matlab"
+SET (MATLAB_DEST_DIR "${CMAKE_INSTALL_PREFIX}/share/pfstools/pfstools_matlab"
 CACHE PATH  "Copy matlab functions to this directory")
 
 if( WITH_MATLAB )

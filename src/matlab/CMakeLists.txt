@@ -7,7 +7,7 @@ link_directories("${PROJECT_SOURCE_DIR}/src/pfs")
 execute_process(COMMAND ${MATLAB_ROOT}/bin/mexext OUTPUT_VARIABLE MEX_EXT OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 message( "Matlab: mexext: ${MEX_EXT}" )
-set(SRCMEX pfsclose pfsopen pfspopen pfsput pfsget pfs_transform_colorspace pfspclose ) 
+set(SRCMEX pfsclose.cpp pfsopen.cpp pfspopen.cpp pfsput.cpp pfsget.cpp pfs_transform_colorspace.cpp pfspclose.cpp) 
 
 set(SRCM Contents.m pfs_read_image.m pfs_read_luminance.m
 pfs_read_rgb.m pfs_read_xyz.m pfs_shell.m pfs_test_shell.m
@@ -53,7 +53,7 @@ MESSAGE( STATUS "mex.cmake is loaded.\n" )
 
 add_definitions(-DMATLAB_MEX_FILE) 
 foreach(SRC ${SRCMEX}) 
-  get_filename_component(MEXNAME ${SRC} NAME) 
+  get_filename_component(MEXNAME ${SRC} NAME_WE) 
   add_library(${MEXNAME} SHARED ${SRC} mex_utils.cpp ${MEXDEFFILE}) 
 #  target_link_libraries(${MEXNAME} pfs ${MATLAB_LIBRARIES}) 
   target_link_libraries(${MEXNAME} pfs ) 

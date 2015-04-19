@@ -179,13 +179,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
 
 //    FILE *fh = fdopen( fid, "a" );
-    FILE *fh = fdopen( dup( fid ), "a" );
+    FILE *fh = fdopen( dup( fid ), "w" );
     if( fh == NULL ) 
       error( SCRIPT_NAME ": Cannot open file for writting" );
     
     ctx.writeFrame( frame, fh );
     ctx.freeFrame( frame );
     fclose( fh );
+    fsync( fid );
 
   }
   catch( pfs::Exception ex )

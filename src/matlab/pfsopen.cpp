@@ -116,6 +116,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     // File descriptor given
     double *p_fid = mxGetPr( prhs[0] );
     fid = dup( (int)p_fid[0] );
+    if( fid == -1 ) 
+      error( SCRIPT_NAME ": Failed to use the file descriptor" );
   }
 
   mxArray *pfs_stream = mxCreateStructMatrix( 1, 1, 0, NULL );
