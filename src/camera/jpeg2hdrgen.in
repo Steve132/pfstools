@@ -30,16 +30,19 @@ export LC_ALL
 
 JHEAD="jhead"                   # program for extracting exif info from jpegs
 
-TEST_JHEAD=`which jhead`;
-if [ "$TEST_JHEAD" = "" ]; then
-    echo "Program 'jhead' is required to run this script."
-    echo "Install appropriate software, for example from:"
-    echo "http://www.sentex.net/~mwandel/jhead/"
+IDENTIFY="identify"             # alternative program from ImageMagics
+
+TEST_IDENTIFY=`which $IDENTIFY 2>/dev/null` || TEST_JHEAD=`which $JHEAD 2>/dev/null`;
+
+if [ -z "$TEST_JHEAD" ] && [ -z "$TEST_IDENTIFY" ]; then
+    echo "Either 'jhead' or 'identify' (part of ImageMagic) is required to run this script." >&2
+    echo "Install appropriate software, for example from:" >&2
+    echo "http://www.sentex.net/~mwandel/jhead/" >&2
     exit 1;
 fi
 
 #Note: Double backslash MUST be put in front of each $ sign
-AWK_PROGRAM=`cat <<EOF
+AWK_PROGRAM_JHEAD=`cat <<EOF
 BEGIN {
   exposure="";
   aperture="";
@@ -72,8 +75,52 @@ END {
 
 EOF`
 
+#Note: Double backslash MUST be put in front of each $ sign
+AWK_PROGRAM_IDENTIFY=`cat <<EOF
+BEGIN {
+  exposure="";
+  aperture="";
+  FS="=";
+}
+
+END {
+  if( aperture=="" )
+    aperture=1;
+
+  if( iso_speed=="" )
+    iso_speed=100;
+    
+  if( exposure=="" )
+    printf("not recognized exif header!\n");
+  else
+    print exposure " " aperture " " iso_speed " 0";
+}
+
+/^exif:ExposureTime=([0-9]+\/?[0-9]*)/ {
+	split( \\$2, ex_info, "/" );
+  exposure = ex_info[1] / ex_info[2];
+}
+
+/^exif:FNumber=([0-9]+\/?[0-9]*)/ {
+	split( \\$2, ex_info, "/" );
+  aperture = ex_info[1] / ex_info[2];;
+}
+
+/^exif:ISOSpeedRatings=([0-9]*\.?[0-9]*)/ {
+  iso_speed = \\$2;
+}
+EOF`
+
+
+
 while [ "$1" != "" ]; do
-    EXPOSURE_INFO=`$JHEAD "$1" | awk "$AWK_PROGRAM"`
+
+	if [ ! -z "$TEST_IDENTIFY" ]; then
+		EXPOSURE_INFO=`$IDENTIFY -format \"%[exif:*]\" "$1" | awk "$AWK_PROGRAM_IDENTIFY"`
+	else
+		EXPOSURE_INFO=`$JHEAD "$1" | awk "$AWK_PROGRAM_JHEAD"`
+	fi
+
     echo "$1" $EXPOSURE_INFO
 
     shift

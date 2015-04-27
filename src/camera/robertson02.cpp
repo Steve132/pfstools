@@ -255,7 +255,7 @@ int robertson02_getResponse( pfs::Array2D       *xj,
   long  *cardEm     = new long [ M ];
   float *sum        = new float[ M ];
 
-  if( sum    == NULL || 
+  if( sum == NULL || 
     cardEm == NULL )
   {
     std::cerr << "robertson02: could not allocate memory for optimization process" << std::endl;
@@ -275,6 +275,7 @@ int robertson02_getResponse( pfs::Array2D       *xj,
       sum[ m ] = 0.0f;
     }
     
+	// For each exposure
     for( i = 0 ; i < N ; i++ )
     {
 
@@ -418,32 +419,31 @@ float normalize_rcurve( float* rcurve, int M )
 }
 
 
-
-// float normalizeI( float* rcurve, int M )
-// {
-//   int Mmin, Mmax;
-//   // find min max
-//   for( Mmin=0 ; Mmin<M && rcurve[Mmin]==0 ; Mmin++ );
-//   for( Mmax=M-1 ; Mmax>0 && rcurve[Mmax]==0 ; Mmax-- );
+float normalize_rcurve_old( float* rcurve, int M )
+{
+  int Mmin, Mmax;
+  // find min max
+  for( Mmin=0 ; Mmin<M && rcurve[Mmin]==0 ; Mmin++ );
+  for( Mmax=M-1 ; Mmax>0 && rcurve[Mmax]==0 ; Mmax-- );
   
-//   int Mmid = Mmin+(Mmax-Mmin)/2;
-//   float mid = rcurve[Mmid];
+  int Mmid = Mmin+(Mmax-Mmin)/2;
+  float mid = rcurve[Mmid];
 
-// //   std::cerr << "robertson02: middle response, mid=" << mid
-// //             << " [" << Mmid << "]"
-// //             << " " << Mmin << ".." << Mmax << std::endl;
+//   std::cerr << "robertson02: middle response, mid=" << mid
+//             << " [" << Mmid << "]"
+//             << " " << Mmin << ".." << Mmax << std::endl;
   
-//   if( mid==0.0f )
-//   {
-//     // find first non-zero middle response
-//     while( Mmid<Mmax && rcurve[Mmid]==0.0f )
-//       Mmid++;
-//     mid = rcurve[Mmid];
-//   }
+  if( mid==0.0f )
+  {
+    // find first non-zero middle response
+    while( Mmid<Mmax && rcurve[Mmid]==0.0f )
+      Mmid++;
+    mid = rcurve[Mmid];
+  }
 
-//   if( mid!=0.0f )
-//     for( int m=0 ; m<M ; m++ )
-//       rcurve[m] /= mid;
-//   return mid;
-// }
+  if( mid!=0.0f )
+    for( int m=0 ; m<M ; m++ )
+      rcurve[m] /= mid;
+  return mid;
+}
 
