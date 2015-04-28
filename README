@@ -1,13 +1,15 @@
-pfstools 2.0.2
+pfstools 2.0.3
 
-This is a minor release, which fixes several issues in the cmake files and in the documentation.
+This is a minor release, which fixes several important issues, including a bug in pfshdrcalibration, storing 32-bit EXR files and improvements in cmake build scripts. 
 
-pfstools 2.0.2 <08.03.2015>
-	* fixed: Fixed build and install scripts for hdrhtml
-	* fixed: Fixed building FFT solver for pfstmo_fattal02
-	* updated: Added check for libexif
-	* updated: improvements in pfstmo_ferradans11 to produce brighter results
-	* updated: Updated some manual pages
+pfstools 2.0.3 <28.04.2015>
+	* fixed: permission issues in the cmake scripts
+	* fixed: Out-of-source compilation issues in octave (thanks to Tomas)
+	* added: pfsoutexr has new --float32 option to store color as 32-bit float
+	* upated: pfsoutexr assumes --fix-halfmax as default and has additional switch --clamp-halfmax to disable this behavior
+	* fixed: pfshdrcalibrate: serious bug that caused Robertson's method to fail most of the time
+	* fixed: pfshdrcalibrate: Improved clipping of saturated pixels should avoid most of the artefacts
+	* added: jpeg2hdrgen - now the command can use identify from ImageMagick instead of jhead
 
 pfstools 2.0.0 - Release Notes
 

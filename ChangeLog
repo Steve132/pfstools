@@ -1,4 +1,4 @@
-pfstools 2.0.3 <?>
+pfstools 2.0.3 <28.04.2015>
 	* fixed: permission issues in the cmake scripts
 	* fixed: Out-of-source compilation issues in octave (thanks to Tomas)
 	* added: pfsoutexr has new --float32 option to store color as 32-bit float
