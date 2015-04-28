@@ -204,18 +204,16 @@ void pfshdrcalibrate( int argc, char* argv[] )
 
 	  /* predefined response curve */
 	case 'r':
-	  if( strcmp( optarg, "linear" ) == 0 ) 
+	  if( strcmp( optarg, "linear" ) == 0 ) {            
 	    opt_response = LINEAR;
-	  else 
-	    if( strcmp( optarg, "gamma" ) == 0 ) 
-	      opt_response = GAMMA;
-	    else 
-	      if( strcmp( optarg, "log" ) == 0 ) 
-		opt_response = LOG10;
-	      else
+	  } else if( strcmp( optarg, "gamma" ) == 0 ) {
+            opt_response = GAMMA;
+          } else if( strcmp( optarg, "log" ) == 0 ) {
+            opt_response = LOG10;
+          } else {      
 		throw pfs::Exception("unknown standard response (check the manpage or use default)");
-
-	      opt_calibration = NONE;
+          }
+          opt_calibration = NONE;
 	  break;
 
 	  
@@ -337,7 +335,7 @@ void pfshdrcalibrate( int argc, char* argv[] )
 //               << (opt_fillgaps ? "yes" : "no") << endl;
   
   if( responseSaveFile != NULL )
-    VERBOSE_STR << "save response curve to a file (do not generate HDR image)" << endl;
+    VERBOSE_STR << "save response curve to a file" << endl;
 
 
   // number of input levels
@@ -525,6 +523,7 @@ void pfshdrcalibrate( int argc, char* argv[] )
   /* 1.4: currently, weights are always Gaussian */
   /* Composite function works better for extreme cases */
   weightsComposite ( w, M, opt_minresponse, opt_maxresponse, opt_gauss );
+//   weightsGauss( w, M, opt_minresponse, opt_maxresponse, opt_gauss );
 
   // camera response functions for each channel
   float* Iy = new float [ M ];
@@ -572,11 +571,11 @@ void pfshdrcalibrate( int argc, char* argv[] )
       break;
 
       /* ------ Response function linear ------ */
-    case LINEAR:
+    case LINEAR:      
       responseLinear( Iy, M );
       responseLinear( Ir, M );
       responseLinear( Ig, M );
-      responseLinear( Ib, M );
+      responseLinear( Ib, M );      
       break;
 
       /* ------ Response function gamma ------ */
@@ -683,6 +682,7 @@ void pfshdrcalibrate( int argc, char* argv[] )
 	    }
 	  else
 	    {
+              
 	      VERBOSE_STR << "recovering R channel..." << endl;
 	      sp = robertson02_getResponse( Xj, imgsR, Ir, w, M);
 	      
