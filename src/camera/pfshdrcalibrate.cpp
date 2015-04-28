@@ -763,9 +763,10 @@ void pfshdrcalibrate( int argc, char* argv[] )
               const ExposureList *exposures[] = { &imgsR, &imgsG, &imgsB };
               const float *resp_curves[] = { Ir, Ig, Ib };
               
+              VERBOSE_STR << "applying response to RGB channels..." << endl;
 	      sp = robertson02_applyResponseRGB( RGB_out, exposures, resp_curves, w, M);
 
-                                            /*
+/*                                            
               VERBOSE_STR << "applying response to R channel..." << endl;
 	      sp = robertson02_applyResponse( Xj, imgsR, Ir, w, M);
 

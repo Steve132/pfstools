@@ -104,7 +104,9 @@ int robertson02_applyResponseRGB( pfs::Array2D *rgb_out[],
         saturatedRGB[cc] = true;
       }      
     }
-    
+
+    if( saturatedRGB[0] || saturatedRGB[1] || saturatedRGB[2] )
+      saturated_pixels++;    
 
     for( int cc=0; cc < 3; cc++ ) {
       // TODO: Some fancy stuff to deal with distorted colors
@@ -161,9 +163,9 @@ int robertson02_applyResponse( pfs::Array2D *xj,
   // number of saturated pixels
   int saturated_pixels = 0;
 
-  cerr << "M = " << M << endl;
-  cerr << "W[0] = " << weights[0] << endl;
-  cerr << "W[end] = " << weights[M-1] << endl;
+//  cerr << "M = " << M << endl;
+//  cerr << "W[0] = " << weights[0] << endl;
+//  cerr << "W[end] = " << weights[M-1] << endl;
   
   // all pixels
   for( int j = 0; j < width * height; j++ )
@@ -189,7 +191,11 @@ int robertson02_applyResponse( pfs::Array2D *xj,
 
     if( div >= 0.01f )
       (*xj)( j ) = sum / div;
-    else {
+    else
+      (*xj)( j ) = 0;
+
+    /*
+    {
       float best_ti = 1e10;
       int best_v = M-1;        
       for( int i = 0 ; i < N ; i++ )
@@ -203,7 +209,7 @@ int robertson02_applyResponse( pfs::Array2D *xj,
       }        
       (*xj)( j ) = (M-1) / best_ti * rcurve [best_v];        
         
-    }
+      }*/
       
       
     
