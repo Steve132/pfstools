@@ -43,7 +43,9 @@ SET(
 # Variables controlling the installation RPATH
 SET( CMAKE_INSTALL_RPATH "\$ORIGIN" )
 # CMake will reset RPATH at the installation phase, so we need to specify CMAKE_INSTALL_RPATH
- 
+
+SET( CMAKE_SKIP_RPATH TRUE ) 
+
 MESSAGE( STATUS "mex.cmake is loaded.\n" )
  
  
