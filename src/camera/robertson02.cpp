@@ -161,9 +161,9 @@ int robertson02_applyResponse( pfs::Array2D *xj,
   // number of saturated pixels
   int saturated_pixels = 0;
 
-  cerr << "M = " << M << endl;
-  cerr << "W[0] = " << weights[0] << endl;
-  cerr << "W[end] = " << weights[M-1] << endl;
+//  cerr << "M = " << M << endl;
+//  cerr << "W[0] = " << weights[0] << endl;
+//  cerr << "W[end] = " << weights[M-1] << endl;
   
   // all pixels
   for( int j = 0; j < width * height; j++ )

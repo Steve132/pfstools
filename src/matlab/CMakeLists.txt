@@ -39,7 +39,8 @@ SET(
     CMAKE_CXX_CREATE_SHARED_LIBRARY
     "<CMAKE_CXX_COMPILER> -cxx <LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS> -output <TARGET> <OBJECTS> <LINK_LIBRARIES>"
 )
- 
+
+SET( CMAKE_SKIP_RPATH TRUE ) 
 # Variables controlling the installation RPATH
 SET( CMAKE_INSTALL_RPATH "\$ORIGIN" )
 # CMake will reset RPATH at the installation phase, so we need to specify CMAKE_INSTALL_RPATH
