@@ -104,7 +104,9 @@ int robertson02_applyResponseRGB( pfs::Array2D *rgb_out[],
         saturatedRGB[cc] = true;
       }      
     }
-    
+
+    if( saturatedRGB[0] || saturatedRGB[1] || saturatedRGB[2] )
+      saturated_pixels++;    
 
     for( int cc=0; cc < 3; cc++ ) {
       // TODO: Some fancy stuff to deal with distorted colors
@@ -189,7 +191,11 @@ int robertson02_applyResponse( pfs::Array2D *xj,
 
     if( div >= 0.01f )
       (*xj)( j ) = sum / div;
-    else {
+    else
+      (*xj)( j ) = 0;
+
+    /*
+    {
       float best_ti = 1e10;
       int best_v = M-1;        
       for( int i = 0 ; i < N ; i++ )
@@ -203,7 +209,7 @@ int robertson02_applyResponse( pfs::Array2D *xj,
       }        
       (*xj)( j ) = (M-1) / best_ti * rcurve [best_v];        
         
-    }
+      }*/
       
       
     
@@ -220,7 +226,8 @@ int robertson02_getResponse( pfs::Array2D       *xj,
   const float        *weights, 
   int M )
 {
-  // number of exposures
+
+// number of exposures
   int N = imgs.size();
     
   // frame size
@@ -242,12 +249,14 @@ int robertson02_getResponse( pfs::Array2D       *xj,
   }
 
   // 0. Initialization
-
+  
   normalize_rcurve( rcurve, M );
-
-  for( m = 0 ; m < M ; m++ )
+  
+  for( m = 0 ; m < M ; m++ ) {
+    //  cerr << "m = " << m << " rc = " << rcurve [ m ] << endl;    
     rcurve_prev [ m ] = rcurve [ m ];
-
+  }
+  
   robertson02_applyResponse( xj, imgs, rcurve, weights, M );
 
   // Optimization process
@@ -267,7 +276,12 @@ int robertson02_getResponse( pfs::Array2D       *xj,
 
   while( !converged )
   {
-  
+
+    // Display response curve - for debugging purposes
+/*    for( m = 0 ; m < M ; m+=32 ) {
+      cerr << "m = " << m << " rc = " << rcurve [ m ] << endl;
+      }*/
+    
     // 1. Minimize with respect to rcurve
     for( m = 0 ; m < M ; m++ )
     {
@@ -306,11 +320,11 @@ int robertson02_getResponse( pfs::Array2D       *xj,
     }
 
     // 2. Normalize rcurve
-    float middle_response = normalize_rcurve( rcurve, M );
-
+    float middle_response = normalize_rcurve( rcurve, M );    
+    
     // 3. Apply new response
     saturated_pixels = robertson02_applyResponse( xj, imgs, rcurve, weights, M );
-
+    
     // 4. Check stopping condition
     float delta = 0.0f;
     int   hits  = 0;
@@ -375,6 +389,7 @@ float normalize_rcurve( float* rcurve, int M )
   float rcurve_filt [ M ];
   float to_sort [ 2 * FILTER_SIZE + 1 ];
 
+  mean = 0.f;
   for ( int i = 0; i < M; i++ )
   {
     mean += rcurve [ i ];
@@ -419,8 +434,9 @@ float normalize_rcurve( float* rcurve, int M )
 }
 
 
-float normalize_rcurve_old( float* rcurve, int M )
+/*float normalize_rcurve_old( float* rcurve, int M )
 {
+
   int Mmin, Mmax;
   // find min max
   for( Mmin=0 ; Mmin<M && rcurve[Mmin]==0 ; Mmin++ );
@@ -444,6 +460,6 @@ float normalize_rcurve_old( float* rcurve, int M )
   if( mid!=0.0f )
     for( int m=0 ; m<M ; m++ )
       rcurve[m] /= mid;
-  return mid;
+      return mid;
 }
-
+*/
