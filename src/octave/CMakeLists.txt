@@ -7,6 +7,8 @@ set(SRC_OCT pfsread pfswrite pfstransform_colorspace pfsopen pfsget pfsput pfscl
 
 set(SRC_M pfsview.m pfsview_rgb.m pfsview_list.m pfs_read_rgb.m pfs_read_xyz.m pfs_read_luminance.m pfs_write_rgb.m pfssize.m pfs_open_frames.m pfs_close_frames.m)
 
+set(OCT_SCRIPTS pfsoctavelum pfsoctavergb pfsstat)
+
 set(CMAKE_CXXFLAGS "-cxx -largeArrayDims")
 set(ENV{CXXFLAGS} ${CMAKE_CXXFLAGS})
 
@@ -36,9 +38,21 @@ endforeach(SRC)
 
 #Installation
 foreach(SRC ${SRC_OCT}) 
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${SRC}.oct DESTINATION ${OCTAVE_DEST_DIR})
+	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${SRC}.oct 
+	         PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE OWNER_WRITE WORLD_READ GROUP_READ OWNER_READ
+	         DESTINATION ${OCTAVE_DEST_DIR})
 endforeach(SRC)
 
 foreach(SRC ${SRC_M}) 
 	install (FILES ${SRC} DESTINATION ${OCTAVE_DEST_DIR})
 endforeach(SRC)
+
+install (FILES ${OCT_SCRIPTS} 
+         PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE OWNER_WRITE WORLD_READ GROUP_READ OWNER_READ
+         DESTINATION bin)
+		 
+foreach(SCRIPT ${OCT_SCRIPTS})
+
+install (FILES ${SCRIPT}.1 DESTINATION ${MAN_DIR})
+
+endforeach(SCRIPT ${OCT_SCRIPTS})

@@ -74,18 +74,18 @@ while( true )
     fprintf( stderr, "Luminance profile: %s\n", pin.tags.LUMINANCE );  
   endif     
   fprintf( stderr, "Width: %d Height: %d\n", pin.columns, pin.rows );
-  fprintf( stderr, "Dynamic Range: \t%g [log_10]\t 1:%g [lin]\t %g [dB]\n", \
-                                dynamic_range, 10^dynamic_range, \
+  fprintf( stderr, "Dynamic Range: \t%g [log_10]\t 1:%g [lin]\t %g [dB]\n", ...
+                                dynamic_range, 10^dynamic_range, ...
                                 round(20*dynamic_range)  );
-  fprintf( stderr, "Minimum: \t%g [log_10]\t %g [lin]\n", \
+  fprintf( stderr, "Minimum: \t%g [log_10]\t %g [lin]\n", ...
                                 minimum, 10^minimum  );
-  fprintf( stderr, "Maximum: \t%g [log_10]\t %g [lin]\n", \
+  fprintf( stderr, "Maximum: \t%g [log_10]\t %g [lin]\n", ...
                                 maximum, 10^maximum  );
 
-  fprintf( stderr, "Log average: \t%g [log_10]\t %g [lin]\n", \
+  fprintf( stderr, "Log average: \t%g [log_10]\t %g [lin]\n", ...
                                 s_average, 10^s_average  );
 
-  fprintf( stderr, "Median: \t%g [log_10]\t %g [lin]\n", \
+  fprintf( stderr, "Median: \t%g [log_10]\t %g [lin]\n", ...
                                 s_median, 10^s_median  );
 
   firstFrame = false;

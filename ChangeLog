@@ -5,7 +5,8 @@ pfstools 2.0.3 <28.04.2015>
 	* upated: pfsoutexr assumes --fix-halfmax as default and has additional switch --clamp-halfmax to disable this behavior
 	* fixed: pfshdrcalibrate: serious bug that caused Robertson's method to fail most of the time
 	* fixed: pfshdrcalibrate: Improved clipping of saturated pixels should avoid most of the artefacts
-	* added: jpeg2hdrgen - now the command can use identify from ImageMagick instead of jhead
+	* added: jpeg2hdrgen - now the command can use "identify" from ImageMagick instead of "jhead"
+	* fixed: added installation of octave-based scripts: pfsoctavelum pfsoctavergb pfsstat
 
 pfstools 2.0.2 <08.03.2015>
 	* fixed: Fixed build and install scripts for hdrhtml
