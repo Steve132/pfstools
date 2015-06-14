@@ -59,12 +59,12 @@ while( true )
   pout.tags = pin.tags;
   pout.channelTags = pin.channelTags;
 
-  [R G B] = pfstransform_colorspace( "XYZ", pout.channels.X, \
+  [R G B] = pfstransform_colorspace( "XYZ", pout.channels.X, ...
       pout.channels.Y, pout.channels.Z, "RGB" );
 
   eval( command );
 
-  [pout.channels.X pout.channels.Y pout.channels.Z] = \
+  [pout.channels.X pout.channels.Y pout.channels.Z] = ...
       pfstransform_colorspace( "RGB", R, G, B, "XYZ" );  
 
   pfsput( pout );
