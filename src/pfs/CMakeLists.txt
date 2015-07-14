@@ -20,12 +20,12 @@ string(REGEX REPLACE "(@PACKAGE_VERSION@)" "${pfstools_VERSION_MAJOR}.${pfstools
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/pfs.pc" "${file_content_res}")	
 
 install (TARGETS pfs 
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib )
+	LIBRARY DESTINATION lib${LIB_SUFFIX}
+	ARCHIVE DESTINATION lib${LIB_SUFFIX})
 
 #install (FILES ${CMAKE_CURRENT_BINARY_DIR}/cygpfs.dll DESTINATION bin)
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/pfs.h ${CMAKE_CURRENT_SOURCE_DIR}/array2d.h DESTINATION include/pfs)
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/pfs.pc DESTINATION lib/pkgconfig)
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/pfs.pc DESTINATION lib${LIB_SUFFIX}/pkgconfig)
 	
 #install (FILES pfsoutppm.1 DESTINATION ${MAN_DIR})
 
