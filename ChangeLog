@@ -2,6 +2,7 @@ pfstools 2.0.4 <?>
 	* fixed: added installation of octave-based scripts: pfsoctavelum pfsoctavergb pfsstat
 	* fixed: libraries installed in lib64 if needed (thanks to Orion for the patch)
 	* fixed: added "so" version to the pfs.so library (thanks to Orion for the patch)
+	* fixed: Replaced depreciated OctaveMap for compatibility with octave 4.0.0
 
 pfstools 2.0.3 <28.04.2015>
 	* fixed: permission issues in the cmake scripts

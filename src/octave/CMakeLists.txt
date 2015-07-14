@@ -21,8 +21,8 @@ set(HEADERS "${PROJECT_SOURCE_DIR}/src/pfs/")
 
 #Building phase
 foreach(SRC ${SRC_OCT})
-get_filename_component(OCT_NAME ${SRC} NAME)
-add_custom_command(
+  get_filename_component(OCT_NAME ${SRC} NAME)
+  add_custom_command(
 	OUTPUT ${OCT_NAME}.oct
 	COMMAND ${MKOCTFILE} "${CMAKE_CURRENT_SOURCE_DIR}/${OCT_NAME}.cpp"
 	ARGS -I${HEADERS} -I${CMAKE_CURRENT_SOURCE_DIR}/help_files
@@ -33,7 +33,7 @@ add_custom_command(
 endforeach(SRC)
 
 foreach(SRC ${SRC_OCT})
-	add_custom_target(${SRC}.cpp ALL DEPENDS ${SRC}.oct)
+	add_custom_target(${SRC}.mkoct ALL DEPENDS ${SRC}.oct)
 endforeach(SRC)
 
 #Installation

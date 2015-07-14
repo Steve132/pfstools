@@ -42,7 +42,7 @@ function pfsview( varargin )
         if( !exist( "channels" ) || !exist( "ch_name" ) )
           error( "channel_name argument must follow channel argument" );
         else
-          channels = setfield( channels, varargin{i}, \
+          channels = setfield( channels, varargin{i}, ...
                               getfield( channels, ch_name ) );
           channels = rmfield( channels, ch_name );
           clear ch_name;

@@ -137,7 +137,7 @@ DEFUN_DLD( pfsopen, args, , helpString)
     }    
   }
 
-  Octave_map pfsStream;
+  octave_scalar_map pfsStream;
   pfsStream.assign( "FH", octave_value((double)((long)fh)) );
   pfsStream.assign( "MODE", writeMode ? octave_value("W") : octave_value("R") );
   pfsStream.assign( "EOF", octave_value(false) );
@@ -145,10 +145,10 @@ DEFUN_DLD( pfsopen, args, , helpString)
   if( writeMode ) {
     pfsStream.assign( "columns", octave_value(width) );
     pfsStream.assign( "rows", octave_value(height) );
-    Octave_map channels;
+    octave_scalar_map channels;
     pfsStream.assign( "channels", octave_value(channels) );    
   }
-  
+
   retval.append(pfsStream);
     
   return retval;
