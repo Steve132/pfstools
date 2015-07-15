@@ -307,7 +307,7 @@ void print_vector( gsl_vector *v )
 class conditional_density: public datmoConditionalDensity
 {
 public:
-  static const double l_min = -8.f, l_max = 8.f, delta = 0.1f;
+  static const double l_min, l_max, delta;
   static double x_scale[X_COUNT];    // input log luminance scale
   double *g_scale;    // contrast scale
   double *f_scale;    // frequency scale
@@ -374,7 +374,7 @@ datmoConditionalDensity::~datmoConditionalDensity()
 {
 }
 
-const double conditional_density::l_min, conditional_density::l_max, conditional_density::delta;
+const double conditional_density::l_min = -8.f, conditional_density::l_max = 8.f, conditional_density::delta = 0.1f;
 double conditional_density::x_scale[X_COUNT] = { 0 };    // input log luminance scale
 
 

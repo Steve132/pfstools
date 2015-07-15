@@ -198,7 +198,7 @@ class ProjectionFactory
     {
       char *opts;
       
-      if(opts = strchr(name, '/'))
+      if( (opts = strchr(name, '/')) )
       {
         *opts++ = '\0';
       }

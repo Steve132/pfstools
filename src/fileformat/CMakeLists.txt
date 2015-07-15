@@ -70,11 +70,13 @@ if( ImageMagick_FOUND )
     target_link_libraries(pfsinimgmagick pfs ${ImageMagick_LIBRARIES})
     install (TARGETS pfsinimgmagick DESTINATION bin)
     install (FILES pfsinimgmagick.1 DESTINATION ${MAN_DIR})
+    set_target_properties(pfsinimgmagick PROPERTIES COMPILE_FLAGS "-DMAGICKCORE_HDRI_ENABLE=0 -DMAGICKCORE_QUANTUM_DEPTH=16")
 
     add_executable(pfsoutimgmagick pfsoutimgmagick.cpp "${GETOPT_OBJECT}")
     target_link_libraries(pfsoutimgmagick pfs ${ImageMagick_LIBRARIES})
     install (TARGETS pfsoutimgmagick DESTINATION bin)
     install (FILES pfsoutimgmagick.1 DESTINATION ${MAN_DIR})
+    set_target_properties(pfsoutimgmagick PROPERTIES COMPILE_FLAGS "-DMAGICKCORE_HDRI_ENABLE=0 -DMAGICKCORE_QUANTUM_DEPTH=16")
 
 endif( ImageMagick_FOUND )
 

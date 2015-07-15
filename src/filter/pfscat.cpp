@@ -353,7 +353,7 @@ while (1) {
 		outWidth=prevWidth;
 		}
 	    }
-	else if (inY=inFrame->getChannel("Y")) {// luminance mode
+	else if ( (inY=inFrame->getChannel("Y")) ) {// luminance mode
     	
 	    if (frame_no==0) optLuminanceMode=true; // first frame
 	

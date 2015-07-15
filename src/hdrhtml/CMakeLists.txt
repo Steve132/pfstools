@@ -3,6 +3,8 @@ link_directories("${PROJECT_SOURCE_DIR}/src/pfs")
 
 add_executable(pfsouthdrhtml pfsouthdrhtml.cpp hdrhtml.cpp)
 target_link_libraries(pfsouthdrhtml pfs ${ImageMagick_LIBRARIES})
+set_target_properties(pfsouthdrhtml PROPERTIES COMPILE_FLAGS "-DMAGICKCORE_HDRI_ENABLE=0 -DMAGICKCORE_QUANTUM_DEPTH=16")
+
 install (TARGETS pfsouthdrhtml DESTINATION bin)
 install (FILES pfsouthdrhtml.1 DESTINATION ${MAN_DIR})
 

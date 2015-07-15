@@ -104,7 +104,7 @@ PFMHeader readPFMHeader( FILE *fh )
     throw pfs::Exception( "Wrong file header" );
 
   // Check if swapping bytes because of endianness is required
-  header.need_swap = (isBigEndian() ^ header.scale > 0);
+  header.need_swap = (isBigEndian() ^ (header.scale > 0));
   
   return header;
 }

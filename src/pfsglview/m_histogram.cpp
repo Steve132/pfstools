@@ -247,7 +247,7 @@ void M_Histogram::drawHistogram() {
 		array_pos = floor((painter * fbins - offset)/virtualWidth) ;
 		int array_pos_min =floor( ((float)(pos-BORDER_SIDE) / his_width * fbins - offset)/virtualWidth) ;
 		int array_pos_max =floor(  ((float)(pos+1-BORDER_SIDE) / his_width * fbins - offset)/virtualWidth) ;
-		if(array_pos_min == array_pos_min) array_pos_max++ ;
+		if(array_pos_min == array_pos_max) array_pos_max++ ;
 
 		int r = 0 ;
 		int g = 0 ;
@@ -339,20 +339,21 @@ void M_Histogram::drawScale() {
 		if( round(i) == i) hh = 4;
 		glRectf( offsetX + pos, offsetY - hh, offsetX + pos + 1, offsetY + hh -1);
 		
-		if( round(i) == i)
-		if( i < 0) {
-			glRasterPos2f( offsetX + pos - 9, offsetY - 15);
-			glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '-');
-			glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '8' - (k1++));
+		if( round(i) == i) {
+		  if( i < 0 ) {
+		    glRasterPos2f( offsetX + pos - 9, offsetY - 15);
+		    glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '-');
+		    glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '8' - (k1++));
+		  }
+		  else if( i == 0 ) {
+		    glRasterPos2f( offsetX + pos - 1, offsetY - 15);
+		    glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '0' + i);
+		  }	
+		  else {
+		    glRasterPos2f( offsetX + pos - 2, offsetY - 15);
+		    glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '0' + i);
+		  }	
 		}
-		else if( i == 0) {
-			glRasterPos2f( offsetX + pos - 1, offsetY - 15);
-			glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '0' + i);
-		}	
-		else {
-			glRasterPos2f( offsetX + pos - 2, offsetY - 15);
-			glutBitmapCharacter(GLUT_BITMAP_8_BY_13, '0' + i);
-		}	
 
 	} 
 	glRectf( offsetX + (0 * virtualWidth) + offset, offsetY, offsetX + pos + 1, offsetY-1);
@@ -1059,15 +1060,17 @@ int M_Histogram::getChannelAsInt(){
 
   if(strcmp(channel, "XYZ") == 0){
       return 0 ;
-  }else
+  } else {
     switch(channel[0]) {
     case 'X':
       return 1 ;
     case 'Y':
       return 2 ;
+    default:
     case 'Z':
       return 3 ;
     }
+  }
 }
 
 

@@ -102,7 +102,7 @@ void PictureIO::setFrame(pfs::Frame *frame, const char *channel) {
 		return;
 
 	// only XYZ channels are taken into consideration
-	if( channel != "XYZ" &&  channel != "X00" && channel != "0Y0" && channel != "00Z" ) {
+	if( strcmp( channel, "XYZ" ) &&  strcmp( channel, "X00" ) && strcmp( channel, "0Y0" ) && strcmp( channel, "00Z" ) ) {
 		if(verbose)
 			fprintf( stderr, "WARNING: wrong channel (PictureIO::setFrame())\n");
 		return;
