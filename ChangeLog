@@ -1,4 +1,4 @@
-pfstools 2.0.4 <?>
+pfstools 2.0.4 <15.07.2015>
 	* fixed: added installation of octave-based scripts: pfsoctavelum pfsoctavergb pfsstat
 	* fixed: libraries installed in lib64 if needed (thanks to Orion for the patch)
 	* fixed: added "so" version to the pfs.so library (thanks to Orion for the patch)

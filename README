@@ -1,15 +1,12 @@
-pfstools 2.0.3
+pfstools 2.0.4
 
-This is a minor release, which fixes several important issues, including a bug in pfshdrcalibration, storing 32-bit EXR files and improvements in cmake build scripts. 
+This is a minor release, which fixes several issues in Octave scripts and functions. 
 
-pfstools 2.0.3 <28.04.2015>
-	* fixed: permission issues in the cmake scripts
-	* fixed: Out-of-source compilation issues in octave (thanks to Tomas)
-	* added: pfsoutexr has new --float32 option to store color as 32-bit float
-	* upated: pfsoutexr assumes --fix-halfmax as default and has additional switch --clamp-halfmax to disable this behavior
-	* fixed: pfshdrcalibrate: serious bug that caused Robertson's method to fail most of the time
-	* fixed: pfshdrcalibrate: Improved clipping of saturated pixels should avoid most of the artefacts
-	* added: jpeg2hdrgen - now the command can use identify from ImageMagick instead of jhead
+pfstools 2.0.4 <15.07.2015>
+	* fixed: added installation of octave-based scripts: pfsoctavelum pfsoctavergb pfsstat
+	* fixed: libraries installed in lib64 if needed (thanks to Orion for the patch)
+	* fixed: added "so" version to the pfs.so library (thanks to Orion for the patch)
+	* fixed: Replaced depreciated OctaveMap for compatibility with octave 4.0.0
 
 pfstools 2.0.0 - Release Notes
 
