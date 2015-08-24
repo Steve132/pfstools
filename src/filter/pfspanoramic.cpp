@@ -535,11 +535,12 @@ class PolarProjection : public Projection
   Vector3D *cross;
 
   static PolarProjection singleton;
+  bool issquare;
 
   PolarProjection(bool initialization)
   {
     name = "polar";
-
+    
     if(initialization)
       ProjectionFactory::registerProjection(name, this->create);
 
@@ -551,7 +552,9 @@ class PolarProjection : public Projection
   public:
   static Projection* create()
   {
-    return new PolarProjection(false);
+    PolarProjection* pp=new PolarProjection(false);
+    pp->issquare=false;
+    return pp;
   }
 
   ~PolarProjection()
@@ -563,12 +566,32 @@ class PolarProjection : public Projection
 
   double getSizeRatio(void)
   {
-    return 2;
+    return this->issquare ? 1.0 : 2.0;
   }
 
   bool isValidPixel(double u, double v)
   {
     return true;
+  }
+  void setOptions(char *opts)
+  {
+    static const char *OPTION_SQUARE = "square";
+    char* delimiter;
+    while(*opts)
+    {
+      if(strncmp(opts, OPTION_SQUARE, strlen(OPTION_SQUARE)) == 0)
+      {
+        delimiter=opts+strlen(OPTION_SQUARE);
+	this->issquare=true;
+      }
+      else
+      {
+        fprintf( stderr, PROG_NAME " error: angular projection: unknown option: %s\n", opts );
+        throw QuietException();
+      }
+
+      opts = delimiter + 1;
+    }
   }
 
   Vector3D* uvToDirection(double u, double v)
