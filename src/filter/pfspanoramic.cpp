@@ -650,6 +650,174 @@ class PolarProjection : public Projection
   }
 };
 
+class CubeProjection : public Projection
+{
+  static CubeProjection singleton;
+  enum { LAYOUT_VERTICAL, LAYOUT_CROSS, LAYOUT_HORIZONTAL } layout;
+  
+  CubeProjection(bool initialization)
+  {
+    name = "cube";
+
+    if(initialization)
+      ProjectionFactory::registerProjection(name, this->create);
+  }
+
+  public:
+  static Projection* create()
+  {
+    CubeProjection *p = new CubeProjection(false);
+    p->layout=LAYOUT_HORIZONTAL;
+    return (Projection *)p;
+  }
+
+  void setOptions(char *opts)
+  {
+    char *delimiter;
+    static const char *OPTION_LAYOUT = "layout";
+
+    while(*opts)
+    {
+      //fprintf(stderr,"option: %s\n", opts);
+      //if(delimiter = strchr(name, '/'))
+        //*delimiter++ = '\0';
+
+
+      if(strncmp(opts, OPTION_LAYOUT, strlen(OPTION_LAYOUT)) == 0)
+      {
+	const char* lstr=opts+strlen(OPTION_LAYOUT)+1;
+        totalAngle = strtod(opts + strlen(OPTION_LAYOUT) + 1, &delimiter);
+      //  fprintf(stderr,"angle: %g\n", totalAngle);
+
+        if(strncmp(lstr,"horizontal",strlen("horizontal"))==0)
+	{
+		this->layout=LAYOUT_HORIZONTAL;
+		delimiter=lstr+strlen("horizontal");
+	}
+	else if(strncmp(lstr,"vertical",strlen("vertical"))==0)
+	{
+		this->layout=LAYOUT_VERTICAL;
+		delimiter=lstr+strlen("vertical");
+	}
+	else if(strncmp(lstr,"cross",strlen("cross"))==0)
+	{
+		this->layout=LAYOUT_CROSS;
+		delimiter=lstr+strlen("cross");
+	}
+	else
+        {
+          fprintf( stderr, PROG_NAME " error: angular projection: layout must be \"cross\",\"horizontal\", or \"vertical\".\n" );
+          throw QuietException();
+        }
+      }
+      else
+      {
+        fprintf( stderr, PROG_NAME " error: angular projection: unknown option: %s\n", opts );
+        throw QuietException();
+      }
+
+      opts = delimiter + 1;
+    }
+  }
+
+
+  const char *getName(void)
+  {
+    return name;
+  }
+
+  double getSizeRatio(void)
+  {
+	switch(this->layout)
+	{
+		case LAYOUT_CROSS:
+			return 3.0/4.0;
+		case LAYOUT_HORIZONTAL:
+			return 6.0;
+		case LAYOUT_VERTICAL:
+			return 1.0/6.0;
+	};
+  }
+
+  bool isValidPixel(double u, double v)
+  {
+	if(layout != LAYOUT_CROSS)
+	{
+		return true;
+	}
+	int u3=3.0*u;
+	int v4=4.0*v;
+	return (u3==2) || (v4 == 2);
+  }
+
+  Vector3D* uvToDirection(double u, double v)
+  {
+    static const int linear_sel[6]={-1,1,-2,2,-3,3};
+    int axis_sel=0;
+    double fu,fv;
+    double tmpi;
+    switch(layout)
+    {
+	case LAYOUT_CROSS:
+	{
+		double u3f=3.0*u;
+		double v4f=4.0*v;
+		int u3=u3f;
+		int v4=v4f;
+		fu=modf(u3f,&tmpi);
+		fv=modf(v4f,&tmpi);
+		static const int cross_sel[3][4]=
+			{{ 0, 2, 0},
+			 {-1, 3, 1},
+			 { 0,-2, 0},
+			 { 0,-3, 0}};
+		axis_sel=cross_sel[u3][v4];
+		break;
+	}
+	case LAYOUT_HORIZONTAL:
+	{
+		double u6f=6.0*u;
+		int u6=u6f;
+		fu=modf(u6f,&tmpi);
+		fv=v;
+		axis_sel=linear_sel[u6];
+		break;
+	}
+	case LAYOUT_VERTICAL:
+	{
+		double v6f=6.0*u;
+		int v6=v6f;
+		fu=u;
+		fv=modf(v6f,&tmpi);
+		axis_sel=linear_sel[v6];
+	}
+    };
+    double vec[3];
+    
+    int ma=abs(axis_sel);
+    vec[ma]=axis_sel < 0 ? -1.0 : 1.0;
+    double tmp;
+    vec[(ma+1) % 3] = fu*vec[ma];
+    vec[(ma+2) % 3] = fv*vec[ma];
+    
+    Vector3D *direction = new Vector3D(vec[0],vec[1],vec[2]);
+    return direction;
+  }
+
+  Point2D* directionToUV(Vector3D *direction)
+  {
+	switch(layout)
+	{
+		case LAYOUT_CROSS:
+		{
+			
+		}
+	}
+
+    return new Point2D(u, v);
+  }
+};
+
 PolarProjection PolarProjection::singleton = true;
 CylindricalProjection CylindricalProjection::singleton = true;
 AngularProjection AngularProjection::singleton = true;
