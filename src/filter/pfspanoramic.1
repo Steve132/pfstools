@@ -11,6 +11,9 @@ Transform spherical maps between various projections. Currently
 .BI angular
 (light probe),
 .BI mirrorball
+(Reflective Ball),
+.BI cube
+(cubemap),
 and
 .BI cylindrical
 are supported. The syntax for specifying the transformation is 
@@ -23,13 +26,21 @@ is the projection you'd like it to be transformed to. If the projection has
 some optional parameters, you can specify them with syntax:
 <source projection>/<argument>/...+<target projection>/<argument>/...
 
-As of now only
 .BI angular
 supports a parameter -
 .BI angle
 - which defines how many degrees from the viewing direction the projection
 should cover, e.g. angular+angular/angle=180 converts angular image to show
 only half of a hemisphere around the viewing direction.
+
+.BI cube
+supports the parameter
+.BI layout
+- which defines the layout of the cubemap faces, either as a 
+.BI horizontal
+or
+.BI vertical
+strip in order negXposXnegYposYnegZposZ, or as a vertical cross.
 
 .SH OPTIONS
 .TP

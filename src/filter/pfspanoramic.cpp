@@ -682,13 +682,11 @@ class CubeProjection : public Projection
       //if(delimiter = strchr(name, '/'))
         //*delimiter++ = '\0';
 
-
+      fprintf(stderr,"%s\n\n",opts);
       if(strncmp(opts, OPTION_LAYOUT, strlen(OPTION_LAYOUT)) == 0)
       {
-	const char* lstr=opts+strlen(OPTION_LAYOUT)+1;
-        totalAngle = strtod(opts + strlen(OPTION_LAYOUT) + 1, &delimiter);
-      //  fprintf(stderr,"angle: %g\n", totalAngle);
-
+	char* lstr=opts+strlen(OPTION_LAYOUT)+1;
+	
         if(strncmp(lstr,"horizontal",strlen("horizontal"))==0)
 	{
 		this->layout=LAYOUT_HORIZONTAL;
@@ -706,17 +704,17 @@ class CubeProjection : public Projection
 	}
 	else
         {
-          fprintf( stderr, PROG_NAME " error: angular projection: layout must be \"cross\",\"horizontal\", or \"vertical\".\n" );
+          fprintf( stderr, PROG_NAME " error: cube projection: layout must be \"cross\",\"horizontal\", or \"vertical\".\n" );
           throw QuietException();
         }
       }
       else
       {
-        fprintf( stderr, PROG_NAME " error: angular projection: unknown option: %s\n", opts );
+        fprintf( stderr, PROG_NAME " error: cube projection: unknown option: %s\n", opts );
         throw QuietException();
       }
 
-      opts = delimiter + 1;
+      opts = delimiter+1;
     }
   }
 
@@ -766,12 +764,12 @@ class CubeProjection : public Projection
 		int v4=v4f;
 		fu=modf(u3f,&tmpi);
 		fv=modf(v4f,&tmpi);
-		static const int cross_sel[3][4]=
+		static const int cross_sel[4][3]=
 			{{ 0, 2, 0},
 			 {-1, 3, 1},
 			 { 0,-2, 0},
 			 { 0,-3, 0}};
-		axis_sel=cross_sel[u3][v4];
+		axis_sel=cross_sel[v4][u3];
 		break;
 	}
 	case LAYOUT_HORIZONTAL:
@@ -794,11 +792,11 @@ class CubeProjection : public Projection
     };
     double vec[3];
     
-    int ma=abs(axis_sel);
+    int ma=abs(axis_sel)-1;
     vec[ma]=axis_sel < 0 ? -1.0 : 1.0;
     double tmp;
-    vec[(ma+1) % 3] = fu*vec[ma];
-    vec[(ma+2) % 3] = fv*vec[ma];
+    vec[(ma+1) % 3] = (2.0*fu-1.0)*vec[ma];
+    vec[(ma+2) % 3] = (2.0*fv-1.0)*vec[ma];
     
     Vector3D *direction = new Vector3D(vec[0],vec[1],vec[2]);
     return direction;
@@ -806,13 +804,49 @@ class CubeProjection : public Projection
 
   Point2D* directionToUV(Vector3D *direction)
   {
+	double vec[3]={direction->x,direction->y,direction->z};
+	double avec[3]={fabs(vec[0]),fabs(vec[1]),fabs(vec[2])};
+	
+	int ma= (avec[0] > avec[1]) ? 0 :
+		((avec[1] > avec[2]) ? 1 : 2);
+		
+	
+	double fu=vec[(ma+1) % 3] / vec[ma];
+	double fv=vec[(ma+2) % 3] / vec[ma];
+	ma+=1;
+	ma=(vec[ma] < 0.0) ? -ma : ma; 
+	
+	double u,v;
+	static const double linear_offsets[7]={4.0,5.0,2.0,3.0,0.0,1.0};
 	switch(layout)
 	{
 		case LAYOUT_CROSS:
 		{
-			
+			static const double offsets[7][2]={
+				              {1.0,3.0},//-3
+			                      {1.0,2.0},//-2
+					      {0.0,1.0},//-1
+					      {0.0,0.0},//0 NULL
+					      {2.0,1.0},
+					      {1.0,2.0},
+					      {1.0,1.0}};
+			u=(fu+offsets[ma+3][0])/3.0;
+			v=(fv+offsets[ma+3][1])/4.0;
+			break;
 		}
-	}
+		case LAYOUT_HORIZONTAL:
+		{
+			u=(fu+linear_offsets[ma+3])/6.0;
+			v=fv;
+			break;
+		}
+		case LAYOUT_VERTICAL:
+		{
+			u=fu;
+			v=(fv+linear_offsets[ma+3])/6.0;
+			break;
+		}
+	};
 
     return new Point2D(u, v);
   }
@@ -822,6 +856,7 @@ PolarProjection PolarProjection::singleton = true;
 CylindricalProjection CylindricalProjection::singleton = true;
 AngularProjection AngularProjection::singleton = true;
 MirrorBallProjection MirrorBallProjection::singleton = true;
+CubeProjection CubeProjection::singleton = true;
 
 class TransformInfo
 {
