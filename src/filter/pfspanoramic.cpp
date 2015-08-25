@@ -67,16 +67,12 @@ class Vector3D
     z = cos(theta);
   }
 
-  Vector3D(double x, double y, double z)
+  Vector3D(double tx, double ty, double tz):x(tx),y(ty),z(tz)
   {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-
     normalize();
   }
   
-  double magnitude(void)
+  double magnitude(void) const
   {
     return sqrt( x * x + y * y + z * z );
   }
@@ -90,9 +86,9 @@ class Vector3D
     z = z / len;
   }
 
-  double dot(Vector3D *v)
+  double dot(const Vector3D& v) const
   {
-    return x * v->x + y * v->y + z * v->z;
+    return x * v.x + y * v.y + z * v.z;
   }
 
   //TODO: optimize rotations by precomputing sines and cosines
@@ -144,11 +140,8 @@ class Point2D
   public:
     double x, y;
 
-  Point2D(double x, double y)
-  {
-    this->x = x;
-    this->y = y;
-  }
+  Point2D(double tx, double ty):x(tx),y(ty)
+  {}
 };
 class Projection
 {
@@ -156,8 +149,8 @@ class Projection
   const char *name;
   public:
     
-    virtual Vector3D *uvToDirection(double u, double v) = 0;
-    virtual Point2D *directionToUV(Vector3D *direction) = 0;
+    virtual Vector3D uvToDirection(double u, double v) = 0;
+    virtual Point2D directionToUV(const Vector3D& direction) = 0;
     virtual bool isValidPixel(double u, double v) = 0;
     virtual double getSizeRatio(void) = 0;
     virtual ~Projection()
@@ -251,10 +244,6 @@ class MirrorBallProjection : public Projection
     return new MirrorBallProjection(false);
   }
 
-  const char *getName(void)
-  {
-    return name;
-  }
 
   double getSizeRatio(void)
   {
@@ -270,7 +259,7 @@ class MirrorBallProjection : public Projection
       return true;
   }
 
-  Vector3D* uvToDirection(double u, double v)
+  Vector3D uvToDirection(double u, double v)
   {
     u = 2 * u - 1;
     v = 2 * v - 1;
@@ -278,35 +267,35 @@ class MirrorBallProjection : public Projection
     double phi = atan2( v, u );
     double theta = 2 * asin( sqrt( u * u + v * v ) );
 
-    Vector3D *direction = new Vector3D(phi, theta);
+    Vector3D direction(phi, theta);
     double t;
 
-    direction->y = -direction->y;
+    direction.y = -direction.y;
 
     return direction;
   }
 
-  Point2D* directionToUV(Vector3D *direction)
+  Point2D directionToUV(const Vector3D& d)
   {
     double u, v;
+    Vector3D direction(d.x,d.y,d.z);
+    direction.y = -direction.y;
 
-    direction->y = -direction->y;
-
-    if(fabs(direction->x) > 0 || fabs(direction->y) > 0)
+    if(fabs(direction.x) > 0 || fabs(direction.y) > 0)
     {
-      double distance = sqrt(direction->x * direction->x + direction->y * direction->y);
+      double distance = sqrt(direction.x * direction.x + direction.y * direction.y);
 
-      double r = 0.5 * (sin(acos(direction->z) / 2)) / distance;
+      double r = 0.5 * (sin(acos(direction.z) / 2)) / distance;
 
-      u = direction->x * r + 0.5;
-      v = direction->y * r + 0.5;
+      u = direction.x * r + 0.5;
+      v = direction.y * r + 0.5;
     }
     else
     {
       u = v = 0.5;
     }
 
-    return new Point2D(u, v);
+    return Point2D(u, v);
   }
 };
 
@@ -365,12 +354,6 @@ class AngularProjection : public Projection
     }
   }
 
-
-  const char *getName(void)
-  {
-    return name;
-  }
-
   double getSizeRatio(void)
   {
     return 1;
@@ -385,7 +368,7 @@ class AngularProjection : public Projection
       return true;
   }
 
-  Vector3D* uvToDirection(double u, double v)
+  Vector3D uvToDirection(double u, double v)
   {
     u = 2 * u - 1;
     v = 2 * v - 1;
@@ -396,56 +379,58 @@ class AngularProjection : public Projection
     double phi = atan2( v, u );
     double theta = PI * sqrt( u * u + v * v );
 
-    Vector3D *direction = new Vector3D(phi, theta);
+    Vector3D direction(phi, theta);
     double t;
 
-    direction->y = -direction->y;
+    direction.y = -direction.y;
 
     return direction;
   }
 
-  Point2D* directionToUV(Vector3D *direction)
+  Point2D directionToUV(const Vector3D& d)
   {
     double u, v;
 
-    direction->y = -direction->y;
+    Vector3D direction(d.x,d.y,d.z);
+    direction.y = -direction.y;
 
-    if(fabs(direction->x) > 0 || fabs(direction->y) > 0)
+    if(fabs(direction.x) > 0 || fabs(direction.y) > 0)
     {
-      double distance = sqrt(direction->x * direction->x + direction->y * direction->y);
+      double distance = sqrt(direction.x * direction.x + direction.y * direction.y);
 
-      double r = (1 / (2 * PI)) * acos(direction->z) / distance;
+      double r = (1 / (2 * PI)) * acos(direction.z) / distance;
 
-      u = direction->x * r + 0.5;
-      v = direction->y * r + 0.5;
+      u = direction.x * r + 0.5;
+      v = direction.y * r + 0.5;
     }
     else
     {
       u = v = 0.5;
     }
 
-    return new Point2D(u, v);
+    return Point2D(u, v);
   }
 };
 
 class CylindricalProjection : public Projection
 {
-  Vector3D *pole;
-  Vector3D *equator;
-  Vector3D *cross;
+  Vector3D pole;
+  Vector3D equator;
+  Vector3D cross;
 
   static CylindricalProjection singleton;
 
-  CylindricalProjection(bool initialization)
+  CylindricalProjection(bool initialization):
+	pole(0, 1, 0),
+	equator(0, 0, -1),
+	cross(1, 0, 0)
   {
     name = "cylindrical";
 
     if(initialization)
       ProjectionFactory::registerProjection(name, this->create);
 
-    pole = new Vector3D(0, 1, 0);
-    equator = new Vector3D(0, 0, -1);
-    cross = new Vector3D(1, 0, 0);
+    
   }
 
   public:
@@ -456,9 +441,6 @@ class CylindricalProjection : public Projection
 
   ~CylindricalProjection()
   {
-    delete pole;
-    delete equator;
-    delete cross;
   }
 
   double getSizeRatio(void)
@@ -471,7 +453,7 @@ class CylindricalProjection : public Projection
     return true;
   }
 
-  Vector3D* uvToDirection(double u, double v)
+  Vector3D uvToDirection(double u, double v)
   {
     u = 0.75 - u;
 
@@ -479,19 +461,19 @@ class CylindricalProjection : public Projection
 
     v = acos( 1 - 2 * v );
 
-    Vector3D *direction = new Vector3D(u, v);
+    Vector3D direction(u, v);
 
-    double temp = direction->z;
-    direction->z = direction->y;
-    direction->y = temp;
+    double temp = direction.z;
+    direction.z = direction.y;
+    direction.y = temp;
 
     return direction;
   }
 
-  Point2D* directionToUV(Vector3D *direction)
+  Point2D directionToUV(const Vector3D& direction)
   {
     double u, v;
-    double lat = direction->dot(pole);
+    double lat = direction.dot(pole);
 
     v = ( 1 - lat ) / 2;
 
@@ -499,7 +481,7 @@ class CylindricalProjection : public Projection
       u = 0;
     else
     {
-      double ratio = equator->dot( direction ) / sin( acos( lat ) );
+      double ratio = equator.dot( direction ) / sin( acos( lat ) );
 
       if(ratio < -1)
         ratio = -1;
@@ -509,7 +491,7 @@ class CylindricalProjection : public Projection
 
       double lon = acos(ratio) / (2 * PI);
 
-      if(cross->dot(direction) < 0)
+      if(cross.dot(direction) < 0)
         u = lon;
       else
         u = 1 - lon;
@@ -524,29 +506,29 @@ class CylindricalProjection : public Projection
   //  if ( 0 > v || v >= 1 ) fprintf(stderr, "u: %f (%f,%f,%f)\n", v, direction->x, direction->y, direction->z);
   //  assert ( -0. <= u && u < 1 );
   //  assert ( -0. <= v && v < 1 );
-    return new Point2D(u, v);
+    return Point2D(u, v);
   }
 };
 
 class PolarProjection : public Projection
 {
-  Vector3D *pole;
-  Vector3D *equator;
-  Vector3D *cross;
+  Vector3D pole;
+  Vector3D equator;
+  Vector3D cross;
 
   static PolarProjection singleton;
   bool issquare;
 
-  PolarProjection(bool initialization)
+  PolarProjection(bool initialization):
+   pole(0, 1, 0),
+    equator(0, 0, -1),
+    cross(1, 0, 0)
   {
     name = "polar";
     
     if(initialization)
       ProjectionFactory::registerProjection(name, this->create);
 
-    pole = new Vector3D(0, 1, 0);
-    equator = new Vector3D(0, 0, -1);
-    cross = new Vector3D(1, 0, 0);
   }
 
   public:
@@ -559,9 +541,6 @@ class PolarProjection : public Projection
 
   ~PolarProjection()
   {
-    delete pole;
-    delete equator;
-    delete cross;
   }
 
   double getSizeRatio(void)
@@ -594,26 +573,26 @@ class PolarProjection : public Projection
     }
   }
 
-  Vector3D* uvToDirection(double u, double v)
+  Vector3D uvToDirection(double u, double v)
   {
     u = 0.75 - u;
 
     u *= PI * 2;
     v *= PI;
 
-    Vector3D *direction = new Vector3D(u, v);
+    Vector3D direction(u, v);
 
-    double temp = direction->z;
-    direction->z = direction->y;
-    direction->y = temp;
+    double temp = direction.z;
+    direction.z = direction.y;
+    direction.y = temp;
 
     return direction;
   }
 
-  Point2D* directionToUV(Vector3D *direction)
+  Point2D directionToUV(const Vector3D& direction)
   {
     double u, v;
-    double lat = acos(direction->dot(pole));
+    double lat = acos(direction.dot(pole));
 
     v = lat * ONE_PI;
 
@@ -621,7 +600,7 @@ class PolarProjection : public Projection
       u = 0;
     else
     {
-      double ratio = equator->dot(direction) / sin(lat);
+      double ratio = equator.dot(direction) / sin(lat);
 
       if(ratio < -1)
         ratio = -1;
@@ -631,7 +610,7 @@ class PolarProjection : public Projection
 
       double lon = acos(ratio) / (2 * PI);
 
-      if(cross->dot(direction) < 0)
+      if(cross.dot(direction) < 0)
         u = lon;
       else
         u = 1 - lon;
@@ -646,7 +625,7 @@ class PolarProjection : public Projection
   //  if ( 0 > v || v >= 1 ) fprintf(stderr, "u: %f (%f,%f,%f)\n", v, direction->x, direction->y, direction->z);
   //  assert ( -0. <= u && u < 1 );
   //  assert ( -0. <= v && v < 1 );
-    return new Point2D(u, v);
+    return Point2D(u, v);
   }
 };
 
@@ -718,12 +697,6 @@ class CubeProjection : public Projection
     }
   }
 
-
-  const char *getName(void)
-  {
-    return name;
-  }
-
   double getSizeRatio(void)
   {
 	switch(this->layout)
@@ -748,7 +721,7 @@ class CubeProjection : public Projection
 	return (u3==2) || (v4 == 2);
   }
 
-  Vector3D* uvToDirection(double u, double v)
+  Vector3D uvToDirection(double u, double v)
   {
     static const int linear_sel[6]={-1,1,-2,2,-3,3};
     int axis_sel=0;
@@ -798,13 +771,12 @@ class CubeProjection : public Projection
     vec[(ma+1) % 3] = (2.0*fu-1.0)*vec[ma];
     vec[(ma+2) % 3] = (2.0*fv-1.0)*vec[ma];
     
-    Vector3D *direction = new Vector3D(vec[0],vec[1],vec[2]);
-    return direction;
+    return Vector3D(vec[0],vec[1],vec[2]);
   }
 
-  Point2D* directionToUV(Vector3D *direction)
+  Point2D directionToUV(const Vector3D& direction)
   {
-	double vec[3]={direction->x,direction->y,direction->z};
+	double vec[3]={direction.x,direction.y,direction.z};
 	double avec[3]={fabs(vec[0]),fabs(vec[1]),fabs(vec[2])};
 	
 	int ma= (avec[0] > avec[1]) ? 0 :
@@ -848,7 +820,7 @@ class CubeProjection : public Projection
 		}
 	};
 
-    return new Point2D(u, v);
+    return Point2D(u, v);
   }
 };
 
@@ -1086,35 +1058,32 @@ void transformArray( const pfs::Array2D *in, pfs::Array2D *out, TransformInfo *t
         for( double sy = 0, oy = 0; oy < transformInfo->oversampleFactor; sy += delta, oy++ )
           for( double sx = 0, ox = 0; ox < transformInfo->oversampleFactor; sx += delta, ox++ )
           {
-            Vector3D *direction = transformInfo->dstProjection->uvToDirection(
+            Vector3D direction = transformInfo->dstProjection->uvToDirection(
                 ( x + offset + sx ) / outCols, ( y + offset + sy ) / outRows );
-
-            if(direction == NULL)
-              continue;
 
             // angles below are negated, because we want to rotate
             // the environment around us, not us within the environment.
             if( transformInfo->xRotate != 0 )
-              direction->rotateX( -transformInfo->xRotate );
+              direction.rotateX( -transformInfo->xRotate );
 
             if( transformInfo->yRotate != 0 )
-              direction->rotateY( -transformInfo->yRotate );
+              direction.rotateY( -transformInfo->yRotate );
 
             if( transformInfo->zRotate != 0 )
-              direction->rotateZ( -transformInfo->zRotate );
+              direction.rotateZ( -transformInfo->zRotate );
 
-            Point2D *p = transformInfo->srcProjection->directionToUV( direction );
+            Point2D p = transformInfo->srcProjection->directionToUV( direction );
 
-            p->x *= inCols;
-            p->y *= inRows;
+            p.x *= inCols;
+            p.y *= inRows;
 
             if( transformInfo->interpolate == true )
             {
-              int ix = (int)floor( p->x );
-              int iy = (int)floor( p->y );
+              int ix = (int)floor( p.x );
+              int iy = (int)floor( p.y );
 
-              double i = p->x - ix;
-              double j = p->y - iy;
+              double i = p.x - ix;
+              double j = p.y - iy;
 
               // compute pixel weights for interpolation
               double w1 = i * j;
@@ -1137,8 +1106,8 @@ void transformArray( const pfs::Array2D *in, pfs::Array2D *out, TransformInfo *t
             }
             else
             {
-              int ix = (int)floor(p->x + 0.5);
-              int iy = (int)floor(p->y + 0.5);
+              int ix = (int)floor(p.x + 0.5);
+              int iy = (int)floor(p.y + 0.5);
 
               if(ix >= inCols)
                 ix = inCols - 1;
@@ -1148,10 +1117,6 @@ void transformArray( const pfs::Array2D *in, pfs::Array2D *out, TransformInfo *t
 
               pixVal += (*in)(ix, iy);
             }
-
-
-            delete direction;
-            delete p;
 
             (*out)(x,y) = (float)(pixVal * scaler);
           }
