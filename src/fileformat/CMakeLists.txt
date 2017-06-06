@@ -40,6 +40,12 @@ target_link_libraries(pfsoutrgbe pfs)
 install (TARGETS pfsoutrgbe DESTINATION bin)
 install (FILES pfsoutrgbe.1 DESTINATION ${MAN_DIR})
 
+
+add_executable(pfsoutraw pfsoutraw.cpp "${GETOPT_OBJECT}") 
+target_link_libraries(pfsoutraw pfs)
+install (TARGETS pfsoutraw DESTINATION bin)
+
+
 add_executable(pfsinpfm pfsinpfm.cpp "${GETOPT_OBJECT}")
 target_link_libraries(pfsinpfm pfs)
 install (TARGETS pfsinpfm DESTINATION bin)
